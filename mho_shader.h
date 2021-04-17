@@ -1,5 +1,5 @@
-#ifndef M_SHADER_H
-#define M_SHADER_H
+#ifndef MHO_SHADER_H
+#define MHO_SHADER_H
 
 #pragma warning(disable: 4996)
 
@@ -35,7 +35,7 @@ void	m_check_compile_errors(u32 data, m_shader_enum type, const char *filename);
 ///////////////////////
 ////// IMPL ///////////
 
- #ifdef M_SHADER_IMPL
+ #ifdef MHO_SHADER_IMPL
 
 char*
 m_load_shader_source(const char *filename)
@@ -177,8 +177,8 @@ m_check_compile_errors(u32 data,
     }
 }
 
- #endif // M_SHADER_IMPL
+ #endif // MHO_SHADER_IMPL
 
 #pragma warning(default: 4996)
 
-#endif // M_SHADER_H
+#endif // MHO_SHADER_H
