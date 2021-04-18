@@ -1,5 +1,5 @@
 # mho
-collection of useful C libraries (probably targeted towards grapics)
+collection of useful (minimalist) C libraries (probably targeted towards grapics)
 
 <a name="mho_libs"></a>
 
