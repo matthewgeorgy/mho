@@ -6,33 +6,33 @@
 
 typedef struct _TAG_m_array_header
 {
-    u32 size;       // number of elements in array containing data
-    u32 capacity;   // total number of elements
+	u32 size;       // number of elements in array containing data
+	u32 capacity;   // total number of elements
 } m_array_header_t;
 
 void **m_array_init(void *arr, usize val_size);
 void *m_array_resize(void *arr, usize sz, usize amt);
 
-#define m_array_head(__array) \ 
+#define m_array_head(__array) \
 	((m_array_header_t *)(__array) - 1)
 
-#define m_array_size(__array) \ 
+#define m_array_size(__array) \
 	(__array == NULL ? 0 : m_array_head(__array)->size)
 
-#define m_array_capacity(__array) \ 
+#define m_array_capacity(__array) \
 	(__array == NULL ? 0 : m_array_head(__array)->capacity)
 
-#define m_array_full(__array) \ 
+#define m_array_full(__array) \
 	((m_array_size(__array)) == (m_array_capacity(__array)))
 
 #define m_array_empty(__array) \
 	(m_array_init((void **)&(__array), sizeof(*(__array)), (m_array_size(__array) == 0)))
 
-#define m_array_free(__array) \ 
+#define m_array_free(__array) \
 	(free(m_array_head(__array))) // tighten with NULL checks
 
 #define m_array_need_grow(__array, __n) \
-	((__array) == 0 || m_array_size(__array) + (__n) >= m_array_capacity(__array))
+	((__array) == 0 || m_array_size(__array) + (__n) > m_array_capacity(__array))
 
 #define m_array_grow(__array) \
 	m_array_resize((__array), sizeof(*(__array)), m_array_capacity(__array) ? m_array_capacity(__array) * 2 : 1)
@@ -44,7 +44,7 @@ void *m_array_resize(void *arr, usize sz, usize amt);
 		if (!(__array) || ((__array) && m_array_need_grow(__array, 1))) \
 		{ \
 			*((void **)&(__array)) = m_array_grow(__array); \
-		} \ 
+		} \
 		(__array)[m_array_size(__array)] = (__data); \
 		m_array_head(__array)->size++; \
 	} while (0)
@@ -56,7 +56,7 @@ void *m_array_resize(void *arr, usize sz, usize amt);
 		m_array_head(__array)->size -= 1; \
 	} while(0)
 
-#define m_array(__type)				__type *
+#define m_array(__type)	__type *
 
 /////////////////////////////////
 // ====== IMPL =========== //
@@ -65,24 +65,24 @@ void *m_array_resize(void *arr, usize sz, usize amt);
 
 void**
 m_array_init(void **arr,
-             usize val_size)
+			 usize val_size)
 {
-    if (*arr == NULL)
-    {
-        m_array_header_t *data;
-        data = (m_array_header_t *)malloc(val_size + sizeof(m_array_header_t));
+	if (*arr == NULL)
+	{
+		m_array_header_t *data;
+		data = (m_array_header_t *)malloc(val_size + sizeof(m_array_header_t));
 
-        if (data)
-        {
-            data->size = 0;
-            data->capacity = 1;
-            *arr = ((u32 *)data + 2);
+		if (data)
+		{
+			data->size = 0;
+			data->capacity = 1;
+			*arr = ((u32 *)data + 2);
 
-            return arr;
-        }
-    }
+			return arr;
+		}
+	}
 
-    return NULL;
+	return NULL;
 }
 
 void*
