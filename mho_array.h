@@ -91,13 +91,14 @@ void *m_array_resize(void *arr, usize sz, usize amt);
 
  #ifdef MHO_ARRAY_IMPL
 
-void**
+void **
 m_array_init(void **arr,
              usize val_size)
 {
+    m_array_header_t    *data;
+
     if (*arr == NULL)
     {
-        m_array_header_t *data;
         data = (m_array_header_t *)malloc(val_size + sizeof(m_array_header_t));
 
         if (data)
@@ -118,8 +119,8 @@ m_array_resize(void *arr,
                usize sz,
                usize amt)
 {
-    usize capacity;
-    m_array_header_t *data;
+    usize               capacity;
+    m_array_header_t    *data;
 
     if (arr)
         capacity = amt;

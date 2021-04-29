@@ -1,8 +1,6 @@
 #ifndef MHO_SHADER_H
 #define MHO_SHADER_H
 
-#pragma warning(disable: 4996)
-
 #include <glad/glad.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -20,29 +18,32 @@ typedef enum
 
 // Loads a vertex shader + fragment shader from a file source and
 // creates a shader program
-u32     m_load_shader(const char *vs_path, const char *fs_path);
+u32 m_load_shader(const char *vs_path, const char *fs_path);
 
 // Loads a compute shader from a file source and creates a shader program
-u32     m_load_compute_shader(const char *cs_path);
+u32 m_load_compute_shader(const char *cs_path);
 
 // Loads shader source from a file and returns a char * containing its data
-char    *m_load_shader_source(const char *filename);
+char *m_load_shader_source(const char *filename);
 
 // Checks for any shader compilation errors given shader data, shader type, and
 // the originating filename
-void    m_check_compile_errors(u32 data, m_shader_enum type, const char *filename);
+void m_check_compile_errors(u32 data, m_shader_enum type, const char *filename);
 
 ///////////////////////
 ////// IMPL ///////////
 
  #ifdef MHO_SHADER_IMPL
 
-char*
+#pragma warning(disable: 4996)
+
+char *
 m_load_shader_source(const char *filename)
 {
-    FILE *fptr;
-    s32 file_len;
-    char *source = NULL;
+    FILE    *fptr;
+    s32     file_len,
+            ret;
+    char    *source = NULL;
 
     fptr = fopen(filename, "rb");
     if (fptr)
@@ -55,13 +56,10 @@ m_load_shader_source(const char *filename)
             source = (char *)malloc(file_len + 1);
             if (source)
             {
-                s32 ret;
                 ret = fread(source, 1, file_len, fptr);
                 if (ret == file_len)
                 {
                     source[file_len] = 0;
-
-                    return source;
                 }
                 else
                 {
@@ -79,16 +77,18 @@ m_load_shader_source(const char *filename)
         printf("Could not load file: %s\n", filename);
     }
     fclose(fptr);
+
+    return source;
 }
 
 u32
 m_load_shader(const char *vs_path,
               const char *fs_path)
 {
-    u32 vertex,
-        fragment,
-        program;
-    char *shader_source;
+    u32     vertex,
+            fragment,
+            program;
+    char    *shader_source;
 
     // Vertex Shader
     shader_source = m_load_shader_source(vs_path);
@@ -122,9 +122,9 @@ m_load_shader(const char *vs_path,
 u32
 m_load_compute_shader(const char *cs_path)
 {
-    u32 compute,
-        program;
-    char *shader_source;
+    u32     compute,
+            program;
+    char    *shader_source;
 
     // Compute Shader
     shader_source = m_load_shader_source(cs_path);
@@ -150,8 +150,8 @@ m_check_compile_errors(u32 data,
                      m_shader_enum type,
                      const char *filename)
 {
-    b32 success;
-    char info_log[1024];
+    b32     success;
+    char    info_log[1024];
 
     if (type == PROGRAM)
     {
