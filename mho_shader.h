@@ -147,8 +147,8 @@ m_load_compute_shader(const char *cs_path)
 
 void
 m_check_compile_errors(u32 data,
-                     m_shader_enum type,
-                     const char *filename)
+                       m_shader_enum type,
+                       const char *filename)
 {
     b32     success;
     char    info_log[1024];
