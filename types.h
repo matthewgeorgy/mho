@@ -34,8 +34,8 @@ typedef double      f64;
 typedef s8          b8;
 typedef s32         b32;
 
-#define TRUE		1
-#define FALSE		0
+#define TRUE        1
+#define FALSE       0
 
 // Max values
 #define U8_MAX      UINT8_MAX
