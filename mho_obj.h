@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-//#define MHO_ARRAY_IMPL
+#define MHO_ARRAY_IMPL
 #include "mho_array.h"
 
 // --------- Essential structures for this library ------------- //
@@ -33,6 +33,7 @@ typedef struct _TAG_m_obj_data
 
 b32 m_obj_load(const char *file, m_obj_data_t *data, b32 interleaved);
 b32 m_obj_load_interleaved(const char *file, m_obj_data_t *data);
+b32 m_obj_load_inter(const char *file, m_obj_data_t *data);
 b32 m_obj_load_indexed(const char *file, m_obj_data_t *data);
 
 //////////////////////////////////
@@ -179,6 +180,91 @@ m_obj_load_interleaved(const char *file,
 	/* 	data->normals[i] = temp_norms[vn_idx]; */
 	/* } */
 	/* data->interleaved = TRUE; */
+
+	return TRUE;
+}
+
+b32
+m_obj_load_inter(const char *file,
+				 m_obj_data_t *data)
+{
+	FILE *fptr;
+	m_vec3_t *verts, *norms;
+	m_vec2_t *uvs;
+	char token[128];
+	s32 res, num_vals;
+	u32 vert_idx[3], uv_idx[3], norm_idx[3];
+	m_vec3_t temp;
+	m_vec2_t temp2;
+
+	fptr = fopen(file, "r");
+	if (!fptr)
+	{
+		printf("Failed to load file: %s\n", file);
+
+		return FALSE;
+	}
+
+	verts = NULL;
+	norms = NULL;
+	uvs = NULL;
+	for (;;)
+	{
+		res = fscanf(fptr, "%s", token);
+		if (res == EOF)
+			break;
+
+		if (token[0] == '#')
+			continue;
+		else if (token[0] == 'v')
+		{
+			if (token[1] == 't')
+			{
+				fscanf(fptr, "%f %f\n", &temp2.x, &temp2.y);
+				m_array_push(uvs, temp2);
+			}
+			else if (token[1] == 'n')
+			{
+				fscanf(fptr, "%f %f %f\n", &temp.x, &temp.y, &temp.z);
+				m_array_push(norms, temp);
+			}
+			else if (token[1] == 'f')
+			{
+				num_vals = 0;
+				num_vals = fscanf(fptr, "%d/%d/%d", &vert_idx[0],
+													&uv_idx[0],
+													&norm_idx[0]);
+				num_vals += fscanf(fptr, "%d/%d/%d", &vert_idx[1],
+													 &uv_idx[1],
+													 &norm_idx[1]);
+				num_vals += fscanf(fptr, "%d/%d/%d", &vert_idx[2],
+													 &uv_idx[2],
+													 &norm_idx[2]);
+				if (num_vals != 9)
+				{
+					printf("File is incompatible with mho_obj!: %s\n", file);
+					fclose(fptr);
+
+					return FALSE;
+				}
+				
+				m_array_push(verts, vert_idx[0]);
+				m_array_push(verts, vert_idx[1]);
+				m_array_push(verts, vert_idx[2]);
+				m_array_push(verts, uv_idx[0]);
+				m_array_push(verts, uv_idx[1]);
+				m_array_push(verts, uv_idx[2]);
+				m_array_push(verts, norm_idx[0]);
+				m_array_push(verts, norm_idx[1]);
+				m_array_push(verts, norm_idx[2]);
+			}
+			else
+			{
+				fscanf(fptr, "%f %f %f\n", &temp.x, &temp.y, &temp.z);
+				m_array_push(verts, temp);
+			}
+		}
+	}
 
 	return TRUE;
 }
