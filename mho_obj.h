@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+//#define MHO_ARRAY_IMPL
+#include "mho_array.h"
 
 // --------- Essential structures for this library ------------- //
 
@@ -44,22 +46,13 @@ m_obj_load(const char *file,
 		   m_obj_data_t *data,
 		   b32 interleaved)
 {
-	
-	/* FILE *fptr = fopen(file, "r"); */
-
-	/* if (!fptr) */
-	/* { */
-	/* 	printf("Could not load file!: %s\n", file); */
-
-	/* 	return FALSE; */
-	/* } */
-
-	//else
+	if (interleaved)
 	{
-		if (interleaved)
-		{
-			return m_obj_load_interleaved(file, data);
-		}
+		return m_obj_load_interleaved(file, data);
+	}
+	else
+	{
+		//return m_obj_load_indexed(file, data);
 	}
 }
 
@@ -67,14 +60,24 @@ b32
 m_obj_load_interleaved(const char *file,
 					   m_obj_data_t *data)
 {
-	FILE *fptr;
-	u32 nv, nvt, nvn, nf, i;
-	u32 *vertex_indices, *uv_indices, *normal_indices;
-	u32 v_idx, vt_idx, vn_idx, f_idx;
-	m_vec3_t *temp_verts, *temp_norms;
-	m_vec2_t *temp_uvs;
-	char token[128];
-	s32 res;
+	FILE		*fptr;
+	u32			nv,
+				nvt,
+				nvn,
+				nf,
+				i;
+	u32			*vertex_indices,
+				*uv_indices,
+				*normal_indices;
+	u32 		v_idx,
+				vt_idx,
+				vn_idx,
+				f_idx;
+	m_vec3_t 	*temp_verts,
+				 *temp_norms;
+	m_vec2_t	 *temp_uvs;
+	char 		token[128];
+	s32 		res;
 		
 	fptr = fopen(file, "r");
 	nv = 0, nvt = 0, nvn = 0, nf = 0;
@@ -179,10 +182,9 @@ m_obj_load_interleaved(const char *file,
 
 	return TRUE;
 }
-
+	
 #pragma warning(default: 4996)
 
  #endif // MHO_OBJ_IMPL
-
 
 #endif // MHO_OBJ_H
