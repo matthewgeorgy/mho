@@ -6,7 +6,6 @@
     identical but has a few differences.
 */
 
-#include <stdlib.h>
 #include <types.h>
 
 typedef struct _TAG_m_array_header
@@ -82,7 +81,7 @@ void *m_array_resize(void *arr, usize sz, usize amt);
 #define m_array_clear(__array) \
     do \
     { \
-        if (__array)\
+        if (__array) \
             m_array_head(__array)->size = 0; \
     } while (0)
 
@@ -90,6 +89,8 @@ void *m_array_resize(void *arr, usize sz, usize amt);
 // ====== IMPL =========== //
 
  #ifdef MHO_ARRAY_IMPL
+
+#include <stdlib.h>
 
 void **
 m_array_init(void **arr,
@@ -114,7 +115,7 @@ m_array_init(void **arr,
     return NULL;
 }
 
-void*
+void *
 m_array_resize(void *arr,
                usize sz,
                usize amt)
@@ -127,13 +128,14 @@ m_array_resize(void *arr,
     else
         capacity = 0;
 
-    // Create new array with just the header
+    // Create new array with header + desired size
     data = (m_array_header_t *)realloc(arr ? m_array_head(arr) : 0, capacity * sz + sizeof(m_array_header_t));
 
     if (data)
     {
         if (!arr)
             data->size = 0;
+
         data->capacity = (u32)capacity;
         data = (m_array_header_t *)data + 1;
     }
