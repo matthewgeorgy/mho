@@ -56,6 +56,10 @@ void *m_array_resize(void *arr, usize sz, usize amt);
 #define m_array_grow(__array) \
     m_array_resize((__array), sizeof(*(__array)), m_array_capacity(__array) ? m_array_capacity(__array) * 2 : 1)
 
+// Grows the array by a given size
+#define m_array_grow_size(__array, __sz) \
+    m_array_resize((__array), __sz, m_array_capacity(__array) ? m_array_capacity(__array) * 2 : 1)
+
 // Pushes data to the back of the array
 #define m_array_push(__array, __data) \
     do \
@@ -128,7 +132,7 @@ m_array_resize(void *arr,
     else
         capacity = 0;
 
-    // Create new array with header + desired size
+    // Create new array with header + desired size (or 0 if arr is empty)
     data = (m_array_header_t *)realloc(arr ? m_array_head(arr) : 0, capacity * sz + sizeof(m_array_header_t));
 
     if (data)
