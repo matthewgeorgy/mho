@@ -73,9 +73,9 @@ void *m_array_resize(void *arr, usize sz, usize amt);
 #define m_array_pop(__array) \
     do \
     { \
-        if (__array && !m_array_empty(__array)) \
-        m_array_head(__array)->size -= 1; \
-    } while(0)
+        if (__array && !m_array_empty(__array) && m_array_size(__array) != 0) \
+        	m_array_head(__array)->size -= 1; \
+    } while (0)
 
 // Clears all the elements in the array, (simply sets size to 0)
 #define m_array_clear(__array) \
@@ -108,11 +108,11 @@ m_array_init(void **arr,
             data->capacity = 1;
             *arr = ((u32 *)data + 2);
 
-            return arr;
+			return arr;
         }
     }
 
-    return NULL;
+	return NULL;
 }
 
 void *
