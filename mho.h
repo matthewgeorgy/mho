@@ -4,13 +4,13 @@
 // TODO: we're going to start moving over all of the library functionality we
 // currently have (mho_array/shader/etc, mmath, mmdbg, etc) into one big
 // library here - mho.h
-// To do this, there's a number of design decisions we might have to make:
-// 
-// 1. Where will <types.h> go?
-// 2. What will we prefix names with?
-// 3. HOW will we name/rename things?
-// 4. Single header with multiple IMPL symbols? Or separate .c files containing
-// each section?
+//
+// TODO: Where will <types.h> go?
+// TODO: What will we prefix names with?
+// TODO: HOW will we name/rename things?
+// TODO: Single header with multiple IMPL symbols? Or separate .c files
+// containing each section?
+// TODO: #define a custom 'EXTERN' symbol for compilation with C++
 
 // NOTE: For now, we will just include <types.h> directly here. Later, we may
 // elect to inline them.
