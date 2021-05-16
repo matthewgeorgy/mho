@@ -5,7 +5,8 @@
 //
 // Mho should ideally be the last file that is #included in your project, as
 // it contains some definitions (ie, TRUE/FALSE) that other libraries should
-// have precedence for.
+// have precedence for, as well as requiring other headers/files to be
+// included for certain functionality (ie, <glad.h>).
 
 #ifndef MHO_H
 #define MHO_H
@@ -15,7 +16,10 @@
 // library here - mho.h
 //
 // TODO: What will we prefix names with?
+// TODO: add mmath.h
+// TODO: add mmdbg.h
 // TODO: HOW will we name/rename things?
+// TODO: move decls to top, defs to bottom*****
 
 // NOTE: For now, we will just directly inline our <types.h>
 // NOTE: For now, we'll include implementation directly within the file. Later,
@@ -29,6 +33,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 
 
@@ -363,7 +368,7 @@ MHO_EXTERN void m_check_compile_errors(u32 data, u8 type, const char *filename);
 
 u32
 m_load_shader_vf(const char *vs_path,
-                const char *fs_path)
+                 const char *fs_path)
 {
     u32     vertex,
             fragment,
