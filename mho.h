@@ -251,10 +251,6 @@ MHO_EXTERN s8 *m_read_file_buffer(const char *filename);
 //		OPENGL SHADERS
 //
 
-// glad.h is the OpenGL function loader that I primarily use; this can
-// be easily swapped by just replacing the symbol with your respective
-// loader's symbol in the IMPLEMENTATION section (see __glad_h_).
-
 MHO_EXTERN u32 m_load_shader_vf(const char *vs_path, const char *fs_path);
 MHO_EXTERN u32 m_load_shader_comp(const char *cs_path);
 // 0 = source, 1 = program
@@ -388,6 +384,9 @@ m_read_file_buffer(const char *filename)
 //////////////////////////////////////////////////////////////////
 // OpenGL Shaders
 
+// glad.h is the OpenGL function loader that I primarily use; this can
+// be easily swapped by just replacing this symbol with your respective
+// loader's symbol in the IMPLEMENTATION section.
   #ifdef __glad_h_
 
 u32
