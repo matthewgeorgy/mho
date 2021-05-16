@@ -16,7 +16,6 @@
 //
 // TODO: What will we prefix names with?
 // TODO: HOW will we name/rename things?
-// TODO: align the \ in #define's
 
 // NOTE: For now, we will just directly inline our <types.h>
 // NOTE: For now, we'll include implementation directly within the file. Later,
@@ -136,12 +135,12 @@ typedef s32         b32;
 #define m_clamp(__x, __min, __max) \
 	((__x) < (__min) ? (__min) : (__x) > (__max) ? (__max) : (__x))
 
-#define m_swap(__a, __b, __type) \
-	do \
-	{ \
-		__type __M_SWAP_TEMP = __a; \
-		__a = __b; \
-		__b = __M_SWAP_TEMP; \
+#define m_swap(__a, __b, __type) 		\
+	do 									\
+	{ 									\
+		__type __M_SWAP_TEMP = __a; 	\
+		__a = __b; 						\
+		__b = __M_SWAP_TEMP; 			\
 	} while (0)
 
 
@@ -203,32 +202,32 @@ MHO_EXTERN void *m_array_resize(void *arr, usize sz, usize amt);
 	m_array_resize((__array), __sz, m_array_capacity(__array) ? m_array_capacity(__array) * 2 : 1)
 
 // Pushes data to the back of the array
-#define m_array_push(__array, __data) \
-	do \
-	{ \
-		m_array_init((void **)&(__array), sizeof(*(__array))); \
-		if (!(__array) || ((__array) && m_array_need_grow(__array, 1))) \
-		{ \
-			*((void **)&(__array)) = m_array_grow(__array); \
-		} \
-		(__array)[m_array_size(__array)] = (__data); \
-		m_array_head(__array)->size++; \
+#define m_array_push(__array, __data)										\
+	do 																		\
+	{ 																		\
+		m_array_init((void **)&(__array), sizeof(*(__array))); 				\
+		if (!(__array) || ((__array) && m_array_need_grow(__array, 1))) 	\
+		{ 																	\
+			*((void **)&(__array)) = m_array_grow(__array); 				\
+		} 																	\
+		(__array)[m_array_size(__array)] = (__data); 						\
+		m_array_head(__array)->size++; 										\
 	} while (0)
 
 // "Pops" data off of the array (decrements the size)
-#define m_array_pop(__array) \
-	do \
-	{ \
-		if (__array && !m_array_empty(__array) && m_array_size(__array) != 0) \
-			m_array_head(__array)->size -= 1; \
+#define m_array_pop(__array) 													\
+	do 																			\
+	{ 																			\
+		if (__array && !m_array_empty(__array) && m_array_size(__array) != 0) 	\
+			m_array_head(__array)->size -= 1; 									\
 	} while (0)
 
 // Clears all the elements in the array, (simply sets size to 0)
-#define m_array_clear(__array) \
-	do \
-	{ \
-		if (__array) \
-			m_array_head(__array)->size = 0; \
+#define m_array_clear(__array) 					\
+	do 											\
+	{ 											\
+		if (__array) 							\
+			m_array_head(__array)->size = 0; 	\
 	} while (0)
 
 #ifdef MHO_IMPL
