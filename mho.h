@@ -342,4 +342,123 @@ m_read_file_buffer(const char *filename)
 
 #endif // MHO_IMPL
 
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//		OPENGL SHADERS
+//
+
+// glad.h is the OpenGL function loader that I primarily use; this can
+// be easily swapped by just replacing this symbol with your respective
+// loader's symbol.
+#ifdef __glad_h_
+
+MHO_EXTERN u32 m_load_shader_vf(const char *vs_path, const char *fs_path);
+MHO_EXTERN u32 m_load_shader_comp(const char *cs_path);
+// 0 = source, 1 = program
+MHO_EXTERN void m_check_compile_errors(u32 data, u8 type, const char *filename);
+
+#ifdef MHO_IMPL
+
+u32
+m_load_shader_vf(const char *vs_path,
+                const char *fs_path)
+{
+    u32     vertex,
+            fragment,
+            program;
+    s8    	*source;
+
+    // Vertex Shader
+    source = m_read_file_buffer(vs_path);
+    vertex = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertex, 1, &source, NULL);
+    glCompileShader(vertex);
+    m_check_compile_errors(vertex, 0, vs_path);
+    free(source);
+
+    // Fragment Shader
+    source = m_read_file_buffer(fs_path);
+    fragment = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragment, 1, &source, NULL);
+    glCompileShader(fragment);
+    m_check_compile_errors(fragment, 0, fs_path);
+    free(source);
+
+    // Shader Program
+    program = glCreateProgram();
+    glAttachShader(program, vertex);
+    glAttachShader(program, fragment);
+    glLinkProgram(program);
+    m_check_compile_errors(program, 1, NULL);
+
+    glDeleteShader(vertex);
+    glDeleteShader(fragment);
+
+    return program;
+}
+
+u32
+m_load_shader_comp(const char *cs_path)
+{
+    u32     compute,
+            program;
+    s8    	*source;
+
+    // Compute Shader
+    source = m_read_file_buffer(cs_path);
+    compute = glCreateShader(GL_COMPUTE_SHADER);
+    glShaderSource(compute, 1, &source, NULL);
+    glCompileShader(compute);
+    m_check_compile_errors(compute, COMPUTE, cs_path);
+    free(source);
+
+    // Shader Program
+    program = glCreateProgram();
+    glAttachShader(program, compute);
+    glLinkProgram(program);
+    m_check_compile_errors(program, PROGRAM, NULL);
+
+    glDeleteShader(compute);
+
+    return program;
+}
+
+void
+m_check_compile_errors(u32 data,
+                       u8 type,
+                       const char *filename)
+{
+    b8		success;
+    s8		info_log[1024];
+
+    if (type == 1) // program
+    {
+        glGetProgramiv(data, GL_LINK_STATUS, &success);
+        if (!success)
+        {
+            glGetProgramInfoLog(data, 1024, NULL, info_log);
+            printf("PROGRAM LINKING ERROR OF TYPE:\n %s\n\n", info_log);
+        }
+    }
+    else if (type == 0) // source
+    {
+        glGetShaderiv(data, GL_COMPILE_STATUS, &success);
+        if (!success)
+        {
+            glGetShaderInfoLog(data, 1024, NULL, info_log);
+            printf("SHADER COMPILATION ERROR OF TYPE: %s\n %s\n\n", filename, info_log);
+        }
+    }
+    else
+    {
+        printf("INVALID SHADER TYPE\n");
+    }
+}
+
+#endif // MHO_IMPL
+
+#endif // __glad_h_
+
 #endif // MHO_H
