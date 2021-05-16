@@ -1,3 +1,8 @@
+// Mho is a general utility library, consisting of C functions that can be
+// useful for any type of development. It's a single header library, so all
+// that's required is to include it in your project directory and #define
+// and implementation symbol.
+
 #ifndef MHO_H
 #define MHO_H
 
@@ -33,6 +38,30 @@
 //		GENERAL
 //
 
+// Defines NULL in C/C++ if not already defined (should be since stdlib.h is
+// already included above)
+#ifndef NULL
+	#ifdef __cplusplus
+		#define NULL	0
+	#else
+		#define NULL	((void *)0)
+	#endif // __cplusplus
+#endif // NULL
+
+// For C vs. C++ compilation
+#ifdef __cplusplus
+    #define MHO_EXTERN		extern "C"
+#else
+    #define MHO_EXTERN    	extern
+#endif
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//		MISC
+//
+
 #define m_lerp(__a, __b, __t) \
 	((__a) + (f32)((__b) - (__a)) * (__t))
 
@@ -60,10 +89,10 @@ typedef struct _TAG_m_array_header
 } m_array_header_t;
 
 // Initializes the array
-void **m_array_init(void *arr, usize val_size);
+MHO_EXTERN void **m_array_init(void *arr, usize val_size);
 
 // Resizes the array
-void *m_array_resize(void *arr, usize sz, usize amt);
+MHO_EXTERN void *m_array_resize(void *arr, usize sz, usize amt);
 
 // Wrapper macro
 #define m_array(__type) \
