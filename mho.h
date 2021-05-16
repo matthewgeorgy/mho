@@ -286,4 +286,61 @@ m_array_resize(void *arr,
 
 #endif // MHO_IMPL
 
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//		UTIL
+//
+
+MHO_EXTERN s8 *m_read_file_buffer(const char *filename);
+
+#ifdef MHO_IMPL
+
+s8 *
+m_read_file_buffer(const char *filename)
+{
+    FILE    *fptr;
+    s32     file_len,
+            ret;
+    s8    *source = NULL;
+
+    fptr = fopen(filename, "rb");
+    if (fptr)
+    {
+        fseek(fptr, 0, SEEK_END);
+        file_len = ftell(fptr);
+        fseek(fptr, 0, SEEK_SET);
+        if (file_len != -1)
+        {
+            source = (s8 *)malloc(file_len + 1);
+            if (source)
+            {
+                ret = fread(source, 1, file_len, fptr);
+                if (ret == file_len)
+                {
+                    source[file_len] = 0;
+                }
+                else
+                {
+                    printf("Could not read full file: %s\n", filename);
+                }
+            }
+        }
+        else
+        {
+            printf("Could not read file length: %s\n", filename);
+        }
+    }
+    else
+    {
+        printf("Could not load file: %s\n", filename);
+    }
+    fclose(fptr);
+
+    return source;
+}
+
+#endif // MHO_IMPL
+
 #endif // MHO_H
