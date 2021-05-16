@@ -2,6 +2,10 @@
 // useful for any type of development. It's a single header library, so all
 // that's required is to include it in your project directory and #define
 // and implementation symbol.
+//
+// Mho should ideally be the last file that is #included in your project, as
+// it contains some definitions (ie, TRUE/FALSE) that other libraries should
+// have precedence for.
 
 #ifndef MHO_H
 #define MHO_H
@@ -13,13 +17,9 @@
 // TODO: Where will <types.h> go?
 // TODO: What will we prefix names with?
 // TODO: HOW will we name/rename things?
-// TODO: Single header with multiple IMPL symbols? Or separate .c files
-// containing each section?
-// TODO: #define a custom 'EXTERN' symbol for compilation with C++
 // TODO: align the \ in #define's
 
-// NOTE: For now, we will just include <types.h> directly here. Later, we may
-// elect to inline them.
+// NOTE: For now, we will just directly inline our <ypes.h>
 // NOTE: For now, we'll include implementation directly within the file. Later,
 // we might put implementations into separate .c files, as suggested above.
 ///////////////////////////////////////////////////////////////////////////////
@@ -27,9 +27,9 @@
 //		INCLUDES
 //
 
-#include "types.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 
 
@@ -53,6 +53,21 @@
     #define MHO_EXTERN		extern "C"
 #else
     #define MHO_EXTERN    	extern
+#endif
+
+// TRUE/FALSE
+#ifndef TRUE
+	#define TRUE	1
+#endif // TRUE
+#ifndef FALSE
+	#define FALSE	0
+#endif // TRUE
+
+// Useful macro to strip just the filename out of the full filepath.
+#if defined(_WIN32) || defined(_WIN64)
+    #define __FILENAME__    (strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__)
+#else
+    #define __FILENAME__    (strrchr(__FILE__, '/ ') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 #endif
 
 
