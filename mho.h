@@ -160,12 +160,6 @@ typedef struct _TAG_m_array_header
 	u32 capacity;	// total number of elements
 } m_array_header_t;
 
-// Initializes the array
-MHO_EXTERN void **m_array_init(void *arr, usize val_size);
-
-// Resizes the array
-MHO_EXTERN void *m_array_resize(void *arr, usize sz, usize amt);
-
 // Wrapper macro
 #define m_array(__type) \
 	__type *
@@ -235,7 +229,59 @@ MHO_EXTERN void *m_array_resize(void *arr, usize sz, usize amt);
 			m_array_head(__array)->size = 0; 	\
 	} while (0)
 
+// Initializes the array
+MHO_EXTERN void **m_array_init(void *arr, usize val_size);
+
+// Resizes the array
+MHO_EXTERN void *m_array_resize(void *arr, usize sz, usize amt);
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//		UTIL
+//
+
+MHO_EXTERN s8 *m_read_file_buffer(const char *filename);
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//		OPENGL SHADERS
+//
+
+// glad.h is the OpenGL function loader that I primarily use; this can
+// be easily swapped by just replacing the symbol with your respective
+// loader's symbol in the IMPLEMENTATION section (see __glad_h_).
+
+MHO_EXTERN u32 m_load_shader_vf(const char *vs_path, const char *fs_path);
+MHO_EXTERN u32 m_load_shader_comp(const char *cs_path);
+// 0 = source, 1 = program
+MHO_EXTERN void m_check_compile_errors(u32 data, u8 type, const char *filename);
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//																			 //
+// ---------------------- MHO IMPLEMENTATION ------------------------------- //
+//																			 //
+///////////////////////////////////////////////////////////////////////////////
+
+// #define this symbol in exactly 1 .c/.cpp file
+// before including this file!
+// For example:
+//          #include <...>
+//          #include <...>
+//          #include <...>
+//
+//          #define MHO_IMPL
+//          #include <mho.h>
+
  #ifdef MHO_IMPL
+
+//////////////////////////////////////////////////////////////////
+// Dynamic Array
 
 void **
 m_array_init(void **arr,
@@ -288,18 +334,10 @@ m_array_resize(void *arr,
 	return data;
 }
 
- #endif // MHO_IMPL
 
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//		UTIL
-//
-
-MHO_EXTERN s8 *m_read_file_buffer(const char *filename);
-
- #ifdef MHO_IMPL
+//////////////////////////////////////////////////////////////////
+// Utils
 
 s8 *
 m_read_file_buffer(const char *filename)
@@ -345,26 +383,12 @@ m_read_file_buffer(const char *filename)
     return source;
 }
 
- #endif // MHO_IMPL
 
 
+//////////////////////////////////////////////////////////////////
+// OpenGL Shaders
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//		OPENGL SHADERS
-//
-
-// glad.h is the OpenGL function loader that I primarily use; this can
-// be easily swapped by just replacing this symbol with your respective
-// loader's symbol.
- #ifdef __glad_h_
-
-MHO_EXTERN u32 m_load_shader_vf(const char *vs_path, const char *fs_path);
-MHO_EXTERN u32 m_load_shader_comp(const char *cs_path);
-// 0 = source, 1 = program
-MHO_EXTERN void m_check_compile_errors(u32 data, u8 type, const char *filename);
-
-  #ifdef MHO_IMPL
+  #ifdef __glad_h_
 
 u32
 m_load_shader_vf(const char *vs_path,
@@ -462,8 +486,8 @@ m_check_compile_errors(u32 data,
     }
 }
 
-  #endif // MHO_IMPL
+  #endif // __glad_h_
 
- #endif // __glad_h_
+ #endif // MHO_IMPL
 
 #endif // MHO_H
