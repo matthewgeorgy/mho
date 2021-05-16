@@ -37,7 +37,7 @@
 //		TYPES
 //
 
-#ifndef TYPES_H
+ #ifndef TYPES_H
 
 // Defs for static
 #define local       static
@@ -81,7 +81,7 @@ typedef s32         b32;
 #define S32_MAX     INT32_MAX
 #define S64_MAX     INT64_MAX
 
-#endif // TYPES_H
+ #endif // TYPES_H
 
 
 
@@ -230,7 +230,7 @@ MHO_EXTERN void *m_array_resize(void *arr, usize sz, usize amt);
 			m_array_head(__array)->size = 0; 	\
 	} while (0)
 
-#ifdef MHO_IMPL
+ #ifdef MHO_IMPL
 
 void **
 m_array_init(void **arr,
@@ -283,7 +283,7 @@ m_array_resize(void *arr,
 	return data;
 }
 
-#endif // MHO_IMPL
+ #endif // MHO_IMPL
 
 
 
@@ -294,7 +294,7 @@ m_array_resize(void *arr,
 
 MHO_EXTERN s8 *m_read_file_buffer(const char *filename);
 
-#ifdef MHO_IMPL
+ #ifdef MHO_IMPL
 
 s8 *
 m_read_file_buffer(const char *filename)
@@ -340,7 +340,7 @@ m_read_file_buffer(const char *filename)
     return source;
 }
 
-#endif // MHO_IMPL
+ #endif // MHO_IMPL
 
 
 
@@ -352,14 +352,14 @@ m_read_file_buffer(const char *filename)
 // glad.h is the OpenGL function loader that I primarily use; this can
 // be easily swapped by just replacing this symbol with your respective
 // loader's symbol.
-#ifdef __glad_h_
+ #ifdef __glad_h_
 
 MHO_EXTERN u32 m_load_shader_vf(const char *vs_path, const char *fs_path);
 MHO_EXTERN u32 m_load_shader_comp(const char *cs_path);
 // 0 = source, 1 = program
 MHO_EXTERN void m_check_compile_errors(u32 data, u8 type, const char *filename);
 
-#ifdef MHO_IMPL
+  #ifdef MHO_IMPL
 
 u32
 m_load_shader_vf(const char *vs_path,
@@ -411,14 +411,14 @@ m_load_shader_comp(const char *cs_path)
     compute = glCreateShader(GL_COMPUTE_SHADER);
     glShaderSource(compute, 1, &source, NULL);
     glCompileShader(compute);
-    m_check_compile_errors(compute, COMPUTE, cs_path);
+    m_check_compile_errors(compute, 0, cs_path);
     free(source);
 
     // Shader Program
     program = glCreateProgram();
     glAttachShader(program, compute);
     glLinkProgram(program);
-    m_check_compile_errors(program, PROGRAM, NULL);
+    m_check_compile_errors(program, 1, NULL);
 
     glDeleteShader(compute);
 
@@ -457,8 +457,8 @@ m_check_compile_errors(u32 data,
     }
 }
 
-#endif // MHO_IMPL
+  #endif // MHO_IMPL
 
-#endif // __glad_h_
+ #endif // __glad_h_
 
 #endif // MHO_H
