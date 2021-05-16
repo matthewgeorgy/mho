@@ -113,7 +113,7 @@ typedef s32         b32;
 #endif // TRUE
 #ifndef FALSE
 	#define FALSE	0
-#endif // TRUE
+#endif // FALSE
 
 // Useful macro to strip just the filename out of the full filepath.
 #if defined(_WIN32) || defined(_WIN64)
@@ -302,7 +302,7 @@ m_read_file_buffer(const char *filename)
     FILE    *fptr;
     s32     file_len,
             ret;
-    s8    *source = NULL;
+    s8    	*source = NULL;
 
     fptr = fopen(filename, "rb");
     if (fptr)
