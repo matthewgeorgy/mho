@@ -17,7 +17,9 @@
 //
 // TODO: What will we prefix names with?
 // TODO: HOW will we name/rename things?
-// TODO: move decls to top, defs to bottom*****
+// TODO: Move decls to top, defs to bottom*****
+// TODO: Fix and implement m_obj
+// TODO: TEST TEST TEST TEST!!!!!!!!!!!!!!!!!!!
 
 // NOTE: For now, we will just directly inline our <types.h>
 // NOTE: For now, we'll include implementation directly within the file. Later,
@@ -1432,5 +1434,11 @@ m_mem_print(FILE *stream)
 }
 
  #endif // MHO_IMPL
+
+// Wraps malloc() and free()
+ #ifdef M_MEM_DEBUG
+	#define malloc(__n)		m_mem_malloc(__n, __FILENAME__, __LINE__)
+	#define free(__n)		m_mem_free(__n, __FILENAME__, __LINE__)
+ #endif // M_MEM_DEBUG
 
 #endif // MHO_H
