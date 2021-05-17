@@ -1318,15 +1318,15 @@ m_mem_rec_append(void *ptr,
     new_node->next = NULL;
 
     // If list is empty
-    if (*head == NULL)
+    if (*m_mem_alloc_head == NULL)
     {
-        *head = new_node;
+        *m_mem_alloc_head = new_node;
     }
 
     else
     {
         // Find last node
-        temp = *head;
+        temp = *m_mem_alloc_head;
         while (temp->next != NULL)
             temp = temp->next;
 
