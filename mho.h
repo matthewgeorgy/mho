@@ -12,7 +12,7 @@
 #define MHO_H
 
 // TODO: we're going to start moving over all of the library functionality we
-// currently have (mho_array/shader/etc, mmath, m_mem, etc) into one big
+// currently have (mho_array/shader/etc, mmath, mho_mem, etc) into one big
 // library here - mho.h
 //
 // TODO: What will we prefix names with?
@@ -20,12 +20,12 @@
 // TODO: Move decls to top, defs to bottom*****
 // TODO: Fix and implement m_obj
 
+// TESTS:
 // TODO: TEST MHO_UTIL
 // TODO: TEST MHO_GLSHADER
-// TODO: TEST MHO_MMDBG
-
 // NOTE: MHO_ARR VERIFIED!
 // NOTE: MHO_MATH VERIFIED!
+// NOTE: MHO_MMDBG VERIFIED!
 
 // NOTE: For now, we will just directly inline our <types.h>
 // NOTE: For now, we'll include implementation directly within the file. Later,
@@ -490,7 +490,7 @@ MHO_EXTERN f32         m_fsqrtinv(f32 number);
 //
 
 // Record structure for storing memory information
-typedef struct _TAG_m_mem_rec
+typedef struct _TAG_mho_mem_rec
 {
     void    *ptr;
     char    *file,
@@ -499,14 +499,14 @@ typedef struct _TAG_m_mem_rec
             df_line,
             size;
     byte    flags;
-    struct  _TAG_m_mem_rec *next;
-} m_mem_rec_t;
+    struct  _TAG_mho_mem_rec *next;
+} mho_mem_rec_t;
 
-MHO_EXTERN void   *m_mem_malloc(size_t size, const char *file, int line);
-MHO_EXTERN void   m_mem_free(void *buffer, const char *file, int line);
-MHO_EXTERN void   m_mem_print(FILE *stream);
-MHO_EXTERN void   m_mem_rec_append(void *ptr, const char *file, int line, int size);
-MHO_EXTERN void   m_mem_debug_memory();
+MHO_EXTERN void   *mho_mem_malloc(size_t size, const char *file, int line);
+MHO_EXTERN void   mho_mem_free(void *buffer, const char *file, int line);
+MHO_EXTERN void   mho_mem_print(FILE *stream);
+MHO_EXTERN void   mho_mem_rec_append(void *ptr, const char *file, int line, int size);
+MHO_EXTERN void   mho_mem_debug_memory();
 
 
 
@@ -1198,31 +1198,30 @@ m_fsqrtinv(f32 number)
 
 
 
-#if 0
 //////////////////////////////////////////////////////////////////
 // MMDbg
 
 // Important #define constants we use
-#define M_MEM_TRUE              1
-#define M_MEM_FALSE             0
-#define M_MEM_FREE_BIT          0x01
-#define M_MEM_OVER_BIT          0x02
-#define M_MEM_UNDER_BIT         0x04
-#define M_MEM_DOUBLE_FREE_BIT   0x08 
-#define M_MEM_OVER_NUM          0x192BA3A2
-#define M_MEM_UNDER_NUM         0x39D7A5DA
+#define MHO_MEM_TRUE              1
+#define MHO_MEM_FALSE             0
+#define MHO_MEM_FREE_BIT          0x01
+#define MHO_MEM_OVER_BIT          0x02
+#define MHO_MEM_UNDER_BIT         0x04
+#define MHO_MEM_DOUBLE_FREE_BIT   0x08 
+#define MHO_MEM_OVER_NUM          0x192BA3A2
+#define MHO_MEM_UNDER_NUM         0x39D7A5DA
 
-static s32              m_mem_malloc_cnt;
-static s32              m_mem_free_cnt;
-static usize           	m_mem_total_alloc;
-static m_mem_rec_t     	*m_mem_alloc_head = NULL;
+static s32              	mho_mem_malloc_cnt;
+static s32              	mho_mem_free_cnt;
+static usize           		mho_mem_total_alloc;
+static mho_mem_rec_t     	*mho_mem_alloc_head = NULL;
 
 void *
-m_mem_malloc(size_t size,
+mho_mem_malloc(size_t size,
              const char *file,
              int line)
 {
-    void    *ptr;
+    void    *ptr = NULL;
     dword   *buff_un,
             *buff_ov;
     
@@ -1233,12 +1232,12 @@ m_mem_malloc(size_t size,
     {
         ptr = buff_un + 1;
         buff_ov = (dword *)((byte *)ptr + size);
-        *buff_ov = MMDBG_OVER_NUM;
-        *buff_un = MMDBG_UNDER_NUM;
+        *buff_ov = MHO_MEM_OVER_NUM;
+        *buff_un = MHO_MEM_UNDER_NUM;
 
-        m_mem_malloc_cnt++;
-        m_mem_total_alloc += size;
-        m_mem_rec_append(&m_mem_alloc_head, ptr, file, line, size);
+        mho_mem_malloc_cnt++;
+        mho_mem_total_alloc += size;
+        mho_mem_rec_append(ptr, file, line, size);
     }
     
     // return ptr regardless
@@ -1246,27 +1245,27 @@ m_mem_malloc(size_t size,
 }
 
 void
-m_mem_free(void *buffer,
+mho_mem_free(void *buffer,
            const char *file,
            int line)
 {
-    m_mem_rec_t     *temp;
+    mho_mem_rec_t     *temp;
     dword           value;
     void            *p;
 
     // Set the 'freed' (or 'double freed') flag(s) if necessary
-    temp = m_mem_alloc_head;
+    temp = mho_mem_alloc_head;
     while (temp != NULL)
     {
         if (temp->ptr == buffer)
         {
-            if (!(temp->flags & MMDBG_FREE_BIT))
+            if (!(temp->flags & MHO_MEM_FREE_BIT))
             {
-                temp->flags |= MMDBG_FREE_BIT;
+                temp->flags |= MHO_MEM_FREE_BIT;
             }
-            else if (temp->flags & MMDBG_FREE_BIT)
+            else if (temp->flags & MHO_MEM_FREE_BIT)
             {
-                temp->flags |= MMDBG_DOUBLE_FREE_BIT;
+                temp->flags |= MHO_MEM_DOUBLE_FREE_BIT;
                 temp->df_file = (char *)file;
                 temp->df_line = line;
             }
@@ -1279,25 +1278,25 @@ m_mem_free(void *buffer,
 
     // After (potentially) setting the 'double freed' flag, proceed to
     // check for any buffer runs and then free the ptr.
-    if (!(temp->flags & MMDBG_DOUBLE_FREE_BIT))
+    if (!(temp->flags & MHO_MEM_DOUBLE_FREE_BIT))
     {
         // Check for overrun
         p = (byte *)buffer + temp->size;
         value = *(dword *)p;
-        if (value != MMDBG_OVER_NUM)
+        if (value != MHO_MEM_OVER_NUM)
         {
-            temp->flags |= MMDBG_OVER_BIT;
+            temp->flags |= MHO_MEM_OVER_BIT;
         }
 
         // Check for underrun
         p = (byte *)buffer - 4;
         value = *(dword *)p;
-        if (value != MMDBG_UNDER_NUM)
+        if (value != MHO_MEM_UNDER_NUM)
         {
-            temp->flags |= MMDBG_UNDER_BIT;
+            temp->flags |= MHO_MEM_UNDER_BIT;
         }
 
-        m_mem_free_cnt++;
+        mho_mem_free_cnt++;
 
         // free the buffer
         free((dword *)buffer - 1);
@@ -1305,16 +1304,16 @@ m_mem_free(void *buffer,
 }
 
 void
-m_mem_rec_append(void *ptr,
+mho_mem_rec_append(void *ptr,
                  const char *file,
                  int line,
                  int size)
 {
-    m_mem_rec_t     *new_node,
+    mho_mem_rec_t     *new_node,
                     *temp;
 
     // Allocate and fill new node
-    new_node = (m_mem_rec_t *)malloc(sizeof(m_mem_rec_t));
+    new_node = (mho_mem_rec_t *)malloc(sizeof(mho_mem_rec_t));
     new_node->ptr = ptr;
     new_node->file = (char *)file;
     new_node->line = line;
@@ -1325,15 +1324,15 @@ m_mem_rec_append(void *ptr,
     new_node->next = NULL;
 
     // If list is empty
-    if (*m_mem_alloc_head == NULL)
+    if (mho_mem_alloc_head == NULL)
     {
-        *m_mem_alloc_head = new_node;
+        mho_mem_alloc_head = new_node;
     }
 
     else
     {
         // Find last node
-        temp = *m_mem_alloc_head;
+        temp = mho_mem_alloc_head;
         while (temp->next != NULL)
             temp = temp->next;
 
@@ -1343,31 +1342,31 @@ m_mem_rec_append(void *ptr,
 }
 
 void
-m_mem_debug_memory()
+mho_mem_debug_memory()
 {
-    m_mem_rec_t     *temp;
+    mho_mem_rec_t     *temp;
     dword           value;
     void            *p;
 
-    temp = m_mem_alloc_head;
+    temp = mho_mem_alloc_head;
     while (temp != NULL)
     {
-        if (!(temp->flags && MMDBG_FREE_BIT))
+        if (!(temp->flags && MHO_MEM_FREE_BIT))
         {
             // Find overruns
             p = (byte *)temp->ptr + temp->size;
             value = *(dword *)p;
-            if (value != MMDBG_OVER_NUM)
+            if (value != MHO_MEM_OVER_NUM)
             {
-                temp->flags |= MMDBG_OVER_BIT;
+                temp->flags |= MHO_MEM_OVER_BIT;
             }
 
             // Find underruns
             p = (byte *)temp->ptr - 4;
             value = *(dword *)p;
-            if (value != MMDBG_UNDER_NUM)
+            if (value != MHO_MEM_UNDER_NUM)
             {
-                temp->flags |= MMDBG_UNDER_BIT;
+                temp->flags |= MHO_MEM_UNDER_BIT;
             }
         }
 
@@ -1376,30 +1375,30 @@ m_mem_debug_memory()
 }
 
 void
-m_mem_print(FILE *stream)
+mho_mem_print(FILE *stream)
 {
-    m_mem_rec_t     *temp;
+    mho_mem_rec_t     *temp;
     void            *p;
 
-    m_mem_debug_memory();
+    mho_mem_debug_memory();
 
     fprintf(stream, "\n=========================================================\n");
     fprintf(stream, "                    MMDBG OUTPUT\n");
     fprintf(stream, "=========================================================\n");
-    fprintf(stream, "Total Mallocs: %d\n", m_mem_malloc_cnt);
-    fprintf(stream, "Total Frees:   %d\n", m_mem_free_cnt);
+    fprintf(stream, "Total Mallocs: %d\n", mho_mem_malloc_cnt);
+    fprintf(stream, "Total Frees:   %d\n", mho_mem_free_cnt);
 #ifdef __cplusplus
-    fprintf(stream, "Total News:    %d\n", m_mem_new_cnt);
-    fprintf(stream, "Total Deletes: %d\n", m_mem_delete_cnt);
+    fprintf(stream, "Total News:    %d\n", mho_mem_new_cnt);
+    fprintf(stream, "Total Deletes: %d\n", mho_mem_delete_cnt);
 #endif
-    fprintf(stream, "Total Size:    %d bytes\n\n", m_mem_total_alloc);
+    fprintf(stream, "Total Size:    %d bytes\n\n", mho_mem_total_alloc);
 
     // Print out all debug-related info
-    temp = m_mem_alloc_head;
+    temp = mho_mem_alloc_head;
     while (temp != NULL)
     {
         // Memory Leaks
-        if (!(temp->flags & MMDBG_FREE_BIT))
+        if (!(temp->flags & MHO_MEM_FREE_BIT))
         {
             fprintf(stream, "UNFREED MEMORY:   0x%p (%s (%d))\n", temp->ptr,
                                                                   temp->file,
@@ -1407,7 +1406,7 @@ m_mem_print(FILE *stream)
         }
 
         // Double Frees
-        if (temp->flags & MMDBG_DOUBLE_FREE_BIT)
+        if (temp->flags & MHO_MEM_DOUBLE_FREE_BIT)
         {
             fprintf(stream, "DOUBLE FREE:      0x%p (%s (%d))\n", temp->ptr,
                                                                   temp->df_file,
@@ -1415,7 +1414,7 @@ m_mem_print(FILE *stream)
         }
 
         // Buffer Underruns
-        if (temp->flags & MMDBG_UNDER_BIT)
+        if (temp->flags & MHO_MEM_UNDER_BIT)
         {
             p = (byte *)temp->ptr - 4;
             fprintf(stream, "BUFFER UNDERRUN:  0x%p (%s (%d))\n", p,
@@ -1424,7 +1423,7 @@ m_mem_print(FILE *stream)
         }
 
         // Buffer Overruns
-        if (temp->flags & MMDBG_OVER_BIT)
+        if (temp->flags & MHO_MEM_OVER_BIT)
         {
             p = (byte *)temp->ptr + temp->size;
             fprintf(stream, "BUFFER OVERRUN:   0x%p (%s (%d))\n", p,
@@ -1439,14 +1438,13 @@ m_mem_print(FILE *stream)
     fprintf(stream, "                    END OF OUTPUT\n");
     fprintf(stream, "=========================================================\n");
 }
-#endif
 
  #endif // MHO_IMPL
 
 // Wraps malloc() and free()
- #ifdef M_MEM_DEBUG
-	#define malloc(__n)		m_mem_malloc(__n, __FILENAME__, __LINE__)
-	#define free(__n)		m_mem_free(__n, __FILENAME__, __LINE__)
+ #ifdef MHO_MEM_DEBUG
+	#define malloc(__n)		mho_mem_malloc(__n, __FILENAME__, __LINE__)
+	#define free(__n)		mho_mem_free(__n, __FILENAME__, __LINE__)
  #endif // M_MEM_DEBUG
 
 #endif // MHO_H
