@@ -19,6 +19,9 @@
 // TODO: HOW will we name/rename things?
 // TODO: Move decls to top, defs to bottom*****
 // TODO: Fix and implement m_obj
+// TODO: use a mho_prefix(...) macro to rename the math functions (like hmm),
+// rename the types, and pass structs into the functions so that we don't
+// need to insert the macros there.
 
 // TESTS:
 // TODO: TEST MHO_UTIL
@@ -142,19 +145,25 @@ typedef s32         b32;
 //		MISC
 //
 
-#define m_lerp(__a, __b, __t) \
+#define mho_lerp(__a, __b, __t) \
 	((__a) + (f32)((__b) - (__a)) * (__t))
 
-#define m_clamp(__x, __min, __max) \
+#define mho_clamp(__x, __min, __max) \
 	((__x) < (__min) ? (__min) : (__x) > (__max) ? (__max) : (__x))
 
-#define m_swap(__a, __b, __type) 		\
+#define mho_swap(__a, __b, __type) 		\
 	do 									\
 	{ 									\
 		__type __M_SWAP_TEMP = __a; 	\
 		__a = __b; 						\
 		__b = __M_SWAP_TEMP; 			\
 	} while (0)
+
+#define mho_min(__a, __b) \
+	((__a) < (__b) ? (__a) : (__b))
+
+#define mho_max(__a, __b) \
+	((__a) > (__b) ? (__a) : (__b))
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -273,13 +282,13 @@ MHO_EXTERN void m_check_compile_errors(u32 data, u8 type, const char *filename);
 //
 
 // Useful #define macros + constants
-#define m_sqrt(__n)   	sqrtf(__n)
-#define m_sin(__n)    	sinf(__n)
-#define m_cos(__n)    	cosf(__n)
-#define m_tan(__n)    	tanf(__n)
-#define m_cast(__n)   	(f32 *)&__n
-#define m_rads(__n)   	(__n * 0.017453f)
-#define m_degs(__n)   	(__n * 57.29578f)
+#define mho_sqrt(__n)   	sqrtf(__n)
+#define mho_sin(__n)    	sinf(__n)
+#define mho_cos(__n)    	cosf(__n)
+#define mho_tan(__n)    	tanf(__n)
+#define mho_cast(__n)   	(f32 *)&__n
+#define mho_rads(__n)   	(__n * 0.017453f)
+#define mho_degs(__n)   	(__n * 57.29578f)
 #ifndef M_PI
 	#define M_PI		3.141592653589f
 #endif // M_PI
@@ -462,25 +471,25 @@ MHO_EXTERN mat4_t      mat4_mult(mat4_t m1, mat4_t m2);
  * ============================ */
 
 // Pseudo RNG for unsigned 32bit ints
-MHO_EXTERN u32         m_randui(u32 index);
+MHO_EXTERN u32         mho_randui(u32 index);
 
 // Pseudo RNG for 32bit floats (ranged 0 to 1)
-MHO_EXTERN f32         m_randf(u32 index);
+MHO_EXTERN f32         mho_randf(u32 index);
 
 // Pseudo RNG for 64bit floats (ranged 0 to 1)
-MHO_EXTERN f64         m_randd(u32 index);
+MHO_EXTERN f64         mho_randd(u32 index);
 
 // Pseudo RNG for 32bit floats (ranged -1 to 1)
-MHO_EXTERN f32         m_randnf(u32 index);
+MHO_EXTERN f32         mho_randnf(u32 index);
 
 // Pseudo RNG for 64bit floats (ranged -1 to 1)
-MHO_EXTERN f64         m_randnd(u32 index);
+MHO_EXTERN f64         mho_randnd(u32 index);
 
 // Quake III square root
-MHO_EXTERN f32         m_fsqrt(f32 number);
+MHO_EXTERN f32         mho_fsqrt(f32 number);
 
 // Quake III inverse square root
-MHO_EXTERN f32         m_fsqrtinv(f32 number);
+MHO_EXTERN f32         mho_fsqrtinv(f32 number);
 
 
 
@@ -798,13 +807,13 @@ vec2_dot(vec2_t v1,
 f32
 vec2_mag(vec2_t vec)
 {
-    return m_sqrt((vec.x * vec.x) + (vec.y * vec.y));
+    return mho_sqrt((vec.x * vec.x) + (vec.y * vec.y));
 }
 
 vec2_t
 vec2_normalize(vec2_t vec)
 {
-    f32 val = m_fsqrtinv((vec.x * vec.x) + (vec.y * vec.y));
+    f32 val = mho_fsqrtinv((vec.x * vec.x) + (vec.y * vec.y));
 
     vec.x *= val;
     vec.y *= val;
@@ -816,9 +825,9 @@ vec2_t
 vec2_rotate(vec2_t vec,
             f32 angle)
 {
-    f32 r_angle = m_rads(angle);
-    f32 c = m_cos(r_angle);
-    f32 s = m_sin(r_angle);
+    f32 r_angle = mho_rads(angle);
+    f32 c = mho_cos(r_angle);
+    f32 s = mho_sin(r_angle);
 
     vec.x = ((vec.x * c) - (vec.y * s));
     vec.y = ((vec.x * s) + (vec.y * c));
@@ -899,13 +908,13 @@ vec3_cross(vec3_t v1,
 f32
 vec3_mag(vec3_t vec)
 {
-    return m_sqrt((vec.x * vec.x) + (vec.y * vec.y) + (vec.z * vec.z));
+    return mho_sqrt((vec.x * vec.x) + (vec.y * vec.y) + (vec.z * vec.z));
 }
 
 vec3_t 
 vec3_normalize(vec3_t vec)
 {
-    f32 val = m_fsqrtinv((vec.x * vec.x) + (vec.y * vec.y) + (vec.z * vec.z));
+    f32 val = mho_fsqrtinv((vec.x * vec.x) + (vec.y * vec.y) + (vec.z * vec.z));
 
     vec.x *= val;
     vec.y *= val;
@@ -987,8 +996,8 @@ mat4_rotate(f32 angle,
 {
     vec3_t vec = {x, y, z};
     vec = vec3_normalize(vec);
-    f32 c = m_cos(m_rads(angle));
-    f32 s = m_sin(m_rads(angle));
+    f32 c = mho_cos(mho_rads(angle));
+    f32 s = mho_sin(mho_rads(angle));
     f32 c1 = 1.0f - c;
 
     mat4_t matrix = {0};
@@ -1015,8 +1024,8 @@ mat4_rotate_v(f32 angle,
               vec3_t vec)
 {
     vec = vec3_normalize(vec);
-    f32 c = m_cos(m_rads(angle));
-    f32 s = m_sin(m_rads(angle));
+    f32 c = mho_cos(mho_rads(angle));
+    f32 s = mho_sin(mho_rads(angle));
     f32 c1 = 1.0f - c;
 
     mat4_t matrix = {0};
@@ -1044,7 +1053,7 @@ mat4_perspective(f32 fov,
                  f32 near,
                  f32 far)
 {
-    f32 t = m_tan(m_rads(fov) / 2.0f);
+    f32 t = mho_tan(mho_rads(fov) / 2.0f);
     f32 fdelta = far - near;
     
     mat4_t matrix = {0};
@@ -1134,42 +1143,42 @@ mat4_mult(mat4_t m1,
 // MISC IMPLEMENTATION
 
 u32
-m_randui(u32 index)
+mho_randui(u32 index)
 {
     index = (index << 13) ^ index;
     return ((index * (index * index * 15731 + 789221) + 1376312589) & 0x7FFFFFFF);
 }
 
 f32
-m_randf(u32 index)
+mho_randf(u32 index)
 {
     index = (index << 13) ^ index;
     return (((index * (index * index * 15731 + 789221) + 1376312589) & 0x7FFFFFFF) / 1073741824.0f) * 0.5f;
 }
 
 f64
-m_randd(u32 index)
+mho_randd(u32 index)
 {
     index = (index << 13) ^ index;
     return (((index * (index * index * 15731 + 789221) + 1376312589) & 0x7FFFFFFF) / 1073741824.0) * 0.5;
 }
 
 f32
-m_randnf(u32 index)
+mho_randnf(u32 index)
 {
     index = (index << 13) ^ index;
     return (((index * (index * index * 15731 + 789221) + 1376312589) & 0x7FFFFFFF) / 1073741824.0f) - 1.0f;
 }
 
 f64
-m_randnd(u32 index)
+mho_randnd(u32 index)
 {
     index = (index << 13) ^ index;
     return (((index * (index * index * 15731 + 789221) + 1376312589) & 0x7FFFFFFF) / 1073741824.0) - 1.0;
 }
 
 f32
-m_fsqrt(f32 number)
+mho_fsqrt(f32 number)
 {
     f32 x = number * 0.5f;
     f32 y = number;
@@ -1183,7 +1192,7 @@ m_fsqrt(f32 number)
 }
 
 f32
-m_fsqrtinv(f32 number)
+mho_fsqrtinv(f32 number)
 {
     f32 x = number * 0.5f;
     f32 y = number;
