@@ -23,9 +23,9 @@
 // TODO: TEST MHO_UTIL
 // TODO: TEST MHO_GLSHADER
 // TODO: TEST MHO_MMDBG
-// TODO: TEST MHO_MATH
 
 // NOTE: MHO_ARR VERIFIED!
+// NOTE: MHO_MATH VERIFIED!
 
 // NOTE: For now, we will just directly inline our <types.h>
 // NOTE: For now, we'll include implementation directly within the file. Later,
@@ -264,6 +264,7 @@ MHO_EXTERN u32 m_load_shader_comp(const char *cs_path);
 // 0 = source, 1 = program
 MHO_EXTERN void m_check_compile_errors(u32 data, u8 type, const char *filename);
 
+#endif 
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -524,7 +525,6 @@ MHO_EXTERN void   m_mem_debug_memory();
 //
 //          #define MHO_IMPL
 //          #include <mho.h>
-#endif
 
  #ifdef MHO_IMPL
 
@@ -632,7 +632,7 @@ m_read_file_buffer(const char *filename)
 }
 #endif
 
-
+#if 0
 //////////////////////////////////////////////////////////////////
 // OpenGL Shaders
 
@@ -738,7 +738,7 @@ m_check_compile_errors(u32 data,
 }
 
   #endif // __glad_h_
-
+#endif
 
 
 //////////////////////////////////////////////////////////////////
@@ -746,7 +746,6 @@ m_check_compile_errors(u32 data,
 
 /////////////////////////////
 // VECTOR2D IMPLEMENTATION
-#if 0
 vec2_t
 vec2_ctor(f32 x,
           f32 y)
@@ -1197,7 +1196,7 @@ m_fsqrtinv(f32 number)
     return y;
 }
 
-#endif
+
 
 #if 0
 //////////////////////////////////////////////////////////////////
