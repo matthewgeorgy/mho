@@ -24,11 +24,11 @@
 // need to insert the macros there.
 
 // TESTS:
-// TODO: TEST MHO_GLSHADER
 // NOTE: MHO_ARR VERIFIED!
 // NOTE: MHO_MATH VERIFIED!
 // NOTE: MHO_MMDBG VERIFIED!
-// NOTE: TEST MHO_UTIL
+// NOTE: MHO_UTIL VERIFIED!
+// NOTE: MHO_GLSHADER VERIFIED!
 
 // NOTE: For now, we will just directly inline our <types.h>
 // NOTE: For now, we'll include implementation directly within the file. Later,
@@ -39,6 +39,8 @@
 //
 //		INCLUDES
 //
+
+#pragma warning(disable: 4996)
 
 #include <stdio.h>
 #include <stdint.h>
@@ -254,22 +256,19 @@ MHO_EXTERN void *mho_arr_resize(void *arr, usize sz, usize amt);
 //		UTIL
 //
 
-MHO_EXTERN s8 *mho_read_file_buffer(const char *filename);
+MHO_EXTERN char *mho_read_file_buffer(const char *filename);
 
 
 
-#if 0
 ///////////////////////////////////////////////////////////////////////////////
 //
 //		OPENGL SHADERS
 //
 
-MHO_EXTERN u32 m_load_shader_vf(const char *vs_path, const char *fs_path);
-MHO_EXTERN u32 m_load_shader_comp(const char *cs_path);
-// 0 = source, 1 = program
-MHO_EXTERN void m_check_compile_errors(u32 data, u8 type, const char *filename);
+MHO_EXTERN u32 mho_load_shader_vf(const char *vs_path, const char *fs_path);
+MHO_EXTERN u32 mho_load_shader_comp(const char *cs_path);
+MHO_EXTERN void mho_check_compile_errors(u32 data, u8 type, const char *filename);
 
-#endif 
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -591,13 +590,13 @@ mho_arr_resize(void *arr,
 //////////////////////////////////////////////////////////////////
 // Utils
 
-s8 *
+char *
 mho_read_file_buffer(const char *filename)
 {
     FILE    *fptr;
     s32     file_len,
             ret;
-    s8    	*source = NULL;
+    char    	*source = NULL;
 
     fptr = fopen(filename, "rb");
     if (fptr)
@@ -607,7 +606,7 @@ mho_read_file_buffer(const char *filename)
         fseek(fptr, 0, SEEK_SET);
         if (file_len != -1)
         {
-            source = (s8 *)malloc(file_len + 1);
+            source = (char *)malloc(file_len + 1);
             if (source)
             {
                 ret = fread(source, 1, file_len, fptr);
@@ -635,7 +634,6 @@ mho_read_file_buffer(const char *filename)
     return source;
 }
 
-#if 0
 //////////////////////////////////////////////////////////////////
 // OpenGL Shaders
 
@@ -645,28 +643,28 @@ mho_read_file_buffer(const char *filename)
   #ifdef __glad_h_
 
 u32
-m_load_shader_vf(const char *vs_path,
-                 const char *fs_path)
+mho_load_shader_vf(const char *vs_path,
+                   const char *fs_path)
 {
     u32     vertex,
             fragment,
             program;
-    s8    	*source;
+    char    	*source;
 
     // Vertex Shader
-    source = m_read_file_buffer(vs_path);
+    source = mho_read_file_buffer(vs_path);
     vertex = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertex, 1, &source, NULL);
     glCompileShader(vertex);
-    m_check_compile_errors(vertex, 0, vs_path);
+    mho_check_compile_errors(vertex, 0, vs_path);
     free(source);
 
     // Fragment Shader
-    source = m_read_file_buffer(fs_path);
+    source = mho_read_file_buffer(fs_path);
     fragment = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragment, 1, &source, NULL);
     glCompileShader(fragment);
-    m_check_compile_errors(fragment, 0, fs_path);
+    mho_check_compile_errors(fragment, 0, fs_path);
     free(source);
 
     // Shader Program
@@ -674,7 +672,7 @@ m_load_shader_vf(const char *vs_path,
     glAttachShader(program, vertex);
     glAttachShader(program, fragment);
     glLinkProgram(program);
-    m_check_compile_errors(program, 1, NULL);
+    mho_check_compile_errors(program, 1, NULL);
 
     glDeleteShader(vertex);
     glDeleteShader(fragment);
@@ -683,25 +681,25 @@ m_load_shader_vf(const char *vs_path,
 }
 
 u32
-m_load_shader_comp(const char *cs_path)
+mho_load_shader_comp(const char *cs_path)
 {
     u32     compute,
             program;
-    s8    	*source;
+    char    	*source;
 
     // Compute Shader
-    source = m_read_file_buffer(cs_path);
+    source = mho_read_file_buffer(cs_path);
     compute = glCreateShader(GL_COMPUTE_SHADER);
     glShaderSource(compute, 1, &source, NULL);
     glCompileShader(compute);
-    m_check_compile_errors(compute, 0, cs_path);
+    mho_check_compile_errors(compute, 0, cs_path);
     free(source);
 
     // Shader Program
     program = glCreateProgram();
     glAttachShader(program, compute);
     glLinkProgram(program);
-    m_check_compile_errors(program, 1, NULL);
+    mho_check_compile_errors(program, 1, NULL);
 
     glDeleteShader(compute);
 
@@ -709,12 +707,12 @@ m_load_shader_comp(const char *cs_path)
 }
 
 void
-m_check_compile_errors(u32 data,
-                       u8 type,
-                       const char *filename)
+mho_check_compile_errors(u32 data,
+                       	 u8 type,
+                         const char *filename)
 {
-    b8		success;
-    s8		info_log[1024];
+    b32		success;
+   	char		info_log[1024];
 
     if (type == 1) // program
     {
@@ -741,7 +739,7 @@ m_check_compile_errors(u32 data,
 }
 
   #endif // __glad_h_
-#endif
+
 
 
 //////////////////////////////////////////////////////////////////
@@ -1390,10 +1388,6 @@ mho_mem_print(FILE *stream)
     fprintf(stream, "=========================================================\n");
     fprintf(stream, "Total Mallocs: %d\n", mho_mem_malloc_cnt);
     fprintf(stream, "Total Frees:   %d\n", mho_mem_free_cnt);
-#ifdef __cplusplus
-    fprintf(stream, "Total News:    %d\n", mho_mem_new_cnt);
-    fprintf(stream, "Total Deletes: %d\n", mho_mem_delete_cnt);
-#endif
     fprintf(stream, "Total Size:    %d bytes\n\n", mho_mem_total_alloc);
 
     // Print out all debug-related info
