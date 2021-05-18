@@ -19,7 +19,13 @@
 // TODO: HOW will we name/rename things?
 // TODO: Move decls to top, defs to bottom*****
 // TODO: Fix and implement m_obj
-// TODO: TEST TEST TEST TEST!!!!!!!!!!!!!!!!!!!
+
+// TODO: TEST MHO_UTIL
+// TODO: TEST MHO_GLSHADER
+// TODO: TEST MHO_MMDBG
+// TODO: TEST MHO_MATH
+
+// NOTE: MHO_ARR VERIFIED!
 
 // NOTE: For now, we will just directly inline our <types.h>
 // NOTE: For now, we'll include implementation directly within the file. Later,
@@ -156,89 +162,89 @@ typedef s32         b32;
 //		DYNAMIC ARRAY
 //
 
-typedef struct _TAG_m_array_header
+typedef struct _TAG_mho_arr_header
 {
 	u32 size;		// number of elements in array containing data
 	u32 capacity;	// total number of elements
-} m_array_header_t;
+} mho_arr_header_t;
 
 // Wrapper macro
-#define m_array(__type) \
+#define mho_arr(__type) \
 	__type *
 
 // Returns the header of the array
-#define m_array_head(__array) \
-	((m_array_header_t *)(__array) - 1)
+#define mho_arr_head(__array) \
+	((mho_arr_header_t *)(__array) - 1)
 
 // Returns the size of the array
-#define m_array_size(__array) \
-	(__array == NULL ? 0 : m_array_head(__array)->size)
+#define mho_arr_size(__array) \
+	(__array == NULL ? 0 : mho_arr_head(__array)->size)
 
 // Returns the capacity of the array
-#define m_array_capacity(__array) \
-	(__array == NULL ? 0 : m_array_head(__array)->capacity)
+#define mho_arr_capacity(__array) \
+	(__array == NULL ? 0 : mho_arr_head(__array)->capacity)
 
 // Returns whether the array is full
-#define m_array_full(__array) \
-	((m_array_size(__array)) == (m_array_capacity(__array)))
+#define mho_arr_full(__array) \
+	((mho_arr_size(__array)) == (mho_arr_capacity(__array)))
 
 // Returns whether the array is empty
-#define m_array_empty(__array) \
-	(m_array_init((void **)&(__array), sizeof(*(__array)), (m_array_size(__array) == 0)))
+#define mho_arr_empty(__array) \
+	(mho_arr_init((void **)&(__array), sizeof(*(__array)), (mho_arr_size(__array) == 0)))
 
 // Frees the array
-#define m_array_free(__array) \
-	(free(m_array_head(__array)))
+#define mho_arr_free(__array) \
+	(free(mho_arr_head(__array)))
 
 // Returns whether the array needs to grow by a given size
-#define m_array_need_grow(__array, __n) \
-	((__array) == 0 || m_array_size(__array) + (__n) > m_array_capacity(__array))
+#define mho_arr_need_grow(__array, __n) \
+	((__array) == 0 || mho_arr_size(__array) + (__n) > mho_arr_capacity(__array))
 
 // Grows the array (doubles in size)
-#define m_array_grow(__array) \
-	m_array_resize((__array), sizeof(*(__array)), m_array_capacity(__array) ? m_array_capacity(__array) * 2 : 1)
+#define mho_arr_grow(__array) \
+	mho_arr_resize((__array), sizeof(*(__array)), mho_arr_capacity(__array) ? mho_arr_capacity(__array) * 2 : 1)
 
 // Grows the array by a given size
-#define m_array_grow_size(__array, __sz) \
-	m_array_resize((__array), __sz, m_array_capacity(__array) ? m_array_capacity(__array) * 2 : 1)
+#define mho_arr_grow_size(__array, __sz) \
+	mho_arr_resize((__array), __sz, mho_arr_capacity(__array) ? mho_arr_capacity(__array) * 2 : 1)
 
 // Pushes data to the back of the array
-#define m_array_push(__array, __data)										\
+#define mho_arr_push(__array, __data)										\
 	do 																		\
 	{ 																		\
-		m_array_init((void **)&(__array), sizeof(*(__array))); 				\
-		if (!(__array) || ((__array) && m_array_need_grow(__array, 1))) 	\
+		mho_arr_init((void **)&(__array), sizeof(*(__array))); 				\
+		if (!(__array) || ((__array) && mho_arr_need_grow(__array, 1))) 	\
 		{ 																	\
-			*((void **)&(__array)) = m_array_grow(__array); 				\
+			*((void **)&(__array)) = mho_arr_grow(__array); 				\
 		} 																	\
-		(__array)[m_array_size(__array)] = (__data); 						\
-		m_array_head(__array)->size++; 										\
+		(__array)[mho_arr_size(__array)] = (__data); 						\
+		mho_arr_head(__array)->size++; 										\
 	} while (0)
 
 // "Pops" data off of the array (decrements the size)
-#define m_array_pop(__array) 													\
+#define mho_arr_pop(__array) 													\
 	do 																			\
 	{ 																			\
-		if (__array && !m_array_empty(__array) && m_array_size(__array) != 0) 	\
-			m_array_head(__array)->size -= 1; 									\
+		if (__array && !mho_arr_empty(__array) && mho_arr_size(__array) != 0) 	\
+			mho_arr_head(__array)->size -= 1; 									\
 	} while (0)
 
 // Clears all the elements in the array, (simply sets size to 0)
-#define m_array_clear(__array) 					\
+#define mho_arr_clear(__array) 					\
 	do 											\
 	{ 											\
 		if (__array) 							\
-			m_array_head(__array)->size = 0; 	\
+			mho_arr_head(__array)->size = 0; 	\
 	} while (0)
 
 // Initializes the array
-MHO_EXTERN void **m_array_init(void *arr, usize val_size);
+MHO_EXTERN void **mho_arr_init(void *arr, usize val_size);
 
 // Resizes the array
-MHO_EXTERN void *m_array_resize(void *arr, usize sz, usize amt);
+MHO_EXTERN void *mho_arr_resize(void *arr, usize sz, usize amt);
 
 
-
+#if 0
 ///////////////////////////////////////////////////////////////////////////////
 //
 //		UTIL
@@ -518,6 +524,7 @@ MHO_EXTERN void   m_mem_debug_memory();
 //
 //          #define MHO_IMPL
 //          #include <mho.h>
+#endif
 
  #ifdef MHO_IMPL
 
@@ -525,14 +532,14 @@ MHO_EXTERN void   m_mem_debug_memory();
 // Dynamic Array
 
 void **
-m_array_init(void **arr,
+mho_arr_init(void **arr,
 			 usize val_size)
 {
-	m_array_header_t	*data;
+	mho_arr_header_t	*data;
 
 	if (*arr == NULL)
 	{
-		data = (m_array_header_t *)malloc(val_size + sizeof(m_array_header_t));
+		data = (mho_arr_header_t *)malloc(val_size + sizeof(mho_arr_header_t));
 
 		if (data)
 		{
@@ -548,12 +555,12 @@ m_array_init(void **arr,
 }
 
 void *
-m_array_resize(void *arr,
+mho_arr_resize(void *arr,
 			   usize sz,
 			   usize amt)
 {
 	usize				capacity;
-	m_array_header_t	*data;
+	mho_arr_header_t	*data;
 
 	if (arr)
 		capacity = amt;
@@ -561,7 +568,7 @@ m_array_resize(void *arr,
 		capacity = 0;
 
 	// Create new array with header + desired size (or 0 if arr is empty)
-	data = (m_array_header_t *)realloc(arr ? m_array_head(arr) : 0, capacity * sz + sizeof(m_array_header_t));
+	data = (mho_arr_header_t *)realloc(arr ? mho_arr_head(arr) : 0, capacity * sz + sizeof(mho_arr_header_t));
 
 	if (data)
 	{
@@ -569,17 +576,17 @@ m_array_resize(void *arr,
 			data->size = 0;
 
 		data->capacity = (u32)capacity;
-		data = (m_array_header_t *)data + 1;
+		data = (mho_arr_header_t *)data + 1;
 	}
 
 	return data;
 }
 
 
-
 //////////////////////////////////////////////////////////////////
 // Utils
 
+#if 0
 s8 *
 m_read_file_buffer(const char *filename)
 {
@@ -623,7 +630,7 @@ m_read_file_buffer(const char *filename)
 
     return source;
 }
-
+#endif
 
 
 //////////////////////////////////////////////////////////////////
@@ -739,7 +746,7 @@ m_check_compile_errors(u32 data,
 
 /////////////////////////////
 // VECTOR2D IMPLEMENTATION
-
+#if 0
 vec2_t
 vec2_ctor(f32 x,
           f32 y)
@@ -1190,8 +1197,9 @@ m_fsqrtinv(f32 number)
     return y;
 }
 
+#endif
 
-
+#if 0
 //////////////////////////////////////////////////////////////////
 // MMDbg
 
@@ -1432,6 +1440,7 @@ m_mem_print(FILE *stream)
     fprintf(stream, "                    END OF OUTPUT\n");
     fprintf(stream, "=========================================================\n");
 }
+#endif
 
  #endif // MHO_IMPL
 
