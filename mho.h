@@ -24,11 +24,11 @@
 // need to insert the macros there.
 
 // TESTS:
-// TODO: TEST MHO_UTIL
 // TODO: TEST MHO_GLSHADER
 // NOTE: MHO_ARR VERIFIED!
 // NOTE: MHO_MATH VERIFIED!
 // NOTE: MHO_MMDBG VERIFIED!
+// NOTE: TEST MHO_UTIL
 
 // NOTE: For now, we will just directly inline our <types.h>
 // NOTE: For now, we'll include implementation directly within the file. Later,
@@ -253,16 +253,16 @@ MHO_EXTERN void **mho_arr_init(void *arr, usize val_size);
 MHO_EXTERN void *mho_arr_resize(void *arr, usize sz, usize amt);
 
 
-#if 0
 ///////////////////////////////////////////////////////////////////////////////
 //
 //		UTIL
 //
 
-MHO_EXTERN s8 *m_read_file_buffer(const char *filename);
+MHO_EXTERN s8 *mho_read_file_buffer(const char *filename);
 
 
 
+#if 0
 ///////////////////////////////////////////////////////////////////////////////
 //
 //		OPENGL SHADERS
@@ -595,9 +595,8 @@ mho_arr_resize(void *arr,
 //////////////////////////////////////////////////////////////////
 // Utils
 
-#if 0
 s8 *
-m_read_file_buffer(const char *filename)
+mho_read_file_buffer(const char *filename)
 {
     FILE    *fptr;
     s32     file_len,
@@ -639,7 +638,6 @@ m_read_file_buffer(const char *filename)
 
     return source;
 }
-#endif
 
 #if 0
 //////////////////////////////////////////////////////////////////
