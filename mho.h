@@ -230,13 +230,9 @@ typedef struct _TAG_mho_arr_header
 		mho_arr_head(__array)->size++; 										\
 	} while (0)
 
-// "Pops" data off of the array (decrements the size)
-#define mho_arr_pop(__array) 													\
-	do 																			\
-	{ 																			\
-		if (__array && !mho_arr_empty(__array) && mho_arr_size(__array) != 0) 	\
-			mho_arr_head(__array)->size -= 1; 									\
-	} while (0)
+// Pops data off the array (decrements the size) and returns it
+#define mho_arr_pop(__array) \
+	((mho_arr_size(__array) > 0) ? (__array)[(--mho_arr_head(__array)->size)] : (__array)[(mho_arr_head(__array)->size)])
 
 // Clears all the elements in the array, (simply sets size to 0)
 #define mho_arr_clear(__array) 					\
