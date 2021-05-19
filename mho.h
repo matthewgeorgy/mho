@@ -15,13 +15,11 @@
 // currently have (mho_array/shader/etc, mmath, mho_mem, etc) into one big
 // library here - mho.h
 //
-// TODO: What will we prefix names with?
-// TODO: HOW will we name/rename things?
-// TODO: Move decls to top, defs to bottom*****
 // TODO: Fix and implement m_obj
 // TODO: use a mho_prefix(...) macro to rename the math functions (like hmm),
 // rename the types, and pass structs into the functions so that we don't
 // need to insert the macros there.
+// TODO: add GL fns for framebuffer_size_callback, imgui, mouse input, etc.
 
 // TESTS:
 // NOTE: MHO_ARR VERIFIED!
@@ -40,13 +38,16 @@
 //		INCLUDES
 //
 
-#pragma warning(disable: 4996)
+#pragma warning(disable: 4996) // fopen
+#pragma warning(disable: 4055) // fn ptr void * (enabled on +MSVC 14)
+#pragma warning(disable: 4021) // anon struct/union
+#pragma warning(disable: 4054) // typecast from fn ptr
 
-#include <stdio.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
+#include <stdio.h> 	// FILE *
+#include <stdint.h> // int_t's
+#include <stdlib.h> // malloc/realloc/free
+#include <string.h> // strchr
+#include <math.h>	// sin, cos, tan, sqrt
 
 
 
