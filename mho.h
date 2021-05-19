@@ -53,7 +53,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//		TYPES
+//		Types
 //
 
  #ifndef TYPES_H
@@ -106,7 +106,7 @@ typedef s32         b32;
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//		GENERAL
+//		General
 //
 
 // Defines NULL in C/C++ if not already defined (should be since stdlib.h is
@@ -145,7 +145,7 @@ typedef s32         b32;
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//		MISC
+//		Misc.
 //
 
 #define mho_lerp(__a, __b, __t) \
@@ -171,7 +171,7 @@ typedef s32         b32;
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//		DYNAMIC ARRAY
+//		Dynamic Array
 //
 
 typedef struct _TAG_mho_arr_header
@@ -266,7 +266,7 @@ MHO_EXTERN void *mho_arr_resize(void *arr, usize sz, usize amt);
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//		UTIL
+//		Util
 //
 
 // Reads a file and writes it into a char * buffer
@@ -276,7 +276,7 @@ MHO_EXTERN char *mho_read_file_buffer(const char *filename);
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//		OPENGL SHADERS
+//		OpenGL
 //
 
 // Builds a GLSL shader program using a vertex + fragment source
@@ -288,11 +288,16 @@ MHO_EXTERN u32 mho_load_shader_comp(const char *cs_path);
 // Checks for any compile errors in a given GLSL shader program or source
 MHO_EXTERN void mho_check_compile_errors(u32 data, u8 type, const char *filename);
 
+ #ifdef _glfw3_h_
+// Default framebuffer resize callback function for OpenGL + GLFW
+MHO_EXTERN void mho_framebuffer_size_callback(GLFWwindow *window, s32 width, s32 height);
+ #endif
+
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//		MATH
+//		Math
 //
 
 // Useful #define macros + constants
@@ -663,7 +668,7 @@ mho_read_file_buffer(const char *filename)
 }
 
 //////////////////////////////////////////////////////////////////
-// OpenGL Shaders
+// OpenGL
 
 // glad.h is the OpenGL function loader that I primarily use; this can
 // be easily swapped by just replacing this symbol with your respective
@@ -766,8 +771,18 @@ mho_check_compile_errors(u32 data,
     }
 }
 
-  #endif // __glad_h_
 
+   #ifdef _glfw3_h_
+void
+mho_framebuffer_size_callback(GLFWwindow *window,
+							  s32 width,
+							  s32 height)
+{
+	glViewport(0, 0, width, height);
+}
+   #endif // _glfw3_h_
+
+  #endif // __glad_h_
 
 
 //////////////////////////////////////////////////////////////////
