@@ -245,6 +245,18 @@ typedef struct _TAG_mho_arr_header
 			mho_arr_head(__array)->size = 0; 	\
 	} while (0)
 
+// Reserves internal space in the array for __amount, non-initialized elements
+#define mho_arr_reserve(__array, __amount) 													\
+	do 																						\
+	{ 																						\
+		if ((!__array)) mho_arr_init((void **)&(__array_), sizeof(*(__array))); 			\
+		if ((!__array) || (usize)__amount > mho_arr_capacity(__array)) 						\
+		{ 																					\
+			*((void **)&(__array)) = mho_arr_resize(__array, sizeof(*(__array)), __amount); \
+		} 																					\
+	} while (0)
+
+
 // Initializes the array
 MHO_EXTERN void **mho_arr_init(void *arr, usize val_size);
 
