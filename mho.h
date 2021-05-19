@@ -257,6 +257,7 @@ MHO_EXTERN void *mho_arr_resize(void *arr, usize sz, usize amt);
 //		UTIL
 //
 
+// Reads a file and writes it into a char * buffer
 MHO_EXTERN char *mho_read_file_buffer(const char *filename);
 
 
@@ -266,8 +267,13 @@ MHO_EXTERN char *mho_read_file_buffer(const char *filename);
 //		OPENGL SHADERS
 //
 
+// Builds a GLSL shader program using a vertex + fragment source
 MHO_EXTERN u32 mho_load_shader_vf(const char *vs_path, const char *fs_path);
+
+// Builds a GLSL shader program using a compute source
 MHO_EXTERN u32 mho_load_shader_comp(const char *cs_path);
+
+// Checks for any compile errors in a given GLSL shader program or source
 MHO_EXTERN void mho_check_compile_errors(u32 data, u8 type, const char *filename);
 
 
@@ -491,7 +497,7 @@ MHO_EXTERN f32         mho_fsqrtinv(f32 number);
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//		MMDBG
+//		Debugging
 //
 
 // Record structure for storing memory information
@@ -507,10 +513,19 @@ typedef struct _TAG_mho_mem_rec
     struct  _TAG_mho_mem_rec *next;
 } mho_mem_rec_t;
 
+// Custom malloc impl for debugging
 MHO_EXTERN void   *mho_mem_malloc(size_t size, const char *file, int line);
+
+// Custom free impl for debugging
 MHO_EXTERN void   mho_mem_free(void *buffer, const char *file, int line);
+
+// Prints a memory debugging report to a specified stream
 MHO_EXTERN void   mho_mem_print(FILE *stream);
+
+// Adds a new memory record to the debug list
 MHO_EXTERN void   mho_mem_rec_append(void *ptr, const char *file, int line, int size);
+
+// Verifies memory integrity of list (searches for over/underruns)
 MHO_EXTERN void   mho_mem_debug_memory();
 
 
@@ -1201,7 +1216,7 @@ mho_fsqrtinv(f32 number)
 
 
 //////////////////////////////////////////////////////////////////
-// MMDbg
+// Debugging
 
 // Important #define constants we use
 #define MHO_MEM_TRUE              1
@@ -1213,10 +1228,10 @@ mho_fsqrtinv(f32 number)
 #define MHO_MEM_OVER_NUM          0x192BA3A2
 #define MHO_MEM_UNDER_NUM         0x39D7A5DA
 
-static s32              	mho_mem_malloc_cnt;
-static s32              	mho_mem_free_cnt;
-static usize           		mho_mem_total_alloc;
-static mho_mem_rec_t     	*mho_mem_alloc_head = NULL;
+global s32              mho_mem_malloc_cnt;
+global s32              mho_mem_free_cnt;
+global usize           	mho_mem_total_alloc;
+global mho_mem_rec_t	*mho_mem_alloc_head = NULL;
 
 void *
 mho_mem_malloc(size_t size,
@@ -1385,7 +1400,7 @@ mho_mem_print(FILE *stream)
     mho_mem_debug_memory();
 
     fprintf(stream, "\n=========================================================\n");
-    fprintf(stream, "                    MMDBG OUTPUT\n");
+    fprintf(stream, "                    DEBUG REPORT\n");
     fprintf(stream, "=========================================================\n");
     fprintf(stream, "Total Mallocs: %d\n", mho_mem_malloc_cnt);
     fprintf(stream, "Total Frees:   %d\n", mho_mem_free_cnt);
@@ -1433,7 +1448,7 @@ mho_mem_print(FILE *stream)
     }
 
     fprintf(stream, "=========================================================\n");
-    fprintf(stream, "                    END OF OUTPUT\n");
+    fprintf(stream, "                    END OF REPORT\n");
     fprintf(stream, "=========================================================\n");
 }
 
