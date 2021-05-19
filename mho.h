@@ -1445,4 +1445,9 @@ mho_mem_print(FILE *stream)
 	#define free(__n)		mho_mem_free(__n, __FILENAME__, __LINE__)
  #endif // M_MEM_DEBUG
 
+#pragma warning(default: 4996) // fopen
+#pragma warning(default: 4055) // fn ptr void * (enabled on +MSVC 14)
+#pragma warning(default: 4021) // anon struct/union
+#pragma warning(default: 4054) // typecast from fn ptr
+
 #endif // MHO_H
