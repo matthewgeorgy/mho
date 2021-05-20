@@ -468,14 +468,6 @@ MHO_EXTERN mho_mat4_t      mho_mat4_mult(mho_mat4_t m1, mho_mat4_t m2);
  * =====       Misc       ===== *
  * ============================ */
 
-// Definition for a camera
-typedef struct _TAG_camera
-{
-    vec3_t pos;
-    vec3_t front;
-    vec3_t up;
-} camera_t;
-
 // Pseudo RNG for unsigned 32bit ints
 MHO_EXTERN u32         mho_randui(u32 index);
 
@@ -828,7 +820,7 @@ mho_mouse_callback(GLFWwindow *window,
     if (pitch < -89.0f)
         pitch = -89.0f;
 
-    vec3_t direction;
+    mho_vec3_t direction;
     direction.x = mho_cos(mho_rads(yaw)) * mho_cos(mho_rads(pitch));
     direction.y = mho_sin(mho_rads(pitch));
     direction.z = mho_sin(mho_rads(yaw)) * mho_cos(mho_rads(pitch));
@@ -1048,7 +1040,7 @@ mho_mat4_translate(f32 x,
 mho_mat4_t
 mho_mat4_translate_v(mho_vec3_t vec)
 {
-    mho_mat4_t matrix = mat4_identity();
+    mho_mat4_t matrix = mho_mat4_identity();
 
     matrix.col4.x = vec.x;
     matrix.col4.y = vec.y;
@@ -1112,7 +1104,7 @@ mho_mat4_rotate(f32 angle,
 }
 
 mho_mat4_t
-mat4_rotate_v(f32 angle,
+mho_mat4_rotate_v(f32 angle,
               mho_vec3_t vec)
 {
     vec = mho_vec3_normalize(vec);
@@ -1140,7 +1132,7 @@ mat4_rotate_v(f32 angle,
 }
 
 mho_mat4_t
-mat4_perspective(f32 fov,
+mho_mat4_perspective(f32 fov,
                  f32 aspect_ratio,
                  f32 near,
                  f32 far)
@@ -1163,7 +1155,7 @@ mat4_perspective(f32 fov,
 }
 
 mho_mat4_t
-mat4_lookat(mho_vec3_t eye, 
+mho_mat4_lookat(mho_vec3_t eye, 
             mho_vec3_t center, 
             mho_vec3_t up)
 {
@@ -1188,16 +1180,16 @@ mat4_lookat(mho_vec3_t eye,
     matrix.col3.z = -f.z;
     matrix.col3.w = 0.0f;
 
-    matrix.col4.x = -vec3_dot(s, eye);
-    matrix.col4.y = -vec3_dot(u, eye);
-    matrix.col4.z = vec3_dot(f, eye);
+    matrix.col4.x = -mho_vec3_dot(s, eye);
+    matrix.col4.y = -mho_vec3_dot(u, eye);
+    matrix.col4.z = mho_vec3_dot(f, eye);
     matrix.col4.w = 1.0f;
 
     return matrix;
 }
 
 mho_mat4_t
-mat4_scale(f32 scale_value)
+mho_mat4_scale(f32 scale_value)
 {
     mho_mat4_t matrix = {0};
 
@@ -1210,7 +1202,7 @@ mat4_scale(f32 scale_value)
 }
 
 mho_mat4_t
-mat4_mult(mho_mat4_t m1,
+mho_mat4_mult(mho_mat4_t m1,
           mho_mat4_t m2)
 {
     mho_mat4_t res;
@@ -1551,35 +1543,35 @@ mho_mem_print(FILE *stream)
 	typedef mho_vec4_t vec4_t;
 	typedef mho_mat4_t mat4_t;
 
-	#define mho_vec2_ctor				vec2_ctor
-	#define mho_vec2_add				vec2_add
-	#define mho_vec2_sub				vec2_sub
-	#define mho_vec2_scal				vec2_scal
-	#define mho_vec2_dot				vec2_dot
-	#define mho_vec2_mag				vec2_mag
-	#define mho_vec2_normalize			vec2_normalize
-	#define mho_vec2_rotate				vec2_rotate
-
-	#define mho_vec3_ctor				vec3_ctor
-	#define mho_vec3_add				vec3_add
-	#define mho_vec3_sub				vec3_sub
-	#define mho_vec3_scal				vec3_scal
-	#define mho_vec3_dot				vec3_dot
-	#define mho_vec3_cross				vec3_cross
-	#define mho_vec3_mag				vec3_mag
-	#define mho_vec3_normalize			vec3_normalize
-
-	#define mho_mat4_identity			mat4_identity
-	#define mho_mat4_translate			mat4_translate
-	#define mho_mat4_translate_v		mat4_translate_v
-	#define mho_mat4_translate_remove	mat4_translate_remove
-	#define mho_mat4_print				mat4_print
-	#define mho_mat4_rotate				mat4_rotate
-	#define mho_mat4_rotate_v			mat4_rotate_v
-	#define mho_mat4_perspective		mat4_perspective
-	#define mho_mat4_lookat				mat4_lookat
-	#define mho_mat4_scale				mat4_scale
-	#define mho_mat4_mult				mat4_mult
+	#define vec2_ctor 					mho_vec2_ctor				
+	#define vec2_add  					mho_vec2_add				
+	#define vec2_sub				  	mho_vec2_sub				
+	#define vec2_scal				  	mho_vec2_scal				
+	#define vec2_dot				  	mho_vec2_dot				
+	#define vec2_mag				  	mho_vec2_mag				
+	#define vec2_normalize 				mho_vec2_normalize
+	#define vec2_rotate 				mho_vec2_rotate
+                      
+	#define vec3_ctor 					mho_vec3_ctor				
+	#define vec3_add					mho_vec3_add				
+	#define vec3_sub					mho_vec3_sub				
+	#define vec3_scal					mho_vec3_scal				
+	#define vec3_dot					mho_vec3_dot				
+	#define vec3_cross					mho_vec3_cross				
+	#define vec3_mag  					mho_vec3_mag				
+	#define vec3_normalize				mho_vec3_normalize
+                      
+	#define mat4_identity				mho_mat4_identity
+	#define mat4_translate				mho_mat4_translate
+	#define mat4_translate_v			mho_mat4_translate_v
+	#define mat4_translate_remove 		mho_mat4_translate_remove
+	#define mat4_print					mho_mat4_print				
+	#define mat4_rotate					mho_mat4_rotate
+	#define mat4_rotate_v 				mho_mat4_rotate_v
+	#define mat4_perspective			mho_mat4_perspective
+	#define mat4_lookat 				mho_mat4_lookat
+	#define mat4_scale					mho_mat4_scale				
+	#define mat4_mult 					mho_mat4_mult				
 
  #endif // MHO_MATH_COMPLEX_NAMES
 
