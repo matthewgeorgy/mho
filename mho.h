@@ -276,27 +276,6 @@ MHO_EXTERN char *mho_read_file_buffer(const char *filename);
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//		OpenGL
-//
-
-// Builds a GLSL shader program using a vertex + fragment source
-MHO_EXTERN u32 mho_load_shader_vf(const char *vs_path, const char *fs_path);
-
-// Builds a GLSL shader program using a compute source
-MHO_EXTERN u32 mho_load_shader_comp(const char *cs_path);
-
-// Checks for any compile errors in a given GLSL shader program or source
-MHO_EXTERN void mho_check_compile_errors(u32 data, u8 type, const char *filename);
-
- #ifdef _glfw3_h_
-// Default framebuffer resize callback function for OpenGL + GLFW
-MHO_EXTERN void mho_framebuffer_size_callback(GLFWwindow *window, s32 width, s32 height);
- #endif
-
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //		Math
 //
 
@@ -489,6 +468,14 @@ MHO_EXTERN mat4_t      mat4_mult(mat4_t m1, mat4_t m2);
  * =====       Misc       ===== *
  * ============================ */
 
+// Definition for a camera
+typedef struct _TAG_camera
+{
+    vec3_t pos;
+    vec3_t front;
+    vec3_t up;
+} camera_t;
+
 // Pseudo RNG for unsigned 32bit ints
 MHO_EXTERN u32         mho_randui(u32 index);
 
@@ -509,6 +496,30 @@ MHO_EXTERN f32         mho_fsqrt(f32 number);
 
 // Quake III inverse square root
 MHO_EXTERN f32         mho_fsqrtinv(f32 number);
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//		OpenGL
+//
+
+// Builds a GLSL shader program using a vertex + fragment source
+MHO_EXTERN u32 mho_load_shader_vf(const char *vs_path, const char *fs_path);
+
+// Builds a GLSL shader program using a compute source
+MHO_EXTERN u32 mho_load_shader_comp(const char *cs_path);
+
+// Checks for any compile errors in a given GLSL shader program or source
+MHO_EXTERN void mho_check_compile_errors(u32 data, u8 type, const char *filename);
+
+ #ifdef _glfw3_h_
+// Default framebuffer resize callback function for OpenGL + GLFW
+MHO_EXTERN void mho_framebuffer_size_callback(GLFWwindow *window, s32 width, s32 height);
+
+// Default mouse callback function for OpenGL + GLFW
+MHO_EXTERN void mho_mouse_callback(GLFWwindow *window, f64 x_pos, f64 y_pos);
+ #endif
 
 
 
@@ -780,6 +791,51 @@ mho_framebuffer_size_callback(GLFWwindow *window,
 {
 	glViewport(0, 0, width, height);
 }
+
+void
+mho_mouse_callback(GLFWwindow *window,
+				   f64 x_pos,
+				   f64 y_pos)
+{
+	local b32 first_mouse = TRUE;
+	local f32 yaw = -90.0f;
+	local f32 pitch = 0.0f;
+	local f64 last_x = 400.0f;
+	local f64 last_y = 300.0f;
+
+    if (first_mouse)
+    {
+        last_x = x_pos;
+        last_y = y_pos;
+        first_mouse = false;
+    }
+    
+    f32 x_offset = x_pos - last_x;
+    f32 y_offset = last_y - y_pos;
+    last_x = x_pos;
+    last_y = y_pos;
+    
+    const f32 sens = 0.1f;
+    x_offset *= sens;
+    y_offset *= sens;
+    
+    yaw += x_offset;
+    pitch += y_offset;
+
+    if (pitch > 89.0f)
+        pitch = 89.0f;
+    if (pitch < -89.0f)
+        pitch = -89.0f;
+
+    vec3_t direction;
+    direction.x = mho_cos(mho_rads(yaw)) * mho_cos(mho_rads(pitch));
+    direction.y = mho_sin(mho_rads(pitch));
+    direction.z = mho_sin(mho_rads(yaw)) * mho_cos(mho_rads(pitch));
+
+	// assuming a 'camera' is defined globally
+    // camera.front = vec3_normalize(direction);
+}
+
    #endif // _glfw3_h_
 
   #endif // __glad_h_
