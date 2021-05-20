@@ -19,7 +19,6 @@
 // TODO: use a mho_prefix(...) macro to rename the math functions (like hmm),
 // rename the types, and pass structs into the functions so that we don't
 // need to insert the macros there.
-// TODO: add GL fns for framebuffer_size_callback, imgui, mouse input, etc.
 
 // TESTS:
 // NOTE: MHO_ARR VERIFIED!
@@ -169,6 +168,7 @@ typedef s32         b32;
 	((__a) > (__b) ? (__a) : (__b))
 
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //		Dynamic Array
@@ -296,7 +296,7 @@ MHO_EXTERN char *mho_read_file_buffer(const char *filename);
  * ============================ */
 
 // Definition of a 2D vector
-typedef struct _TAG_vec2
+typedef struct _TAG_mho_vec2
 {
     union
     {
@@ -307,44 +307,44 @@ typedef struct _TAG_vec2
         };
         f32 elements[2];
     };
-} vec2_t;
+} mho_vec2_t;
 
 // Constructs a 2D vector given x, y components
-MHO_EXTERN vec2_t      vec2_ctor(f32 x, f32 y);
+MHO_EXTERN mho_vec2_t      mho_vec2_ctor(f32 x, f32 y);
 
 // Computes the sum of two 2D vectors
 // (v1 + v2)
-MHO_EXTERN vec2_t      vec2_add(vec2_t v1, vec2_t v2);
+MHO_EXTERN mho_vec2_t      mho_vec2_add(mho_vec2_t v1, mho_vec2_t v2);
 
 // Computes the difference of two 2D vectors
 // (v1 - v2)
-MHO_EXTERN vec2_t      vec2_sub(vec2_t v1, vec2_t v2);
+MHO_EXTERN mho_vec2_t      mho_vec2_sub(mho_vec2_t v1, mho_vec2_t v2);
 
 // Computes a 2D vector multiplied by a scalar
 // (vec * scalar)
-MHO_EXTERN vec2_t      vec2_scal(vec2_t vec, f32 scalar);
+MHO_EXTERN mho_vec2_t      mho_vec2_scal(mho_vec2_t vec, f32 scalar);
 
 // Computes the dot product of two 2D vectors
 // (v1 . v2)
-MHO_EXTERN f32         vec2_dot(vec2_t v1, vec2_t v2);
+MHO_EXTERN f32         mho_vec2_dot(mho_vec2_t v1, mho_vec2_t v2);
 
 // Computes the magnitude (norm) of a 2D vector
 // (||vec||)
-MHO_EXTERN f32         vec2_mag(vec2_t vec);
+MHO_EXTERN f32         mho_vec2_mag(mho_vec2_t vec);
 
 // Normalizes a given 2D vector
 // (vec * (1 / ||vec||))
-MHO_EXTERN vec2_t      vec2_normalize(vec2_t vec);
+MHO_EXTERN mho_vec2_t      mho_vec2_normalize(mho_vec2_t vec);
 
 // Computes a 2D vector rotated by an angle in degrees
-MHO_EXTERN vec2_t      vec2_rotate(vec2_t vec, f32 angle);
+MHO_EXTERN mho_vec2_t      mho_vec2_rotate(mho_vec2_t vec, f32 angle);
 
 /* ============================ *
  * =====     Vector3D     ===== *
  * ============================ */
 
 // Definition of a 3D vector
-typedef struct _TAG_vec3
+typedef struct _TAG_mho_vec3
 {
     union
     {
@@ -356,45 +356,45 @@ typedef struct _TAG_vec3
         };
         f32 elements[3];
     };
-} vec3_t;
+} mho_vec3_t;
 
 // Constructs a 3D vector given x, y, z components
-MHO_EXTERN vec3_t      vec3_ctor(f32 x, f32 y, f32 z);
+MHO_EXTERN mho_vec3_t      mho_vec3_ctor(f32 x, f32 y, f32 z);
 
 // Computes the sum of two 3D vectors
 // (v1 + v2)
-MHO_EXTERN vec3_t      vec3_add(vec3_t v1, vec3_t v2);
+MHO_EXTERN mho_vec3_t      mho_vec3_add(mho_vec3_t v1, mho_vec3_t v2);
 
 // Computes the difference of two 3D vectors
 // (v1 - v2)
-MHO_EXTERN vec3_t      vec3_sub(vec3_t v1, vec3_t v2);
+MHO_EXTERN mho_vec3_t      mho_vec3_sub(mho_vec3_t v1, mho_vec3_t v2);
 
 // Computes a 3D vector multipled by a scalar
 // (vec * scalar)
-MHO_EXTERN vec3_t      vec3_scal(vec3_t vec, f32 scalar);
+MHO_EXTERN mho_vec3_t      mho_vec3_scal(mho_vec3_t vec, f32 scalar);
 
 // Computes the dot product of two 3D vectors
 // (v1 . v2)
-MHO_EXTERN f32         vec3_dot(vec3_t v1, vec3_t v2);
+MHO_EXTERN f32         mho_vec3_dot(mho_vec3_t v1, mho_vec3_t v2);
 
 // Computes the cross product of two 3D vectors
 // (v1 x v2)
-MHO_EXTERN vec3_t      vec3_cross(vec3_t v1, vec3_t v2);
+MHO_EXTERN mho_vec3_t      mho_vec3_cross(mho_vec3_t v1, mho_vec3_t v2);
 
 // Computes the magnitude (norm) of a 3D vector
 // (||vec||)
-MHO_EXTERN f32         vec3_mag(vec3_t vec);
+MHO_EXTERN f32         mho_vec3_mag(mho_vec3_t vec);
 
 // Normalizes a given 3D vector
 // (vec * (1 / ||vec||))
-MHO_EXTERN vec3_t      vec3_normalize(vec3_t vec);
+MHO_EXTERN mho_vec3_t      mho_vec3_normalize(mho_vec3_t vec);
 
 /* ============================ *
  * =====     Vector4D     ===== *
  * ============================ */
 
 // Definition of a 4D vector
-typedef struct _TAG_vec4
+typedef struct _TAG_mho_vec4
 {
     union
     {
@@ -407,62 +407,62 @@ typedef struct _TAG_vec4
         };
         f32 elements[4];
     };
-} vec4_t;
+} mho_vec4_t;
 
 /* ============================ *
  * =====     Matrix4      ===== *
  * ============================ */
 
 // Definition of a 4x4 matrix
-typedef struct _TAG_mat4
+typedef struct _TAG_mho_mat4
 {
     union
     {
         struct
         {
-            vec4_t  col1,
-                    col2,
-                    col3,
-                    col4;
+            mho_vec4_t  col1,
+                    	col2,
+                    	col3,
+                    	col4;
         };
         f32 elements[16];
     };
-} mat4_t;
+} mho_mat4_t;
 
 // Returns a 4x4 identity matrix
-MHO_EXTERN mat4_t      mat4_identity(void);
+MHO_EXTERN mho_mat4_t      mho_mat4_identity(void);
 
 // Returns a 4x4 translation matrix given x, y, z components
-MHO_EXTERN mat4_t      mat4_translate(f32 x, f32 y, f32 z);
+MHO_EXTERN mho_mat4_t      mho_mat4_translate(f32 x, f32 y, f32 z);
 
 // Returns a 4x4 translation matrix given a 3D vector
-MHO_EXTERN mat4_t      mat4_translate_v(vec3_t vec);
+MHO_EXTERN mho_mat4_t      mho_mat4_translate_v(mho_vec3_t vec);
 
 // Removes the "translation" component from a 4x4 matrix
 // (col4.xyz ---> 0)
-MHO_EXTERN mat4_t      mat4_translate_remove(mat4_t matrix);
+MHO_EXTERN mho_mat4_t      mho_mat4_translate_remove(mho_mat4_t matrix);
 
 // Prints the given 4x4 matrix to stdout
-MHO_EXTERN void        mat4_print(mat4_t matrix);
+MHO_EXTERN void        mho_mat4_print(mho_mat4_t matrix);
 
 // Returns a 4x4 rotation matrix given an angle in degrees and x, y, z components
-MHO_EXTERN mat4_t      mat4_rotate(f32 angle, f32 x, f32 y, f32 z);
+MHO_EXTERN mho_mat4_t      mho_mat4_rotate(f32 angle, f32 x, f32 y, f32 z);
 
 // Returns a 4x4 rotation matrix given an angle in degrees and 3D vector
-MHO_EXTERN mat4_t      mat4_rotate_v(f32 angle, vec3_t vec);
+MHO_EXTERN mho_mat4_t      mho_mat4_rotate_v(f32 angle, mho_vec3_t vec);
 
 // Returns a 4x4 perspective matrix given an FOV, aspect ratio, and
 // near/far plane distance values
-MHO_EXTERN mat4_t      mat4_perspective(f32 fov, f32 aspect_ratio, f32 near, f32 far);
+MHO_EXTERN mho_mat4_t      mho_mat4_perspective(f32 fov, f32 aspect_ratio, f32 near, f32 far);
 
 // Returns a 4x4 lookat matrix given an eye, center, and up 3D vector
-MHO_EXTERN mat4_t      mat4_lookat(vec3_t eye, vec3_t center, vec3_t up);
+MHO_EXTERN mho_mat4_t      mho_mat4_lookat(mho_vec3_t eye, mho_vec3_t center, mho_vec3_t up);
 
 // Returns a 4x4 scale matrix given a scale factor/value
-MHO_EXTERN mat4_t      mat4_scale(f32 scale_value);
+MHO_EXTERN mho_mat4_t      mho_mat4_scale(f32 scale_value);
 
 // Computes the product of two 4x4 matrices
-MHO_EXTERN mat4_t      mat4_mult(mat4_t m1, mat4_t m2);
+MHO_EXTERN mho_mat4_t      mho_mat4_mult(mho_mat4_t m1, mho_mat4_t m2);
 
 /* ============================ *
  * =====       Misc       ===== *
@@ -519,6 +519,7 @@ MHO_EXTERN void mho_framebuffer_size_callback(GLFWwindow *window, s32 width, s32
 
 // Default mouse callback function for OpenGL + GLFW
 MHO_EXTERN void mho_mouse_callback(GLFWwindow *window, f64 x_pos, f64 y_pos);
+
  #endif
 
 
@@ -846,11 +847,11 @@ mho_mouse_callback(GLFWwindow *window,
 
 /////////////////////////////
 // VECTOR2D IMPLEMENTATION
-vec2_t
-vec2_ctor(f32 x,
-          f32 y)
+mho_vec2_t
+mho_vec2_ctor(f32 x,
+              f32 y)
 {
-    vec2_t vec;
+    mho_vec2_t vec;
 
     vec.x = x;
     vec.y = y;
@@ -858,9 +859,9 @@ vec2_ctor(f32 x,
     return vec;
 }
 
-vec2_t
-vec2_add(vec2_t v1,
-         vec2_t v2)
+mho_vec2_t
+mho_vec2_add(mho_vec2_t v1,
+         	 mho_vec2_t v2)
 {
     v1.x += v2.x;
     v1.y += v2.y;
@@ -868,9 +869,9 @@ vec2_add(vec2_t v1,
     return v1;
 }
 
-vec2_t
-vec2_sub(vec2_t v1,
-         vec2_t v2)
+mho_vec2_t
+mho_vec2_sub(mho_vec2_t v1,
+         mho_vec2_t v2)
 {
     v1.x -= v2.x;
     v1.y -= v2.y;
@@ -878,8 +879,8 @@ vec2_sub(vec2_t v1,
     return v1;
 }
 
-vec2_t
-vec2_scal(vec2_t vec,
+mho_vec2_t
+mho_vec2_scal(mho_vec2_t vec,
           f32 scalar)
 {
     vec.x *= scalar;
@@ -889,20 +890,20 @@ vec2_scal(vec2_t vec,
 }
 
 f32
-vec2_dot(vec2_t v1,
-         vec2_t v2)
+mho_vec2_dot(mho_vec2_t v1,
+         mho_vec2_t v2)
 {
     return ((v1.x * v2.x) + (v1.y * v2.y));
 }
 
 f32
-vec2_mag(vec2_t vec)
+mho_vec2_mag(mho_vec2_t vec)
 {
     return mho_sqrt((vec.x * vec.x) + (vec.y * vec.y));
 }
 
-vec2_t
-vec2_normalize(vec2_t vec)
+mho_vec2_t
+mho_vec2_normalize(mho_vec2_t vec)
 {
     f32 val = mho_fsqrtinv((vec.x * vec.x) + (vec.y * vec.y));
 
@@ -912,8 +913,8 @@ vec2_normalize(vec2_t vec)
     return vec;
 }
 
-vec2_t
-vec2_rotate(vec2_t vec,
+mho_vec2_t
+mho_vec2_rotate(mho_vec2_t vec,
             f32 angle)
 {
     f32 r_angle = mho_rads(angle);
@@ -929,12 +930,12 @@ vec2_rotate(vec2_t vec,
 //////////////////////////////
 // VECTOR3D IMPLEMENTATION
 
-vec3_t
-vec3_ctor(f32 x,
+mho_vec3_t
+mho_vec3_ctor(f32 x,
           f32 y,
           f32 z)
 {
-    vec3_t vec;
+    mho_vec3_t vec;
 
     vec.x = x;
     vec.y = y;
@@ -943,9 +944,9 @@ vec3_ctor(f32 x,
     return vec;
 }
 
-vec3_t
-vec3_add(vec3_t v1,
-         vec3_t v2)
+mho_vec3_t
+mho_vec3_add(mho_vec3_t v1,
+         mho_vec3_t v2)
 {
     v1.x += v2.x;
     v1.y += v2.y;
@@ -954,9 +955,9 @@ vec3_add(vec3_t v1,
     return v1;
 }
 
-vec3_t
-vec3_sub(vec3_t v1,
-         vec3_t v2)
+mho_vec3_t
+mho_vec3_sub(mho_vec3_t v1,
+         mho_vec3_t v2)
 {
     v1.x -= v2.x;
     v1.y -= v2.y;
@@ -965,8 +966,8 @@ vec3_sub(vec3_t v1,
     return v1;
 }
 
-vec3_t
-vec3_scal(vec3_t vec,
+mho_vec3_t
+mho_vec3_scal(mho_vec3_t vec,
           f32 scalar)
 {
     vec.x *= scalar;
@@ -977,17 +978,17 @@ vec3_scal(vec3_t vec,
 }
 
 f32
-vec3_dot(vec3_t v1,
-         vec3_t v2)
+mho_vec3_dot(mho_vec3_t v1,
+         mho_vec3_t v2)
 {
     return ((v1.x * v2.x) + (v1.y * v2.y) + (v1.z * v2.z));
 }
 
-vec3_t
-vec3_cross(vec3_t v1,
-           vec3_t v2)
+mho_vec3_t
+mho_vec3_cross(mho_vec3_t v1,
+           mho_vec3_t v2)
 {
-    vec3_t cross_prod;
+    mho_vec3_t cross_prod;
     
     cross_prod.x = (v1.y * v2.z) - (v1.z * v2.y);
     cross_prod.y = (v1.z * v2.x) - (v1.x * v2.z);
@@ -997,13 +998,13 @@ vec3_cross(vec3_t v1,
 }
 
 f32
-vec3_mag(vec3_t vec)
+mho_vec3_mag(mho_vec3_t vec)
 {
     return mho_sqrt((vec.x * vec.x) + (vec.y * vec.y) + (vec.z * vec.z));
 }
 
-vec3_t 
-vec3_normalize(vec3_t vec)
+mho_vec3_t 
+mho_vec3_normalize(mho_vec3_t vec)
 {
     f32 val = mho_fsqrtinv((vec.x * vec.x) + (vec.y * vec.y) + (vec.z * vec.z));
 
@@ -1017,10 +1018,10 @@ vec3_normalize(vec3_t vec)
 //////////////////////////////
 // MATRIX4 IMPLEMENTATION
 
-mat4_t
-mat4_identity(void)
+mho_mat4_t
+mho_mat4_identity(void)
 {
-    mat4_t matrix = {0};
+    mho_mat4_t matrix = {0};
     
     matrix.col1.x = 1.0f;
     matrix.col2.y = 1.0f;
@@ -1030,12 +1031,12 @@ mat4_identity(void)
     return matrix;
 }
 
-mat4_t
-mat4_translate(f32 x,
+mho_mat4_t
+mho_mat4_translate(f32 x,
                f32 y,
                f32 z)
 {
-    mat4_t matrix = mat4_identity();
+    mho_mat4_t matrix = mho_mat4_identity();
 
     matrix.col4.x = x;
     matrix.col4.y = y;
@@ -1044,10 +1045,10 @@ mat4_translate(f32 x,
     return matrix;
 }
 
-mat4_t
-mat4_translate_v(vec3_t vec)
+mho_mat4_t
+mho_mat4_translate_v(mho_vec3_t vec)
 {
-    mat4_t matrix = mat4_identity();
+    mho_mat4_t matrix = mat4_identity();
 
     matrix.col4.x = vec.x;
     matrix.col4.y = vec.y;
@@ -1056,8 +1057,8 @@ mat4_translate_v(vec3_t vec)
     return matrix;
 }
 
-mat4_t
-mat4_translate_remove(mat4_t matrix)
+mho_mat4_t
+mho_mat4_translate_remove(mho_mat4_t matrix)
 {
     matrix.col4.x = 0.0f;
     matrix.col4.y = 0.0f;
@@ -1067,7 +1068,7 @@ mat4_translate_remove(mat4_t matrix)
 }
 
 void
-mat4_print(mat4_t matrix)
+mho_mat4_print(mho_mat4_t matrix)
 {
     for (u8 i = 0; i < 4; i++)
     {
@@ -1079,19 +1080,19 @@ mat4_print(mat4_t matrix)
     }
 } 
 
-mat4_t
-mat4_rotate(f32 angle, 
+mho_mat4_t
+mho_mat4_rotate(f32 angle, 
             f32 x, 
             f32 y, 
             f32 z)
 {
-    vec3_t vec = {x, y, z};
-    vec = vec3_normalize(vec);
+    mho_vec3_t vec = {x, y, z};
+    vec = mho_vec3_normalize(vec);
     f32 c = mho_cos(mho_rads(angle));
     f32 s = mho_sin(mho_rads(angle));
     f32 c1 = 1.0f - c;
 
-    mat4_t matrix = {0};
+    mho_mat4_t matrix = {0};
 
     matrix.col1.x = (c1 * vec.x * vec.x) + c;
     matrix.col1.y = (c1 * vec.x * vec.y) + s * vec.z;
@@ -1110,16 +1111,16 @@ mat4_rotate(f32 angle,
     return matrix;
 }
 
-mat4_t
+mho_mat4_t
 mat4_rotate_v(f32 angle,
-              vec3_t vec)
+              mho_vec3_t vec)
 {
-    vec = vec3_normalize(vec);
+    vec = mho_vec3_normalize(vec);
     f32 c = mho_cos(mho_rads(angle));
     f32 s = mho_sin(mho_rads(angle));
     f32 c1 = 1.0f - c;
 
-    mat4_t matrix = {0};
+    mho_mat4_t matrix = {0};
 
     matrix.col1.x = (c1 * vec.x * vec.x) + c;
     matrix.col1.y = (c1 * vec.x * vec.y) + s * vec.z;
@@ -1138,7 +1139,7 @@ mat4_rotate_v(f32 angle,
     return matrix;
 }
 
-mat4_t
+mho_mat4_t
 mat4_perspective(f32 fov,
                  f32 aspect_ratio,
                  f32 near,
@@ -1147,7 +1148,7 @@ mat4_perspective(f32 fov,
     f32 t = mho_tan(mho_rads(fov) / 2.0f);
     f32 fdelta = far - near;
     
-    mat4_t matrix = {0};
+    mho_mat4_t matrix = {0};
 
     matrix.col1.x = 1 / (aspect_ratio * t);
 
@@ -1161,16 +1162,16 @@ mat4_perspective(f32 fov,
     return matrix;
 }
 
-mat4_t
-mat4_lookat(vec3_t eye, 
-            vec3_t center, 
-            vec3_t up)
+mho_mat4_t
+mat4_lookat(mho_vec3_t eye, 
+            mho_vec3_t center, 
+            mho_vec3_t up)
 {
-    const vec3_t f = vec3_normalize(vec3_sub(center, eye));
-    const vec3_t s = vec3_normalize(vec3_cross(f, up));
-    const vec3_t u = vec3_cross(s, f);
+    const mho_vec3_t f = mho_vec3_normalize(mho_vec3_sub(center, eye));
+    const mho_vec3_t s = mho_vec3_normalize(mho_vec3_cross(f, up));
+    const mho_vec3_t u = mho_vec3_cross(s, f);
 
-    mat4_t matrix;
+    mho_mat4_t matrix;
 
     matrix.col1.x = s.x;
     matrix.col1.y = u.x;
@@ -1195,10 +1196,10 @@ mat4_lookat(vec3_t eye,
     return matrix;
 }
 
-mat4_t
+mho_mat4_t
 mat4_scale(f32 scale_value)
 {
-    mat4_t matrix = {0};
+    mho_mat4_t matrix = {0};
 
     matrix.col1.x = scale_value;
     matrix.col2.y = scale_value;
@@ -1208,11 +1209,11 @@ mat4_scale(f32 scale_value)
     return matrix;
 }
 
-mat4_t
-mat4_mult(mat4_t m1,
-          mat4_t m2)
+mho_mat4_t
+mat4_mult(mho_mat4_t m1,
+          mho_mat4_t m2)
 {
-    mat4_t res;
+    mho_mat4_t res;
 
     for (u8 y = 0; y < 4; y++)
     {
@@ -1542,6 +1543,45 @@ mho_mem_print(FILE *stream)
 	#define malloc(__n)		mho_mem_malloc(__n, __FILENAME__, __LINE__)
 	#define free(__n)		mho_mem_free(__n, __FILENAME__, __LINE__)
  #endif // M_MEM_DEBUG
+
+// Simplifies Math related names for types and functions
+ #ifndef MHO_MATH_COMPLEX_NAMES
+	typedef mho_vec2_t vec2_t;
+	typedef mho_vec3_t vec3_t;
+	typedef mho_vec4_t vec4_t;
+	typedef mho_mat4_t mat4_t;
+
+	#define mho_vec2_ctor				vec2_ctor
+	#define mho_vec2_add				vec2_add
+	#define mho_vec2_sub				vec2_sub
+	#define mho_vec2_scal				vec2_scal
+	#define mho_vec2_dot				vec2_dot
+	#define mho_vec2_mag				vec2_mag
+	#define mho_vec2_normalize			vec2_normalize
+	#define mho_vec2_rotate				vec2_rotate
+
+	#define mho_vec3_ctor				vec3_ctor
+	#define mho_vec3_add				vec3_add
+	#define mho_vec3_sub				vec3_sub
+	#define mho_vec3_scal				vec3_scal
+	#define mho_vec3_dot				vec3_dot
+	#define mho_vec3_cross				vec3_cross
+	#define mho_vec3_mag				vec3_mag
+	#define mho_vec3_normalize			vec3_normalize
+
+	#define mho_mat4_identity			mat4_identity
+	#define mho_mat4_translate			mat4_translate
+	#define mho_mat4_translate_v		mat4_translate_v
+	#define mho_mat4_translate_remove	mat4_translate_remove
+	#define mho_mat4_print				mat4_print
+	#define mho_mat4_rotate				mat4_rotate
+	#define mho_mat4_rotate_v			mat4_rotate_v
+	#define mho_mat4_perspective		mat4_perspective
+	#define mho_mat4_lookat				mat4_lookat
+	#define mho_mat4_scale				mat4_scale
+	#define mho_mat4_mult				mat4_mult
+
+ #endif // MHO_MATH_COMPLEX_NAMES
 
 #pragma warning(default: 4996) // fopen
 #pragma warning(default: 4055) // fn ptr void * (enabled on +MSVC 14)
