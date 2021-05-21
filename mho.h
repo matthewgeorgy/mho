@@ -16,9 +16,7 @@
 // library here - mho.h
 //
 // TODO: Fix and implement m_obj
-// TODO: use a mho_prefix(...) macro to rename the math functions (like hmm),
-// rename the types, and pass structs into the functions so that we don't
-// need to insert the macros there.
+// TODO: FIX ALIGNMENT
 
 // TESTS:
 // NOTE: MHO_ARR VERIFIED!
@@ -514,6 +512,22 @@ MHO_EXTERN void mho_mouse_callback(GLFWwindow *window, f64 x_pos, f64 y_pos);
 
  #endif
 
+// Obj Data Structure
+typedef struct _TAG_mho_obj_data
+{
+	mho_arr(mho_vec3_t) vertices;
+	mho_arr(mho_vec3_t) normals;
+	mho_arr(mho_vec2_t) uvs;
+	mho_arr(u32) indices;
+	b32 interleaved;
+} mho_obj_data_t;
+
+MHO_EXTERN b32 mho_load_obj(const char *file, mho_obj_data_t *data, b32 interleaved);
+
+MHO_EXTERN b32 mho_load_obj_inter(const char *file, mho_obj_data_t *data);
+
+MHO_EXTERN b32 mho_load_obj_index(const char *file, mho_obj_data_t *data);
+
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -833,6 +847,142 @@ mho_mouse_callback(GLFWwindow *window,
 
   #endif // __glad_h_
 
+
+b32
+mho_load_obj(const char *file,
+			 mho_obj_data_t *data,
+			 b32 interleaved)
+{
+	if (interleaved)
+	{
+		return mho_obj_load_inter(file, data);
+	}
+	/* else */
+	/* { */
+	/* 	return m_obj_load_indexed(file, data); */
+	/* } */
+}
+
+b32
+mho_load_obj_inter(const char *file,
+				   mho_obj_data_t *data)
+{
+	FILE *fptr;
+	mho_arr(mho_vec3_t) verts = NULL;
+	mho_arr(mho_vec3_t) norms = NULL;
+	mho_arr(mho_vec2_t) uvs = NULL;
+	mho_arr(u32) vert_inds = NULL;
+	mho_arr(u32) uv_inds = NULL;
+	mho_arr(u32) norm_inds = NULL;
+	data->vertices = NULL;
+	data->normals = NULL;
+	data->uvs = NULL;
+
+	fptr = fopen(file, "r");
+	if (!fptr)
+	{
+		printf("Failed to load file: %s\n", file);
+
+		return FALSE;
+	}
+
+	for (;;)
+	{
+		s8 token[128];
+		s32 res = fscanf(fptr, "%s", token);
+
+		if (res == EOF)
+			break;
+
+		if (token[0] == '#')
+			continue;
+		else if (token[0] == 'v')
+		{
+			if (token[1] == 't')
+			{
+				mho_vec3_t temp2d;
+
+				fscanf(fptr, "%f %f\n", &temp2d.x, &temp2d.y);
+				mho_arr_push(uvs, temp2d);
+			}
+			else if (token[1] == 'n')
+			{
+				mho_vec3_t temp3d;
+
+				fscanf(fptr, "%f %f %f\n", &temp3d.x, &temp3d.y, &temp3d.z);
+				mho_arr_push(norms, temp3d);
+			}
+			else if (token[1] == 'f')
+			{
+				s32 num_vals;
+				u32 vert_idx[3], uv_idx[3], norm_idx[3];
+
+				num_vals = fscanf(fptr, "%d/%d/%d", &vert_idx[0], &uv_idx[0], &norm_idx[0]);
+				num_vals += fscanf(fptr, "%d/%d/%d", &vert_idx[1], &uv_idx[1], &norm_idx[1]);
+				num_vals += fscanf(fptr, "%d/%d/%d", &vert_idx[2], &uv_idx[2], &norm_idx[2]);
+
+				if (num_vals != 9)
+				{
+					printf("File is incompatible with mho_obj!: %s\n", file);
+					fclose(fptr);
+
+					return FALSE;
+				}
+				
+				mho_arr_push(vert_inds, vert_idx[0]);
+				mho_arr_push(vert_inds, vert_idx[1]);
+				mho_arr_push(vert_inds, vert_idx[2]);
+				mho_arr_push(uv_inds, uv_idx[0]);
+				mho_arr_push(uv_inds, uv_idx[1]);
+				mho_arr_push(uv_inds, uv_idx[2]);
+				mho_arr_push(norm_inds, norm_idx[0]);
+				mho_arr_push(norm_inds, norm_idx[1]);
+				mho_arr_push(norm_inds, norm_idx[2]);
+			}
+			else
+			{
+				mho_vec3_t temp3d;
+
+				fscanf(fptr, "%f %f %f\n", &temp3d.x, &temp3d.y, &temp3d.z);
+				mho_arr_push(verts, temp3d);
+			}
+		}
+		else
+		{
+			// comment
+			s8 comment_buffer[512];
+
+			fgets(comment_buffer, 512, fptr);
+		}
+	}
+
+	for (u32 i = 0; i < mho_arr_size(vert_inds); i++)
+	{
+		u32 v = vert_inds[i];
+		u32 n = norm_inds[i];
+		u32 u = uv_inds[i];
+
+		mho_vec3_t vertex = verts[v - 1];
+		mho_vec3_t normal = norms[n - 1];
+		mho_vec2_t uv = uvs[u - 1];
+
+		mho_arr_push(data->vertices, vertex);
+		mho_arr_push(data->normals, normal);
+		mho_arr_push(data->uvs, uv);
+	}
+	data->interleaved = TRUE;
+
+	mho_arr_free(verts);
+	mho_arr_free(norms);
+	mho_arr_free(uvs);
+	mho_arr_free(vert_inds);
+	mho_arr_free(uv_inds);
+	mho_arr_free(norm_inds);
+
+	return TRUE;
+}
+
+/* MHO_EXTERN b32 mho_load_obj_index(const char *file, mho_obj_data_t *data); */
 
 //////////////////////////////////////////////////////////////////
 // Math
