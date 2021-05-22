@@ -693,7 +693,7 @@ u64
 mho_filelen(FILE *fp)
 {
 	u64 	len,
-		  	pos;	
+		  	pos;
 
 	pos = ftell(fp);
 	fseek(fp, 0, SEEK_END);
