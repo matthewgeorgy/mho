@@ -16,7 +16,8 @@
 // library here - mho.h
 //
 // TODO: Fix and implement m_obj
-// TODO: FIX ALIGNMENT
+// TODO: implement these C stdlib fn's
+// TODO: Refactor for C89 compliance (VC10)
 
 // TESTS:
 // NOTE: MHO_ARR VERIFIED!
@@ -274,6 +275,13 @@ MHO_EXTERN char			*mho_read_file_buffer(const char *filename);
 // Returns the length of a file using the FILE * handle
 MHO_EXTERN u64			mho_filelen(FILE *fp);
 
+MHO_EXTERN void			mho_memcpy(void *dest, void *src, usize n);
+MHO_EXTERN void			*mho_memset(void *dest, s32 c, usize n);
+MHO_EXTERN void			mho_strcpy(s8 *dest, s8 *src);
+MHO_EXTERN void			mho_strncpy(s8 *dest, s8 *src, usize n);
+MHO_EXTERN s32			mho_strcmp(s8 *dest, s8 *src);
+MHO_EXTERN s32			mho_strncmp(s8 *dest, s8 *src, usize n);
+MHO_EXTERN s8			*mho_strcat(s8 *dest, s8 *src);
 
 
 ///////////////////////////////////////////////////////////////////////////////
