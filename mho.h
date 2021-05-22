@@ -15,7 +15,7 @@
 // currently have (mho_array/shader/etc, mmath, mho_mem, etc) into one big
 // library here - mho.h
 //
-// TODO: Fix and implement m_obj
+// TODO: Fix and implement mho_obj
 // TODO: implement these C stdlib fn's
 
 // TESTS:
@@ -278,6 +278,8 @@ MHO_EXTERN void			mho_memcpy(void *dest, void *src, usize n);
 MHO_EXTERN void			*mho_memset(void *dest, s32 c, usize n);
 MHO_EXTERN void			mho_strcpy(s8 *dest, s8 *src);
 MHO_EXTERN void			mho_strncpy(s8 *dest, s8 *src, usize n);
+MHO_EXTERN usize		mho_strlen(s8 *str);
+
 MHO_EXTERN s32			mho_strcmp(s8 *dest, s8 *src);
 MHO_EXTERN s32			mho_strncmp(s8 *dest, s8 *src, usize n);
 MHO_EXTERN s8			*mho_strcat(s8 *dest, s8 *src);
@@ -710,6 +712,70 @@ mho_filelen(FILE *fp)
 	return len;
 }
 
+void
+mho_memcpy(void *dest,
+		   void *src,
+		   usize n)
+{
+	usize i;
+
+	for (i = 0; i < n; i++)
+	{
+		(char *)dest[i] = (char *)src[i];
+	}
+}
+
+void *
+mho_memset(void *dest,
+		   s32 c,
+		   usize n)
+{
+	u8 uc = (u8)c;
+	usize i;
+
+	for (i = 0; i < n; i++)
+	{
+		dest[i] = c;
+	}
+}
+
+void
+mho_strcpy(s8 *dest,
+		   s8 *src)
+{
+	while (*dest != 0)
+	{
+		*dest++ = *src++;
+	}
+}
+
+void
+mho_strncpy(s8 *dest,
+			s8 *src,
+			usize n)
+{
+	usize i;
+
+	for (i = 0; i < n; i++)
+	{
+		dest[i] = src[i];
+	}
+}
+
+usize
+mho_strlen(s8 *str)
+{
+	usize len = 0;
+
+	while (*str != '\0')
+	{
+		len++;
+		str++;
+	}
+
+	return len;
+}
+
 //////////////////////////////////////////////////////////////////
 // OpenGL
 
@@ -878,14 +944,16 @@ mho_load_obj(const char *file,
 			 mho_obj_data_t *data,
 			 b32 interleaved)
 {
-	if (interleaved)
-	{
-		return mho_obj_load_inter(file, data);
-	}
+	/* if (interleaved) */
+	/* { */
+	/* 	return mho_obj_load_inter(file, data); */
+	/* } */
 	/* else */
 	/* { */
 	/*	return m_obj_load_indexed(file, data); */
 	/* } */
+	
+	 return FALSE;
 }
 
 b32
@@ -900,7 +968,7 @@ mho_load_obj_inter(const char *file,
 						uv_idx[3],
 						norm_idx[3],
 						i;
-	mho_vec3_t 			temp2d;
+	mho_vec2_t 			temp2d;
 	mho_vec3_t 			temp3d;
 	mho_arr(mho_vec3_t) verts = NULL;
 	mho_arr(mho_vec3_t) norms = NULL;
@@ -995,6 +1063,7 @@ mho_load_obj_inter(const char *file,
 	mho_arr_free(vert_inds);
 	mho_arr_free(uv_inds);
 	mho_arr_free(norm_inds);
+	fclose(fptr);
 
 	return TRUE;
 }
