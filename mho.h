@@ -821,13 +821,13 @@ mho_mouse_callback(GLFWwindow *window,
 		last_y = y_pos;
 		first_mouse = false;
 	}
-	
+
 	last_x = x_pos;
 	last_y = y_pos;
-	
+
 	x_offset *= sens;
 	y_offset *= sens;
-	
+
 	yaw += x_offset;
 	pitch += y_offset;
 
@@ -929,7 +929,7 @@ mho_load_obj_inter(const char *file,
 
 					return FALSE;
 				}
-				
+
 				mho_arr_push(vert_inds, vert_idx[0]);
 				mho_arr_push(vert_inds, vert_idx[1]);
 				mho_arr_push(vert_inds, vert_idx[2]);
@@ -1123,7 +1123,7 @@ mho_vec3_cross(mho_vec3_t v1,
 		   	   mho_vec3_t v2)
 {
 	mho_vec3_t cross_prod;
-	
+
 	cross_prod.x = (v1.y * v2.z) - (v1.z * v2.y);
 	cross_prod.y = (v1.z * v2.x) - (v1.x * v2.z);
 	cross_prod.z = (v1.x * v2.y) - (v1.y * v2.x);
@@ -1137,7 +1137,7 @@ mho_vec3_mag(mho_vec3_t vec)
 	return mho_sqrt((vec.x * vec.x) + (vec.y * vec.y) + (vec.z * vec.z));
 }
 
-mho_vec3_t 
+mho_vec3_t
 mho_vec3_normalize(mho_vec3_t vec)
 {
 	f32 val = mho_fsqrtinv((vec.x * vec.x) + (vec.y * vec.y) + (vec.z * vec.z));
@@ -1156,7 +1156,7 @@ mho_mat4_t
 mho_mat4_identity(void)
 {
 	mho_mat4_t matrix = {0};
-	
+
 	matrix.col1.x = 1.0f;
 	matrix.col2.y = 1.0f;
 	matrix.col3.z = 1.0f;
@@ -1212,12 +1212,12 @@ mho_mat4_print(mho_mat4_t matrix)
 		}
 		printf("\n");
 	}
-} 
+}
 
 mho_mat4_t
-mho_mat4_rotate(f32 angle, 
-				f32 x, 
-				f32 y, 
+mho_mat4_rotate(f32 angle,
+				f32 x,
+				f32 y,
 				f32 z)
 {
 	mho_vec3_t vec = {x, y, z};
@@ -1281,7 +1281,7 @@ mho_mat4_perspective(f32 fov,
 {
 	f32 t = mho_tan(mho_rads(fov) / 2.0f);
 	f32 fdelta = far - near;
-	
+
 	mho_mat4_t matrix = {0};
 
 	matrix.col1.x = 1 / (aspect_ratio * t);
@@ -1297,8 +1297,8 @@ mho_mat4_perspective(f32 fov,
 }
 
 mho_mat4_t
-mho_mat4_lookat(mho_vec3_t eye, 
-				mho_vec3_t center, 
+mho_mat4_lookat(mho_vec3_t eye,
+				mho_vec3_t center,
 				mho_vec3_t up)
 {
 	const mho_vec3_t f = mho_vec3_normalize(mho_vec3_sub(center, eye));
@@ -1442,7 +1442,7 @@ mho_fsqrtinv(f32 number)
 #define MHO_MEM_FREE_BIT		  0x01
 #define MHO_MEM_OVER_BIT		  0x02
 #define MHO_MEM_UNDER_BIT		  0x04
-#define MHO_MEM_DOUBLE_FREE_BIT   0x08 
+#define MHO_MEM_DOUBLE_FREE_BIT   0x08
 #define MHO_MEM_OVER_NUM		  0x192BA3A2
 #define MHO_MEM_UNDER_NUM		  0x39D7A5DA
 
@@ -1459,7 +1459,7 @@ mho_mem_malloc(size_t size,
 	void	*ptr = NULL;
 	dword	*buff_un,
 			*buff_ov;
-	
+
 	buff_un = (dword *)malloc(size + 2 * sizeof(dword));
 
 	// if allocation succeeded
@@ -1474,7 +1474,7 @@ mho_mem_malloc(size_t size,
 		mho_mem_total_alloc += size;
 		mho_mem_rec_append(ptr, file, line, size);
 	}
-	
+
 	// return ptr regardless
 	return ptr;
 }
@@ -1685,35 +1685,35 @@ mho_mem_print(FILE *stream)
 	typedef mho_vec4_t 					vec4_t;
 	typedef mho_mat4_t 					mat4_t;
 
-	#define vec2_ctor					mho_vec2_ctor				
-	#define vec2_add					mho_vec2_add				
-	#define vec2_sub					mho_vec2_sub				
-	#define vec2_scal					mho_vec2_scal				
-	#define vec2_dot					mho_vec2_dot				
-	#define vec2_mag					mho_vec2_mag				
+	#define vec2_ctor					mho_vec2_ctor
+	#define vec2_add					mho_vec2_add
+	#define vec2_sub					mho_vec2_sub
+	#define vec2_scal					mho_vec2_scal
+	#define vec2_dot					mho_vec2_dot
+	#define vec2_mag					mho_vec2_mag
 	#define vec2_normalize				mho_vec2_normalize
 	#define vec2_rotate					mho_vec2_rotate
-					  
-	#define vec3_ctor					mho_vec3_ctor				
-	#define vec3_add					mho_vec3_add				
-	#define vec3_sub					mho_vec3_sub				
-	#define vec3_scal					mho_vec3_scal				
-	#define vec3_dot					mho_vec3_dot				
-	#define vec3_cross					mho_vec3_cross				
-	#define vec3_mag					mho_vec3_mag				
+
+	#define vec3_ctor					mho_vec3_ctor
+	#define vec3_add					mho_vec3_add
+	#define vec3_sub					mho_vec3_sub
+	#define vec3_scal					mho_vec3_scal
+	#define vec3_dot					mho_vec3_dot
+	#define vec3_cross					mho_vec3_cross
+	#define vec3_mag					mho_vec3_mag
 	#define vec3_normalize				mho_vec3_normalize
-					  
+
 	#define mat4_identity				mho_mat4_identity
 	#define mat4_translate				mho_mat4_translate
 	#define mat4_translate_v			mho_mat4_translate_v
 	#define mat4_translate_remove		mho_mat4_translate_remove
-	#define mat4_print					mho_mat4_print				
+	#define mat4_print					mho_mat4_print
 	#define mat4_rotate					mho_mat4_rotate
 	#define mat4_rotate_v				mho_mat4_rotate_v
 	#define mat4_perspective			mho_mat4_perspective
 	#define mat4_lookat					mho_mat4_lookat
-	#define mat4_scale					mho_mat4_scale				
-	#define mat4_mult					mho_mat4_mult				
+	#define mat4_scale					mho_mat4_scale
+	#define mat4_mult					mho_mat4_mult
 
  #endif // MHO_MATH_COMPLEX_NAMES
 
