@@ -17,7 +17,6 @@
 //
 // TODO: Fix and implement m_obj
 // TODO: implement these C stdlib fn's
-// TODO: Refactor for C89 compliance (VC10)
 
 // TESTS:
 // NOTE: MHO_ARR VERIFIED!
@@ -899,7 +898,8 @@ mho_load_obj_inter(const char *file,
 						num_vals;
 	u32 				vert_idx[3],
 						uv_idx[3],
-						norm_idx[3];
+						norm_idx[3],
+						i;
 	mho_vec3_t 			temp2d;
 	mho_vec3_t 			temp3d;
 	mho_arr(mho_vec3_t) verts = NULL;
@@ -973,7 +973,7 @@ mho_load_obj_inter(const char *file,
 		}
 	}
 
-	for (u32 i = 0; i < mho_arr_size(vert_inds); i++)
+	for (i = 0; i < mho_arr_size(vert_inds); i++)
 	{
 		u32 v = vert_inds[i];
 		u32 n = norm_inds[i];
@@ -1076,9 +1076,8 @@ mho_vec2_t
 mho_vec2_rotate(mho_vec2_t vec,
 				f32 angle)
 {
-	f32 r_angle = mho_rads(angle);
-	f32 c = mho_cos(r_angle);
-	f32 s = mho_sin(r_angle);
+	f32 c = mho_cos(mho_rads(angle));
+	f32 s = mho_sin(mho_rads(angle));
 
 	vec.x = ((vec.x * c) - (vec.y * s));
 	vec.y = ((vec.x * s) + (vec.y * c));
@@ -1229,9 +1228,11 @@ mho_mat4_translate_remove(mho_mat4_t matrix)
 void
 mho_mat4_print(mho_mat4_t matrix)
 {
-	for (u8 i = 0; i < 4; i++)
+	u8 i, j;
+
+	for (i = 0; i < 4; i++)
 	{
-		for (u8 j = 0; j < 4; j++)
+		for (j = 0; j < 4; j++)
 		{
 			printf("%f ", matrix.elements[i + j * 4]);
 		}
@@ -1246,13 +1247,12 @@ mho_mat4_rotate(f32 angle,
 				f32 z)
 {
 	mho_vec3_t vec = {x, y, z};
-	vec = mho_vec3_normalize(vec);
 	f32 c = mho_cos(mho_rads(angle));
 	f32 s = mho_sin(mho_rads(angle));
 	f32 c1 = 1.0f - c;
-
 	mho_mat4_t matrix = {0};
 
+	vec = mho_vec3_normalize(vec);
 	matrix.col1.x = (c1 * vec.x * vec.x) + c;
 	matrix.col1.y = (c1 * vec.x * vec.y) + s * vec.z;
 	matrix.col1.z = (c1 * vec.x * vec.z) - s * vec.y;
@@ -1274,13 +1274,12 @@ mho_mat4_t
 mho_mat4_rotate_v(f32 angle,
 			      mho_vec3_t vec)
 {
-	vec = mho_vec3_normalize(vec);
 	f32 c = mho_cos(mho_rads(angle));
 	f32 s = mho_sin(mho_rads(angle));
 	f32 c1 = 1.0f - c;
-
 	mho_mat4_t matrix = {0};
 
+	vec = mho_vec3_normalize(vec);
 	matrix.col1.x = (c1 * vec.x * vec.x) + c;
 	matrix.col1.y = (c1 * vec.x * vec.y) + s * vec.z;
 	matrix.col1.z = (c1 * vec.x * vec.z) - s * vec.y;
@@ -1306,7 +1305,6 @@ mho_mat4_perspective(f32 fov,
 {
 	f32 t = mho_tan(mho_rads(fov) / 2.0f);
 	f32 fdelta = far - near;
-
 	mho_mat4_t matrix = {0};
 
 	matrix.col1.x = 1 / (aspect_ratio * t);
@@ -1326,11 +1324,12 @@ mho_mat4_lookat(mho_vec3_t eye,
 				mho_vec3_t center,
 				mho_vec3_t up)
 {
-	const mho_vec3_t f = mho_vec3_normalize(mho_vec3_sub(center, eye));
-	const mho_vec3_t s = mho_vec3_normalize(mho_vec3_cross(f, up));
-	const mho_vec3_t u = mho_vec3_cross(s, f);
-
 	mho_mat4_t matrix;
+	mho_vec3_t f, s, u;
+
+	f = mho_vec3_normalize(mho_vec3_sub(center, eye));
+	s = mho_vec3_normalize(mho_vec3_cross(f, up));
+	u = mho_vec3_cross(s, f);
 
 	matrix.col1.x = s.x;
 	matrix.col1.y = u.x;
@@ -1373,16 +1372,19 @@ mho_mat4_mult(mho_mat4_t m1,
 		  	  mho_mat4_t m2)
 {
 	mho_mat4_t res;
+	u8 y, x, e;
+	f32 sum;
 
-	for (u8 y = 0; y < 4; y++)
+	for (y = 0; y < 4; y++)
 	{
-		for (u8 x = 0; x < 4; x++)
+		for (x = 0; x < 4; x++)
 		{
-			f32 sum = 0.0f;
-			for (u8 e = 0; e < 4; e++)
+			sum = 0.0f;
+			for (e = 0; e < 4; e++)
 			{
 				sum += m1.elements[x + e * 4] * m2.elements[e + y * 4];
 			}
+
 			res.elements[x + y * 4] = sum;
 		}
 	}
@@ -1431,9 +1433,12 @@ mho_randnd(u32 index)
 f32
 mho_fsqrt(f32 number)
 {
-	f32 x = number * 0.5f;
-	f32 y = number;
-	s32 i = *(s32 *)&y;				// evil floating point bit hack
+	f32 x, y;
+	s32 i;
+
+	x = number * 0.5f;
+	y = number;
+	i = *(s32 *)&y;				// evil floating point bit hack
 	i = 0x5F3759DF - (i >> 1);		// what the fuck?
 	y = *(f32 *)&i;
 	y = y * (1.5f - (x * y * y));	// 1st iteration
@@ -1445,9 +1450,12 @@ mho_fsqrt(f32 number)
 f32
 mho_fsqrtinv(f32 number)
 {
-	f32 x = number * 0.5f;
-	f32 y = number;
-	s32 i = *(s32 *)&y;				// evil floating point bit hack
+	f32	x, y;
+	s32 i;
+
+	x = number * 0.5f;
+	y = number;
+	i = *(s32 *)&y;				// evil floating point bit hack
 	i = 0x5F3759DF - (i >> 1);		// what the fuck?
 	y = *(f32 *)&i;
 	y = y * (1.5f - (x * y * y));	// 1st iteration
@@ -1509,7 +1517,7 @@ mho_mem_free(void *buffer,
 		     const char *file,
 		     int line)
 {
-	mho_mem_rec_t	  *temp;
+	mho_mem_rec_t	*temp;
 	dword			value;
 	void			*p;
 
@@ -1569,7 +1577,7 @@ mho_mem_rec_append(void *ptr,
 				   int line,
 				   int size)
 {
-	mho_mem_rec_t	  *new_node,
+	mho_mem_rec_t	*new_node,
 					*temp;
 
 	// Allocate and fill new node
@@ -1604,7 +1612,7 @@ mho_mem_rec_append(void *ptr,
 void
 mho_mem_debug_memory()
 {
-	mho_mem_rec_t	  *temp;
+	mho_mem_rec_t	*temp;
 	dword			value;
 	void			*p;
 
