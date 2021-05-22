@@ -271,6 +271,9 @@ MHO_EXTERN void			*mho_arr_resize(void *arr, usize sz, usize amt);
 // Reads a file and writes it into a char * buffer
 MHO_EXTERN char			*mho_read_file_buffer(const char *filename);
 
+// Returns the length of a file using the FILE * handle
+MHO_EXTERN u64			mho_filelen(FILE *fp);
+
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -684,6 +687,20 @@ mho_read_file_buffer(const char *filename)
 	fclose(fptr);
 
 	return source;
+}
+
+u64
+mho_filelen(FILE *fp)
+{
+	u64 	len,
+		  	pos;	
+
+	pos = ftell(fp);
+	fseek(fp, 0, SEEK_END);
+	len = ftell(fp);
+	fseek(fp, pos, SEEK_SET);
+
+	return len;
 }
 
 //////////////////////////////////////////////////////////////////
