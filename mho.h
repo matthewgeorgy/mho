@@ -975,7 +975,7 @@ mho_load_obj(const char *file,
 	/* { */
 	/*	return m_obj_load_indexed(file, data); */
 	/* } */
-	
+
 	 return FALSE;
 }
 
