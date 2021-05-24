@@ -279,10 +279,10 @@ MHO_EXTERN void			*mho_memset(void *dest, s32 c, usize n);
 MHO_EXTERN void			mho_strcpy(s8 *dest, s8 *src);
 MHO_EXTERN void			mho_strncpy(s8 *dest, s8 *src, usize n);
 MHO_EXTERN usize		mho_strlen(s8 *str);
+MHO_EXTERN s8			*mho_strcat(s8 *str1, s8 *str2);
 
 MHO_EXTERN s32			mho_strcmp(s8 *dest, s8 *src);
 MHO_EXTERN s32			mho_strncmp(s8 *dest, s8 *src, usize n);
-MHO_EXTERN s8			*mho_strcat(s8 *dest, s8 *src);
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -776,6 +776,26 @@ mho_strlen(s8 *str)
 	}
 
 	return len;
+}
+
+s8 *
+mho_strcat(s8 *str1,
+		   s8 *str2)
+{
+	u32 size1, size2, index, i;
+	s8 *new_str;
+
+	for (size1 = 0; str1[size1] != '\0'; size1++);
+	for (size2 = 0; str2[size2] != '\0'; size2++);
+
+	new_str = (s8 *)malloc(size1 + size2);
+
+	for (index = 0; index < size1; index++)
+		new_str[index] = str1[index];
+	for (i = 0; index < (size1 + size2); index++, i++)
+		new_str[index] = str2[i];
+
+	return new_str;
 }
 
 //////////////////////////////////////////////////////////////////
