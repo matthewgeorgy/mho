@@ -37,7 +37,7 @@
 
 #pragma warning(disable: 4996) // fopen
 #pragma warning(disable: 4055) // fn ptr void * (enabled on +MSVC 14)
-#pragma warning(disable: 4021) // anon struct/union
+#pragma warning(disable: 4201) // anon struct/union
 #pragma warning(disable: 4054) // typecast from fn ptr
 
 #include <stdio.h>	// FILE *
@@ -248,7 +248,7 @@ typedef struct _TAG_mho_arr_header
 	do																						\
 	{																						\
 		if ((!__array))																		\
-			mho_arr_init((void **)&(__array_), sizeof(*(__array)));							\
+			mho_arr_init((void **)&(__array), sizeof(*(__array)));							\
 		if ((!__array) || (usize)__amount > mho_arr_capacity(__array))						\
 		{																					\
 			*((void **)&(__array)) = mho_arr_resize(__array, sizeof(*(__array)), __amount); \
@@ -712,32 +712,32 @@ mho_filelen(FILE *fp)
 	return len;
 }
 
-void
-mho_memcpy(void *dest,
-		   void *src,
-		   usize n)
-{
-	usize i;
+/* void */
+/* mho_memcpy(void *dest, */
+/* 		   void *src, */
+/* 		   usize n) */
+/* { */
+/* 	usize i; */
 
-	for (i = 0; i < n; i++)
-	{
-		(char *)dest[i] = (char *)src[i];
-	}
-}
+/* 	for (i = 0; i < n; i++) */
+/* 	{ */
+/* 		(char *)dest[i] = (char *)src[i]; */
+/* 	} */
+/* } */
 
-void *
-mho_memset(void *dest,
-		   s32 c,
-		   usize n)
-{
-	u8 uc = (u8)c;
-	usize i;
+/* void * */
+/* mho_memset(void *dest, */
+/* 		   s32 c, */
+/* 		   usize n) */
+/* { */
+/* 	u8 uc = (u8)c; */
+/* 	usize i; */
 
-	for (i = 0; i < n; i++)
-	{
-		dest[i] = c;
-	}
-}
+/* 	for (i = 0; i < n; i++) */
+/* 	{ */
+/* 		(u8 *)dest[i] = c; */
+/* 	} */
+/* } */
 
 void
 mho_strcpy(s8 *dest,
@@ -882,14 +882,15 @@ mho_check_compile_errors(u32 data,
 
 
    #ifdef _glfw3_h_
-void
-mho_framebuffer_size_callback(GLFWwindow *window,
-							  s32 width,
-							  s32 height)
-{
-	glViewport(0, 0, width, height);
-}
+/* void */
+/* mho_framebuffer_size_callback(GLFWwindow *window, */
+/* 							  s32 width, */
+/* 							  s32 height) */
+/* { */
+/* 	glViewport(0, 0, width, height); */
+/* } */
 
+/*
 void
 mho_mouse_callback(GLFWwindow *window,
 				   f64 x_pos,
@@ -909,7 +910,7 @@ mho_mouse_callback(GLFWwindow *window,
 	{
 		last_x = x_pos;
 		last_y = y_pos;
-		first_mouse = false;
+		first_mouse = FALSE;
 	}
 
 	last_x = x_pos;
@@ -933,7 +934,7 @@ mho_mouse_callback(GLFWwindow *window,
 	// assuming a 'camera' is defined globally
 	// camera.front = vec3_normalize(direction);
 }
-
+*/
    #endif // _glfw3_h_
 
   #endif // __glad_h_
