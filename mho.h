@@ -712,32 +712,34 @@ mho_filelen(FILE *fp)
 	return len;
 }
 
-/* void */
-/* mho_memcpy(void *dest, */
-/* 		   void *src, */
-/* 		   usize n) */
-/* { */
-/* 	usize i; */
+void
+mho_memcpy(void *dest,
+		   void *src,
+		   usize n)
+{
+	usize i;
 
-/* 	for (i = 0; i < n; i++) */
-/* 	{ */
-/* 		(char *)dest[i] = (char *)src[i]; */
-/* 	} */
-/* } */
+	for (i = 0; i < n; i++)
+	{
+		((s8 *)dest)[i] = ((s8 *)src)[i];
+	}
+}
 
-/* void * */
-/* mho_memset(void *dest, */
-/* 		   s32 c, */
-/* 		   usize n) */
-/* { */
-/* 	u8 uc = (u8)c; */
-/* 	usize i; */
+void *
+mho_memset(void *dest,
+		   s32 c,
+		   usize n)
+{
+	u8 uc = (u8)c;
+	usize i;
 
-/* 	for (i = 0; i < n; i++) */
-/* 	{ */
-/* 		(u8 *)dest[i] = c; */
-/* 	} */
-/* } */
+	for (i = 0; i < n; i++)
+	{
+		((u8 *)dest)[i] = uc;
+	}
+
+	return dest;
+}
 
 void
 mho_strcpy(s8 *dest,
