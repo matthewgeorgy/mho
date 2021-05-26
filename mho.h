@@ -194,6 +194,10 @@ typedef struct _TAG_mho_arr_header
 #define mho_arr_capacity(__array) \
 	(__array == NULL ? 0 : mho_arr_head(__array)->capacity)
 
+// Returns the length of the array (size * sizeof(type))
+#define mho_arr_len(__array) \
+	(mho_arr_size(__array) * (sizeof(*(__array))))
+
 // Returns whether the array is full
 #define mho_arr_full(__array) \
 	((mho_arr_size(__array)) == (mho_arr_capacity(__array)))
