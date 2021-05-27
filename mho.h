@@ -276,7 +276,7 @@ MHO_EXTERN void			*mho_arr_resize(void *arr, usize sz, usize amt);
 MHO_EXTERN char			*mho_read_file_buffer(const char *filename);
 
 // Returns the length of a file using the FILE * handle
-MHO_EXTERN u64			mho_filelen(FILE *fp);
+MHO_EXTERN s64			mho_filelen(FILE *fp);
 
 MHO_EXTERN void			mho_memcpy(void *dest, void *src, usize n);
 MHO_EXTERN void			*mho_memset(void *dest, s32 c, usize n);
@@ -702,10 +702,10 @@ mho_read_file_buffer(const char *filename)
 	return source;
 }
 
-u64
+s64
 mho_filelen(FILE *fp)
 {
-	u64 	len,
+	s64 	len,
 		  	pos;
 
 	pos = ftell(fp);
