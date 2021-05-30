@@ -105,9 +105,9 @@ typedef s32         b32;
 
 // For C vs. C++ compilation
 #ifdef __cplusplus
-    #define MHO_EXTERN      extern "C"
+    #define MHO_EXTERN  extern "C"
 #else
-    #define MHO_EXTERN      extern
+    #define MHO_EXTERN  extern
 #endif
 
 // TRUE/FALSE
@@ -246,12 +246,12 @@ typedef struct _TAG_mho_arr_header
         }                                                                                   \
     } while (0)
 
-
 // Initializes the array
 MHO_EXTERN void         **mho_arr_init(void *arr, usize val_size);
 
 // Resizes the array
 MHO_EXTERN void         *mho_arr_resize(void *arr, usize sz, usize amt);
+
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -260,7 +260,7 @@ MHO_EXTERN void         *mho_arr_resize(void *arr, usize sz, usize amt);
 //
 
 // Reads a file and writes it into a char * buffer
-MHO_EXTERN char         *mho_read_file_buffer(const char *filename);
+MHO_EXTERN s8           *mho_read_file_buffer(const char *filename);
 
 // Returns the length of a file using the FILE * handle
 MHO_EXTERN s64          mho_filelen(FILE *fp);
@@ -645,20 +645,18 @@ mho_arr_resize(void *arr,
 //////////////////////////////////////////////////////////////////
 // Utils
 
-char *
+s8 *
 mho_read_file_buffer(const char *filename)
 {
     FILE    *fptr;
     s32     file_len,
             ret;
-    char    *source = NULL;
+    s8      *source = NULL;
 
     fptr = fopen(filename, "rb");
     if (fptr)
     {
-        fseek(fptr, 0, SEEK_END);
-        file_len = ftell(fptr);
-        fseek(fptr, 0, SEEK_SET);
+        file_len = mho_filelen(fptr);
         if (file_len != -1)
         {
             source = (char *)malloc(file_len + 1);
@@ -708,7 +706,7 @@ mho_memcpy(void *dest,
            void *src,
            usize n)
 {
-    usize i;
+    usize   i;
 
     for (i = 0; i < n; i++)
     {
@@ -721,8 +719,8 @@ mho_memset(void *dest,
            s32 c,
            usize n)
 {
-    u8 uc = (u8)c;
-    usize i;
+    u8      uc = (u8)c;
+    usize   i;
 
     for (i = 0; i < n; i++)
     {
@@ -747,7 +745,7 @@ mho_strncpy(s8 *dest,
             s8 *src,
             usize n)
 {
-    usize i;
+    usize   i;
 
     for (i = 0; i < n; i++)
     {
@@ -758,12 +756,11 @@ mho_strncpy(s8 *dest,
 usize
 mho_strlen(s8 *str)
 {
-    usize len = 0;
+    usize   len = 0;
 
-    while (*str != '\0')
+    while (*str++ != '\0')
     {
         len++;
-        str++;
     }
 
     return len;
@@ -773,8 +770,11 @@ s8 *
 mho_strcat(s8 *str1,
            s8 *str2)
 {
-    u32 size1, size2, index, i;
-    s8 *new_str;
+    u32     size1,
+            size2,
+            index,
+            i;
+    s8      *new_str;
 
     for (size1 = 0; str1[size1] != '\0'; size1++);
     for (size2 = 0; str2[size2] != '\0'; size2++);
@@ -867,7 +867,7 @@ mho_check_compile_errors(u32 data,
                          const char *filename)
 {
     b32     success;
-    char    info_log[1024];
+    s8      info_log[1024];
 
     if (type == 1) // program
     {
@@ -990,9 +990,6 @@ mho_load_obj_inter(const char *file,
     mho_arr(u32)        vert_inds = NULL;
     mho_arr(u32)        uv_inds = NULL;
     mho_arr(u32)        norm_inds = NULL;
-    data->vertices = NULL;
-    data->normals = NULL;
-    data->uvs = NULL;
 
     fptr = fopen(file, "r");
     if (!fptr)
@@ -1055,6 +1052,10 @@ mho_load_obj_inter(const char *file,
         }
     }
 
+    data->vertices = NULL;
+    data->normals = NULL;
+    data->uvs = NULL;
+
     for (i = 0; i < mho_arr_size(vert_inds); i++)
     {
         u32 v = vert_inds[i];
@@ -1093,7 +1094,7 @@ mho_vec2_t
 mho_vec2_ctor(f32 x,
               f32 y)
 {
-    mho_vec2_t vec;
+    mho_vec2_t  vec;
 
     vec.x = x;
     vec.y = y;
@@ -1147,8 +1148,9 @@ mho_vec2_mag(mho_vec2_t vec)
 mho_vec2_t
 mho_vec2_normalize(mho_vec2_t vec)
 {
-    f32 val = mho_fsqrtinv((vec.x * vec.x) + (vec.y * vec.y));
+    f32     val;
 
+    val = mho_fsqrtinv((vec.x * vec.x) + (vec.y * vec.y));
     vec.x *= val;
     vec.y *= val;
 
@@ -1159,9 +1161,11 @@ mho_vec2_t
 mho_vec2_rotate(mho_vec2_t vec,
                 f32 angle)
 {
-    f32 c = mho_cos(mho_rads(angle));
-    f32 s = mho_sin(mho_rads(angle));
+    f32     c,
+            s;
 
+    c = mho_cos(mho_rads(angle));
+    s = mho_sin(mho_rads(angle));
     vec.x = ((vec.x * c) - (vec.y * s));
     vec.y = ((vec.x * s) + (vec.y * c));
 
@@ -1176,7 +1180,7 @@ mho_vec3_ctor(f32 x,
               f32 y,
               f32 z)
 {
-    mho_vec3_t vec;
+    mho_vec3_t  vec;
 
     vec.x = x;
     vec.y = y;
@@ -1229,7 +1233,7 @@ mho_vec3_t
 mho_vec3_cross(mho_vec3_t v1,
                mho_vec3_t v2)
 {
-    mho_vec3_t cross_prod;
+    mho_vec3_t  cross_prod;
 
     cross_prod.x = (v1.y * v2.z) - (v1.z * v2.y);
     cross_prod.y = (v1.z * v2.x) - (v1.x * v2.z);
@@ -1247,8 +1251,9 @@ mho_vec3_mag(mho_vec3_t vec)
 mho_vec3_t
 mho_vec3_normalize(mho_vec3_t vec)
 {
-    f32 val = mho_fsqrtinv((vec.x * vec.x) + (vec.y * vec.y) + (vec.z * vec.z));
+    f32     val;
 
+    val = mho_fsqrtinv((vec.x * vec.x) + (vec.y * vec.y) + (vec.z * vec.z));
     vec.x *= val;
     vec.y *= val;
     vec.z *= val;
@@ -1262,7 +1267,7 @@ mho_vec3_normalize(mho_vec3_t vec)
 mho_mat4_t
 mho_mat4_identity(void)
 {
-    mho_mat4_t matrix = {0};
+    mho_mat4_t  matrix = {0};
 
     matrix.col1.x = 1.0f;
     matrix.col2.y = 1.0f;
@@ -1277,8 +1282,9 @@ mho_mat4_translate(f32 x,
                    f32 y,
                    f32 z)
 {
-    mho_mat4_t matrix = mho_mat4_identity();
+    mho_mat4_t  matrix;
 
+    matrix = mho_mat4_identity();
     matrix.col4.x = x;
     matrix.col4.y = y;
     matrix.col4.z = z;
@@ -1289,8 +1295,9 @@ mho_mat4_translate(f32 x,
 mho_mat4_t
 mho_mat4_translate_v(mho_vec3_t vec)
 {
-    mho_mat4_t matrix = mho_mat4_identity();
+    mho_mat4_t  matrix;
 
+    matrix = mho_mat4_identity();
     matrix.col4.x = vec.x;
     matrix.col4.y = vec.y;
     matrix.col4.z = vec.z;
@@ -1311,7 +1318,8 @@ mho_mat4_translate_remove(mho_mat4_t matrix)
 void
 mho_mat4_print(mho_mat4_t matrix)
 {
-    u8 i, j;
+    u8  i,
+        j;
 
     for (i = 0; i < 4; i++)
     {
@@ -1329,13 +1337,17 @@ mho_mat4_rotate(f32 angle,
                 f32 y,
                 f32 z)
 {
-    mho_vec3_t vec = {x, y, z};
-    f32 c = mho_cos(mho_rads(angle));
-    f32 s = mho_sin(mho_rads(angle));
-    f32 c1 = 1.0f - c;
-    mho_mat4_t matrix = {0};
+    f32         c,
+                s,
+                c1;
+    mho_vec3_t  vec = {x, y, z};
+    mho_mat4_t  matrix = {0};
 
+    c = mho_cos(mho_rads(angle));
+    s = mho_sin(mho_rads(angle));
+    c1 = 1.0f - c;
     vec = mho_vec3_normalize(vec);
+
     matrix.col1.x = (c1 * vec.x * vec.x) + c;
     matrix.col1.y = (c1 * vec.x * vec.y) + s * vec.z;
     matrix.col1.z = (c1 * vec.x * vec.z) - s * vec.y;
@@ -1357,12 +1369,17 @@ mho_mat4_t
 mho_mat4_rotate_v(f32 angle,
                   mho_vec3_t vec)
 {
-    f32 c = mho_cos(mho_rads(angle));
-    f32 s = mho_sin(mho_rads(angle));
-    f32 c1 = 1.0f - c;
-    mho_mat4_t matrix = {0};
 
+    f32         c,
+                s,
+                c1;
+    mho_mat4_t  matrix = {0};
+
+    c = mho_cos(mho_rads(angle));
+    s = mho_sin(mho_rads(angle));
+    c1 = 1.0f - c;
     vec = mho_vec3_normalize(vec);
+
     matrix.col1.x = (c1 * vec.x * vec.x) + c;
     matrix.col1.y = (c1 * vec.x * vec.y) + s * vec.z;
     matrix.col1.z = (c1 * vec.x * vec.z) - s * vec.y;
@@ -1386,9 +1403,12 @@ mho_mat4_perspective(f32 fov,
                      f32 near,
                      f32 far)
 {
-    f32 t = mho_tan(mho_rads(fov) / 2.0f);
-    f32 fdelta = far - near;
-    mho_mat4_t matrix = {0};
+    f32         t,
+                fdelta;
+    mho_mat4_t  matrix = {0};
+
+    t = mho_tan(mho_rads(fov) / 2.0f);
+    fdelta = far - near;
 
     matrix.col1.x = 1 / (aspect_ratio * t);
 
@@ -1407,8 +1427,10 @@ mho_mat4_lookat(mho_vec3_t eye,
                 mho_vec3_t center,
                 mho_vec3_t up)
 {
-    mho_mat4_t matrix;
-    mho_vec3_t f, s, u;
+    mho_mat4_t  matrix;
+    mho_vec3_t  f,
+                s,
+                u;
 
     f = mho_vec3_normalize(mho_vec3_sub(center, eye));
     s = mho_vec3_normalize(mho_vec3_cross(f, up));
@@ -1440,7 +1462,7 @@ mho_mat4_lookat(mho_vec3_t eye,
 mho_mat4_t
 mho_mat4_scale(f32 scale_value)
 {
-    mho_mat4_t matrix = {0};
+    mho_mat4_t  matrix = {0};
 
     matrix.col1.x = scale_value;
     matrix.col2.y = scale_value;
@@ -1454,9 +1476,11 @@ mho_mat4_t
 mho_mat4_mult(mho_mat4_t m1,
               mho_mat4_t m2)
 {
-    mho_mat4_t res;
-    u8 y, x, e;
-    f32 sum;
+    mho_mat4_t  res;
+    u8          y,
+                x,
+                e;
+    f32         sum;
 
     for (y = 0; y < 4; y++)
     {
@@ -1516,8 +1540,9 @@ mho_randnd(u32 index)
 f32
 mho_fsqrt(f32 number)
 {
-    f32 x, y;
-    s32 i;
+    f32     x,
+            y;
+    s32     i;
 
     x = number * 0.5f;
     y = number;
@@ -1533,8 +1558,9 @@ mho_fsqrt(f32 number)
 f32
 mho_fsqrtinv(f32 number)
 {
-    f32 x, y;
-    s32 i;
+    f32     x,
+            y;
+    s32     i;
 
     x = number * 0.5f;
     y = number;
