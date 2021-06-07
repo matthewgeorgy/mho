@@ -1,7 +1,7 @@
 // mho is a general utility library, consisting of C functions that can be
 // useful for any type of development. It's a single header library, so all
 // that's required is to include it in your project directory and #define
-// an implementation symbol.
+// the implementation symbol.
 //
 // mho should ideally be the last file that is #included in your project, as
 // it contains some definitions (ie, TRUE/FALSE) that other libraries should
@@ -11,15 +11,16 @@
 #ifndef MHO_H
 #define MHO_H
 
-// TODO: we're going to start moving over all of the library functionality we
-// currently have (mho_array/shader/etc, mmath, mho_mem, etc) into one big
-// library here - mho.h
-//
-// TODO: Fix and implement mho_obj
-// TODO: implement these C stdlib fn's
+// TODO: Fix and implement mho_obj.
+// TODO: Implement these C stdlib fn's.
+
+// TODO: See if we can prefix the typedef names with 'mho_' in case a file is
+// already included whose names collide.
+// TODO: Add mho_arr_shrink/compact().
+// TODO: Add MHO_ARR_INC_SIZE macro to resize array by a given size.
 ///////////////////////////////////////////////////////////////////////////////
 //
-//      INCLUDES
+//      Includes
 //
 
 #pragma warning(disable: 4996) // fopen
@@ -122,7 +123,7 @@ typedef s32         b32;
 #if defined(_WIN32) || defined(_WIN64)
     #define __FILENAME__    (strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__)
 #else
-    #define __FILENAME__    (strrchr(__FILE__, '/ ') ? strrchr(__FILE__, '/') + 1 : __FILE__)
+    #define __FILENAME__    (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 #endif
 
 
@@ -260,7 +261,7 @@ MHO_EXTERN void         *mho_arr_resize(void *arr, usize sz, usize amt);
 //
 
 // Reads a file and writes it into a char * buffer
-MHO_EXTERN s8           *mho_read_file_buffer(const char *filename);
+MHO_EXTERN char           *mho_read_file_buffer(const char *filename);
 
 // Returns the length of a file using the FILE * handle
 MHO_EXTERN s64          mho_filelen(FILE *fp);
@@ -645,13 +646,13 @@ mho_arr_resize(void *arr,
 //////////////////////////////////////////////////////////////////
 // Utils
 
-s8 *
+char *
 mho_read_file_buffer(const char *filename)
 {
     FILE    *fptr;
     s32     file_len,
             ret;
-    s8      *source = NULL;
+    char      *source = NULL;
 
     fptr = fopen(filename, "rb");
     if (fptr)
@@ -867,7 +868,7 @@ mho_check_compile_errors(u32 data,
                          const char *filename)
 {
     b32     success;
-    s8      info_log[1024];
+    char    info_log[1024];
 
     if (type == 1) // program
     {
