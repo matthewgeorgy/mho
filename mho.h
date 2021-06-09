@@ -13,7 +13,6 @@
 
 // TODO: Fix and implement mho_obj.
 // TODO: Implement these C stdlib fn's.
-
 // TODO: See if we can prefix the typedef names with 'mho_' in case a file is
 // already included whose names collide.
 // TODO: Add mho_arr_shrink/compact().
@@ -162,8 +161,8 @@ typedef s32         b32;
 
 typedef struct _TAG_mho_arr_header
 {
-    u32 size;       // number of elements in array containing data
-    u32 capacity;   // total number of elements
+    u32     size;       // Number of elements in array containing data
+    u32     capacity;   // Total number of elements
 } mho_arr_header_t;
 
 // Wrapper macro
@@ -248,10 +247,10 @@ typedef struct _TAG_mho_arr_header
     } while (0)
 
 // Initializes the array
-MHO_EXTERN void         **mho_arr_init(void *arr, usize val_size);
+MHO_EXTERN void     **mho_arr_init(void *arr, usize val_size);
 
 // Resizes the array
-MHO_EXTERN void         *mho_arr_resize(void *arr, usize sz, usize amt);
+MHO_EXTERN void     *mho_arr_resize(void *arr, usize sz, usize amt);
 
 
 
@@ -261,20 +260,20 @@ MHO_EXTERN void         *mho_arr_resize(void *arr, usize sz, usize amt);
 //
 
 // Reads a file and writes it into a char * buffer
-MHO_EXTERN char           *mho_read_file_buffer(const char *filename);
+MHO_EXTERN char     *mho_read_file_buffer(const char *filename);
 
 // Returns the length of a file using the FILE * handle
-MHO_EXTERN s64          mho_filelen(FILE *fp);
+MHO_EXTERN s64      mho_filelen(FILE *fp);
 
-MHO_EXTERN void         mho_memcpy(void *dest, void *src, usize n);
-MHO_EXTERN void         *mho_memset(void *dest, s32 c, usize n);
-MHO_EXTERN void         mho_strcpy(s8 *dest, s8 *src);
-MHO_EXTERN void         mho_strncpy(s8 *dest, s8 *src, usize n);
-MHO_EXTERN usize        mho_strlen(s8 *str);
-MHO_EXTERN s8           *mho_strcat(s8 *str1, s8 *str2);
+MHO_EXTERN void     mho_memcpy(void *dest, void *src, usize n);
+MHO_EXTERN void     *mho_memset(void *dest, s32 c, usize n);
+MHO_EXTERN void     mho_strcpy(s8 *dest, s8 *src);
+MHO_EXTERN void     mho_strncpy(s8 *dest, s8 *src, usize n);
+MHO_EXTERN usize    mho_strlen(s8 *str);
+MHO_EXTERN s8       *mho_strcat(s8 *str1, s8 *str2);
 
-MHO_EXTERN s32          mho_strcmp(s8 *dest, s8 *src);
-MHO_EXTERN s32          mho_strncmp(s8 *dest, s8 *src, usize n);
+MHO_EXTERN s32      mho_strcmp(s8 *dest, s8 *src);
+MHO_EXTERN s32      mho_strncmp(s8 *dest, s8 *src, usize n);
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -305,42 +304,42 @@ typedef struct _TAG_mho_vec2
     {
         struct
         {
-            f32 x,
-                y;
+            f32     x,
+                    y;
         };
-        f32 elements[2];
+        f32         elements[2];
     };
 } mho_vec2_t;
 
 // Constructs a 2D vector given x, y components
-MHO_EXTERN mho_vec2_t   mho_vec2_ctor(f32 x, f32 y);
+MHO_EXTERN mho_vec2_t       mho_vec2_ctor(f32 x, f32 y);
 
 // Computes the sum of two 2D vectors
 // (v1 + v2)
-MHO_EXTERN mho_vec2_t   mho_vec2_add(mho_vec2_t v1, mho_vec2_t v2);
+MHO_EXTERN mho_vec2_t       mho_vec2_add(mho_vec2_t v1, mho_vec2_t v2);
 
 // Computes the difference of two 2D vectors
 // (v1 - v2)
-MHO_EXTERN mho_vec2_t   mho_vec2_sub(mho_vec2_t v1, mho_vec2_t v2);
+MHO_EXTERN mho_vec2_t       mho_vec2_sub(mho_vec2_t v1, mho_vec2_t v2);
 
 // Computes a 2D vector multiplied by a scalar
 // (vec * scalar)
-MHO_EXTERN mho_vec2_t   mho_vec2_scal(mho_vec2_t vec, f32 scalar);
+MHO_EXTERN mho_vec2_t       mho_vec2_scal(mho_vec2_t vec, f32 scalar);
 
 // Computes the dot product of two 2D vectors
 // (v1 . v2)
-MHO_EXTERN f32          mho_vec2_dot(mho_vec2_t v1, mho_vec2_t v2);
+MHO_EXTERN f32              mho_vec2_dot(mho_vec2_t v1, mho_vec2_t v2);
 
 // Computes the magnitude (norm) of a 2D vector
 // (||vec||)
-MHO_EXTERN f32          mho_vec2_mag(mho_vec2_t vec);
+MHO_EXTERN f32              mho_vec2_mag(mho_vec2_t vec);
 
 // Normalizes a given 2D vector
 // (vec * (1 / ||vec||))
-MHO_EXTERN mho_vec2_t   mho_vec2_normalize(mho_vec2_t vec);
+MHO_EXTERN mho_vec2_t       mho_vec2_normalize(mho_vec2_t vec);
 
 // Computes a 2D vector rotated by an angle in degrees
-MHO_EXTERN mho_vec2_t   mho_vec2_rotate(mho_vec2_t vec, f32 angle);
+MHO_EXTERN mho_vec2_t       mho_vec2_rotate(mho_vec2_t vec, f32 angle);
 
 /* ============================ *
  * =====     Vector3D     ===== *
@@ -353,44 +352,44 @@ typedef struct _TAG_mho_vec3
     {
         struct
         {
-            f32 x,
-                y,
-                z;
+            f32     x,
+                    y,
+                    z;
         };
-        f32 elements[3];
+        f32         elements[3];
     };
 } mho_vec3_t;
 
 // Constructs a 3D vector given x, y, z components
-MHO_EXTERN mho_vec3_t   mho_vec3_ctor(f32 x, f32 y, f32 z);
+MHO_EXTERN mho_vec3_t       mho_vec3_ctor(f32 x, f32 y, f32 z);
 
 // Computes the sum of two 3D vectors
 // (v1 + v2)
-MHO_EXTERN mho_vec3_t   mho_vec3_add(mho_vec3_t v1, mho_vec3_t v2);
+MHO_EXTERN mho_vec3_t       mho_vec3_add(mho_vec3_t v1, mho_vec3_t v2);
 
 // Computes the difference of two 3D vectors
 // (v1 - v2)
-MHO_EXTERN mho_vec3_t   mho_vec3_sub(mho_vec3_t v1, mho_vec3_t v2);
+MHO_EXTERN mho_vec3_t       mho_vec3_sub(mho_vec3_t v1, mho_vec3_t v2);
 
 // Computes a 3D vector multipled by a scalar
 // (vec * scalar)
-MHO_EXTERN mho_vec3_t   mho_vec3_scal(mho_vec3_t vec, f32 scalar);
+MHO_EXTERN mho_vec3_t       mho_vec3_scal(mho_vec3_t vec, f32 scalar);
 
 // Computes the dot product of two 3D vectors
 // (v1 . v2)
-MHO_EXTERN f32          mho_vec3_dot(mho_vec3_t v1, mho_vec3_t v2);
+MHO_EXTERN f32              mho_vec3_dot(mho_vec3_t v1, mho_vec3_t v2);
 
 // Computes the cross product of two 3D vectors
 // (v1 x v2)
-MHO_EXTERN mho_vec3_t   mho_vec3_cross(mho_vec3_t v1, mho_vec3_t v2);
+MHO_EXTERN mho_vec3_t       mho_vec3_cross(mho_vec3_t v1, mho_vec3_t v2);
 
 // Computes the magnitude (norm) of a 3D vector
 // (||vec||)
-MHO_EXTERN f32          mho_vec3_mag(mho_vec3_t vec);
+MHO_EXTERN f32              mho_vec3_mag(mho_vec3_t vec);
 
 // Normalizes a given 3D vector
 // (vec * (1 / ||vec||))
-MHO_EXTERN mho_vec3_t   mho_vec3_normalize(mho_vec3_t vec);
+MHO_EXTERN mho_vec3_t       mho_vec3_normalize(mho_vec3_t vec);
 
 /* ============================ *
  * =====     Vector4D     ===== *
@@ -403,12 +402,12 @@ typedef struct _TAG_mho_vec4
     {
         struct
         {
-            f32 x,
-                y,
-                z,
-                w;
+            f32     x,
+                    y,
+                    z,
+                    w;
         };
-        f32 elements[4];
+        f32         elements[4];
     };
 } mho_vec4_t;
 
@@ -423,74 +422,74 @@ typedef struct _TAG_mho_mat4
     {
         struct
         {
-            mho_vec4_t  col1,
-                        col2,
-                        col3,
-                        col4;
+            mho_vec4_t      col1,
+                            col2,
+                            col3,
+                            col4;
         };
-        f32 elements[16];
+        f32                 elements[16];
     };
 } mho_mat4_t;
 
 // Returns a 4x4 identity matrix
-MHO_EXTERN mho_mat4_t   mho_mat4_identity(void);
+MHO_EXTERN mho_mat4_t       mho_mat4_identity(void);
 
 // Returns a 4x4 translation matrix given x, y, z components
-MHO_EXTERN mho_mat4_t   mho_mat4_translate(f32 x, f32 y, f32 z);
+MHO_EXTERN mho_mat4_t       mho_mat4_translate(f32 x, f32 y, f32 z);
 
 // Returns a 4x4 translation matrix given a 3D vector
-MHO_EXTERN mho_mat4_t   mho_mat4_translate_v(mho_vec3_t vec);
+MHO_EXTERN mho_mat4_t       mho_mat4_translate_v(mho_vec3_t vec);
 
 // Removes the "translation" component from a 4x4 matrix
 // (col4.xyz ---> 0)
-MHO_EXTERN mho_mat4_t   mho_mat4_translate_remove(mho_mat4_t matrix);
+MHO_EXTERN mho_mat4_t       mho_mat4_translate_remove(mho_mat4_t matrix);
 
 // Prints the given 4x4 matrix to stdout
-MHO_EXTERN void         mho_mat4_print(mho_mat4_t matrix);
+MHO_EXTERN void             mho_mat4_print(mho_mat4_t matrix);
 
 // Returns a 4x4 rotation matrix given an angle in degrees and x, y, z components
-MHO_EXTERN mho_mat4_t   mho_mat4_rotate(f32 angle, f32 x, f32 y, f32 z);
+MHO_EXTERN mho_mat4_t       mho_mat4_rotate(f32 angle, f32 x, f32 y, f32 z);
 
 // Returns a 4x4 rotation matrix given an angle in degrees and 3D vector
-MHO_EXTERN mho_mat4_t   mho_mat4_rotate_v(f32 angle, mho_vec3_t vec);
+MHO_EXTERN mho_mat4_t       mho_mat4_rotate_v(f32 angle, mho_vec3_t vec);
 
 // Returns a 4x4 perspective matrix given an FOV, aspect ratio, and
 // near/far plane distance values
-MHO_EXTERN mho_mat4_t   mho_mat4_perspective(f32 fov, f32 aspect_ratio, f32 near, f32 far);
+MHO_EXTERN mho_mat4_t       mho_mat4_perspective(f32 fov, f32 aspect_ratio, f32 near, f32 far);
 
 // Returns a 4x4 lookat matrix given an eye, center, and up 3D vector
-MHO_EXTERN mho_mat4_t   mho_mat4_lookat(mho_vec3_t eye, mho_vec3_t center, mho_vec3_t up);
+MHO_EXTERN mho_mat4_t       mho_mat4_lookat(mho_vec3_t eye, mho_vec3_t center, mho_vec3_t up);
 
 // Returns a 4x4 scale matrix given a scale factor/value
-MHO_EXTERN mho_mat4_t   mho_mat4_scale(f32 scale_value);
+MHO_EXTERN mho_mat4_t       mho_mat4_scale(f32 scale_value);
 
 // Computes the product of two 4x4 matrices
-MHO_EXTERN mho_mat4_t   mho_mat4_mult(mho_mat4_t m1, mho_mat4_t m2);
+MHO_EXTERN mho_mat4_t       mho_mat4_mult(mho_mat4_t m1, mho_mat4_t m2);
 
 /* ============================ *
  * =====       Misc       ===== *
  * ============================ */
 
 // Pseudo RNG for unsigned 32bit ints
-MHO_EXTERN u32          mho_randui(u32 index);
+MHO_EXTERN u32      mho_randui(u32 index);
 
 // Pseudo RNG for 32bit floats (ranged 0 to 1)
-MHO_EXTERN f32          mho_randf(u32 index);
+MHO_EXTERN f32      mho_randf(u32 index);
 
 // Pseudo RNG for 64bit floats (ranged 0 to 1)
-MHO_EXTERN f64          mho_randd(u32 index);
+MHO_EXTERN f64      mho_randd(u32 index);
 
 // Pseudo RNG for 32bit floats (ranged -1 to 1)
-MHO_EXTERN f32          mho_randnf(u32 index);
+MHO_EXTERN f32      mho_randnf(u32 index);
 
 // Pseudo RNG for 64bit floats (ranged -1 to 1)
-MHO_EXTERN f64          mho_randnd(u32 index);
+MHO_EXTERN f64      mho_randnd(u32 index);
 
 // Quake III square root
-MHO_EXTERN f32          mho_fsqrt(f32 number);
+MHO_EXTERN f32      mho_fsqrt(f32 number);
 
 // Quake III inverse square root
-MHO_EXTERN f32          mho_fsqrtinv(f32 number);
+MHO_EXTERN f32      mho_fsqrtinv(f32 number);
 
 
 
@@ -500,38 +499,38 @@ MHO_EXTERN f32          mho_fsqrtinv(f32 number);
 //
 
 // Builds a GLSL shader program using a vertex + fragment source
-MHO_EXTERN u32          mho_load_shader_vf(const char *vs_path, const char *fs_path);
+MHO_EXTERN u32      mho_load_shader_vf(const char *vs_path, const char *fs_path);
 
 // Builds a GLSL shader program using a compute source
-MHO_EXTERN u32          mho_load_shader_comp(const char *cs_path);
+MHO_EXTERN u32      mho_load_shader_comp(const char *cs_path);
 
 // Checks for any compile errors in a given GLSL shader program or source
-MHO_EXTERN void         mho_check_compile_errors(u32 data, u8 type, const char *filename);
+MHO_EXTERN void     mho_check_compile_errors(u32 data, u8 type, const char *filename);
 
  #ifdef _glfw3_h_
 // Default framebuffer resize callback function for OpenGL + GLFW
-MHO_EXTERN void         mho_framebuffer_size_callback(GLFWwindow *window, s32 width, s32 height);
+MHO_EXTERN void     mho_framebuffer_size_callback(GLFWwindow *window, s32 width, s32 height);
 
 // Default mouse callback function for OpenGL + GLFW
-MHO_EXTERN void         mho_mouse_callback(GLFWwindow *window, f64 x_pos, f64 y_pos);
+MHO_EXTERN void     mho_mouse_callback(GLFWwindow *window, f64 x_pos, f64 y_pos);
 
  #endif
 
 // Obj Data Structure
 typedef struct _TAG_mho_obj_data
 {
-    mho_arr(mho_vec3_t) vertices;
-    mho_arr(mho_vec3_t) normals;
-    mho_arr(mho_vec2_t) uvs;
-    mho_arr(u32) indices;
-    b32 interleaved;
+    mho_arr(mho_vec3_t)     vertices;
+    mho_arr(mho_vec3_t)     normals;
+    mho_arr(mho_vec2_t)     uvs;
+    mho_arr(u32)            indices;
+    b32                     interleaved;
 } mho_obj_data_t;
 
-MHO_EXTERN b32          mho_load_obj(const char *file, mho_obj_data_t *data, b32 interleaved);
+MHO_EXTERN b32      mho_load_obj(const char *file, mho_obj_data_t *data, b32 interleaved);
 
-MHO_EXTERN b32          mho_load_obj_inter(const char *file, mho_obj_data_t *data);
+MHO_EXTERN b32      mho_load_obj_inter(const char *file, mho_obj_data_t *data);
 
-MHO_EXTERN b32          mho_load_obj_index(const char *file, mho_obj_data_t *data);
+MHO_EXTERN b32      mho_load_obj_index(const char *file, mho_obj_data_t *data);
 
 
 
@@ -543,30 +542,30 @@ MHO_EXTERN b32          mho_load_obj_index(const char *file, mho_obj_data_t *dat
 // Record structure for storing memory information
 typedef struct _TAG_mho_mem_rec
 {
-    void    *ptr;
-    char    *file,
-            *df_file;
-    int     line,
-            df_line,
-            size;
-    byte    flags;
-    struct  _TAG_mho_mem_rec *next;
+    void        *ptr;
+    char        *file,
+                *df_file;
+    int         line,
+                df_line,
+                size;
+    byte        flags;
+    struct      _TAG_mho_mem_rec *next;
 } mho_mem_rec_t;
 
 // Custom malloc impl for debugging
-MHO_EXTERN void         *mho_mem_malloc(size_t size, const char *file, int line);
+MHO_EXTERN void     *mho_mem_malloc(size_t size, const char *file, int line);
 
-// Custom free imp    l for debugging
-MHO_EXTERN void         mho_mem_free(void *buffer, const char *file, int line);
+// Custom free impl for debugging
+MHO_EXTERN void     mho_mem_free(void *buffer, const char *file, int line);
 
-// Prints a memory         debugging report to a specified stream
-MHO_EXTERN void         mho_mem_print(FILE *stream);
+// Prints a memory debugging report to a specified stream
+MHO_EXTERN void     mho_mem_print(FILE *stream);
 
-// Adds a new memo        ry record to the debug list
-MHO_EXTERN void         mho_mem_rec_append(void *ptr, const char *file, int line, int size);
+// Adds a new memory record to the debug list
+MHO_EXTERN void     mho_mem_rec_append(void *ptr, const char *file, int line, int size);
 
-// Verifies memory         integrity of list (searches for over/underruns)
-MHO_EXTERN void         mho_mem_debug_memory();
+// Verifies memory integrity of list (searches for over/underruns)
+MHO_EXTERN void     mho_mem_debug_memory();
 
 
 
@@ -652,7 +651,7 @@ mho_read_file_buffer(const char *filename)
     FILE    *fptr;
     s32     file_len,
             ret;
-    char      *source = NULL;
+    char    *source = NULL;
 
     fptr = fopen(filename, "rb");
     if (fptr)
@@ -976,9 +975,6 @@ mho_load_obj_inter(const char *file,
                    mho_obj_data_t *data)
 {
     FILE                *fptr;
-    s8                  token[128];
-    s32                 res,
-                        num_vals;
     u32                 vert_idx[3],
                         uv_idx[3],
                         norm_idx[3],
@@ -1002,8 +998,10 @@ mho_load_obj_inter(const char *file,
 
     for (;;)
     {
-        res = fscanf(fptr, "%s", token);
+        s8 token[128];
+        s32 res;
 
+        res = fscanf(fptr, "%s", token);
         if (res == EOF)
             break;
 
@@ -1023,11 +1021,11 @@ mho_load_obj_inter(const char *file,
             }
             else if (token[1] == 'f')
             {
-                num_vals = fscanf(fptr, "%d/%d/%d", &vert_idx[0], &uv_idx[0], &norm_idx[0]);
-                num_vals += fscanf(fptr, "%d/%d/%d", &vert_idx[1], &uv_idx[1], &norm_idx[1]);
-                num_vals += fscanf(fptr, "%d/%d/%d", &vert_idx[2], &uv_idx[2], &norm_idx[2]);
+                res = fscanf(fptr, "%d/%d/%d", &vert_idx[0], &uv_idx[0], &norm_idx[0]);
+                res += fscanf(fptr, "%d/%d/%d", &vert_idx[1], &uv_idx[1], &norm_idx[1]);
+                res += fscanf(fptr, "%d/%d/%d", &vert_idx[2], &uv_idx[2], &norm_idx[2]);
 
-                if (num_vals != 9)
+                if (res != 9)
                 {
                     printf("File is incompatible with mho_obj!: %s\n", file);
                     fclose(fptr);
@@ -1547,7 +1545,7 @@ mho_fsqrt(f32 number)
 
     x = number * 0.5f;
     y = number;
-    i = *(s32 *)&y;             // evil floating point bit hack
+    i = *(s32 *)&y;                 // evil floating point bit hack
     i = 0x5F3759DF - (i >> 1);      // what the fuck?
     y = *(f32 *)&i;
     y = y * (1.5f - (x * y * y));   // 1st iteration
@@ -1565,7 +1563,7 @@ mho_fsqrtinv(f32 number)
 
     x = number * 0.5f;
     y = number;
-    i = *(s32 *)&y;             // evil floating point bit hack
+    i = *(s32 *)&y;                 // evil floating point bit hack
     i = 0x5F3759DF - (i >> 1);      // what the fuck?
     y = *(f32 *)&i;
     y = y * (1.5f - (x * y * y));   // 1st iteration
@@ -1866,3 +1864,4 @@ mho_mem_print(FILE *stream)
 #pragma warning(default: 4054) // typecast from fn ptr
 
 #endif // MHO_H
+
