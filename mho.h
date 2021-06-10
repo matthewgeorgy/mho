@@ -15,9 +15,7 @@
 // TODO: Implement these C stdlib fn's.
 // TODO: See if we can prefix the typedef names with 'mho_' in case a file is
 // already included whose names collide.
-// TODO: Add mho_arr_shrink/compact().
 // TODO: Add MHO_ARR_INC_SIZE macro to resize array by a given size.
-// TODO: Add vec4 functions.
 ///////////////////////////////////////////////////////////////////////////////
 //
 //		Includes
@@ -246,6 +244,10 @@ typedef struct _TAG_mho_arr_header
 			*((void **)&(__array)) = mho_arr_resize(__array, sizeof(*(__array)), __amount); \
 		}																					\
 	} while (0)
+
+// Shrinks array such that capacity = size (no excess memory usage for unused elements)
+#define mho_arr_shrink(__array) \
+	*((void **)&(__array)) = mho_arr_resize(__array, sizeof(*(__array)), mho_arr_size(__array));
 
 // Initializes the array
 MHO_EXTERN void		**mho_arr_init(void *arr, usize val_size);
