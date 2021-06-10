@@ -17,6 +17,7 @@
 // already included whose names collide.
 // TODO: Add mho_arr_shrink/compact().
 // TODO: Add MHO_ARR_INC_SIZE macro to resize array by a given size.
+// TODO: Add vec4 functions.
 ///////////////////////////////////////////////////////////////////////////////
 //
 //      Includes
@@ -207,7 +208,7 @@ typedef struct _TAG_mho_arr_header
 
 // Grows the array by a given size
 #define mho_arr_grow_size(__array, __sz) \
-    mho_arr_resize((__array), __sz, mho_arr_capacity(__array) ? mho_arr_capacity(__array) * 2 : 1)
+    mho_arr_resize((__array), sizeof(*(__array)), mho_arr_capacity(__array) ? mho_arr_capacity(__array) + (__sz) : 1)
 
 // Pushes data to the back of the array
 #define mho_arr_push(__array, __data)                                       \
