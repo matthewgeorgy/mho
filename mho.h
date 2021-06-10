@@ -1955,6 +1955,14 @@ mho_mem_print(FILE *stream)
 	#define vec3_mag					mho_vec3_mag
 	#define vec3_normalize				mho_vec3_normalize
 
+	#define vec4_ctor					mho_vec4_ctor
+	#define vec4_add					mho_vec4_add
+	#define vec4_sub					mho_vec4_sub
+	#define vec4_scal					mho_vec4_scal
+	#define vec4_dot					mho_vec4_dot
+	#define vec4_mag					mho_vec4_mag
+	#define vec4_normalize				mho_vec4_normalize
+
 	#define mat4_identity				mho_mat4_identity
 	#define mat4_translate				mho_mat4_translate
 	#define mat4_translate_v			mho_mat4_translate_v
