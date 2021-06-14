@@ -11,11 +11,15 @@
 #ifndef MHO_H
 #define MHO_H
 
+// TODO: Implement quaternion and VQS structures + functions.
+// TODO: Add MHO_ARR_INC_SIZE macro to resize array by a given size.
 // TODO: Fix and implement mho_obj.
 // TODO: Implement these C stdlib fn's.
+// TODO: Reimplement memory debugging using the dynamic array instead of linked
+// 		 list.
 // TODO: See if we can prefix the typedef names with 'mho_' in case a file is
-// already included whose names collide.
-// TODO: Add MHO_ARR_INC_SIZE macro to resize array by a given size.
+// 		 already included whose names collide.
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //		Includes
@@ -248,6 +252,33 @@ typedef struct _TAG_mho_arr_header
 // Shrinks array such that capacity = size (no excess memory usage for unused elements)
 #define mho_arr_shrink(__array) \
 	*((void **)&(__array)) = mho_arr_resize(__array, sizeof(*(__array)), mho_arr_size(__array));
+
+// Inserts data into the array at the specified position (0 indexing)
+#define mho_arr_insert(__array, __val, __pos) 							\
+	do 																	\
+	{ 																	\
+		u32 __i; 														\
+		if ((mho_arr_need_grow(__array, 1))) 							\
+			*((void **)&(__array)) = mho_arr_grow_size(__array, 1); 	\
+		for (__i = mho_arr_size(__array) - 1; __i >= (__pos); __i--) 	\
+		{ 																\
+			(__array)[__i + 1] = (__array)[__i]; 						\
+		} 																\
+		(__array)[(__pos)] = (__val); 									\
+		mho_arr_head(__array)->size++; 									\
+	} while (0);
+
+// Removes data from the array at the specified position and realigns elements
+#define mho_arr_remove(__array, __pos) \
+	do \
+	{ \
+		u32 __i; \
+		for (__i = (__pos); __i < mho_arr_size(__array); __i++) \
+		{ \
+			(__array)[__i] = (__array)[__i + 1]; \
+		} \
+		mho_arr_head(__array)->size--; \
+	} while (0);
 
 // Initializes the array
 MHO_EXTERN void		**mho_arr_init(void *arr, usize val_size);
@@ -495,6 +526,38 @@ MHO_EXTERN mho_mat4_t		mho_mat4_scale(f32 scale_value);
 
 // Computes the product of two 4x4 matrices
 MHO_EXTERN mho_mat4_t		mho_mat4_mult(mho_mat4_t m1, mho_mat4_t m2);
+
+/* ============================ *
+ * =====    Quaternion    ===== *
+ * ============================ */
+
+// Definition of a quaternion
+typedef struct _TAG_quat
+{
+	union
+	{
+		struct
+		{
+			f32		w,
+					i,
+					j,
+					k;
+		};
+		f32			elements[4];
+	};
+} mho_quat_t;
+
+/* ============================ *
+ * =====        VQS       ===== *
+ * ============================ */
+
+// Definition of a VQS structure
+typedef struct _TAG_vqs
+{
+	mho_vec3_t		pos;
+	mho_quat_t		rotate;
+	mho_vec3_t		scale;
+} mho_vqs_t;
 
 /* ============================ *
  * =====	   Misc		  ===== *
@@ -1876,7 +1939,7 @@ mho_mem_print(FILE *stream)
 	fprintf(stream, "=========================================================\n");
 	fprintf(stream, "Total Mallocs: %d\n", mho_mem_malloc_cnt);
 	fprintf(stream, "Total Frees:	%d\n", mho_mem_free_cnt);
-	fprintf(stream, "Total Size:	%d bytes\n\n", mho_mem_total_alloc);
+	fprintf(stream, "Total Size:	%zu bytes\n\n", mho_mem_total_alloc);
 
 	// Print out all debug-related info
 	temp = mho_mem_alloc_head;
