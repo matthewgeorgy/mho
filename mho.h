@@ -12,7 +12,7 @@
 #define MHO_H
 
 // TODO: Implement quaternion and VQS structures + functions.
-// TODO: Add MHO_ARR_INC_SIZE macro to resize array by a given size.
+// TODO: Add MHO_ARR_INCSZ macro to resize array by a given size.
 // TODO: Fix and implement mho_obj.
 // TODO: Implement these C stdlib fn's.
 // TODO: Reimplement memory debugging using the dynamic array instead of linked
@@ -204,7 +204,7 @@ typedef struct _TAG_mho_arr_header
 #define mho_arr_need_grow(__array, __n) \
 	((__array) == 0 || mho_arr_size(__array) + (__n) > mho_arr_capacity(__array))
 
-// Grows the array (doubles in size)
+// Grows the array (doubles in size or increases by MHO_ARR_INCSZ increments)
 #define mho_arr_grow(__array) \
 	mho_arr_resize((__array), sizeof(*(__array)), mho_arr_capacity(__array) ? mho_arr_capacity(__array) * 2 : 1)
 
@@ -245,7 +245,7 @@ typedef struct _TAG_mho_arr_header
 			mho_arr_init((void **)&(__array), sizeof(*(__array)));							\
 		if ((!__array) || (usize)__amount > mho_arr_capacity(__array))						\
 		{																					\
-			*((void **)&(__array)) = mho_arr_resize(__array, sizeof(*(__array)), __amount); \
+			*((void **)&(__array)) = mho_arr_resize(__array, sizeof(*(__array)), __amount);	\
 		}																					\
 	} while (0)
 
@@ -269,15 +269,15 @@ typedef struct _TAG_mho_arr_header
 	} while (0);
 
 // Removes data from the array at the specified position and realigns elements
-#define mho_arr_remove(__array, __pos) \
-	do \
-	{ \
-		u32 __i; \
-		for (__i = (__pos); __i < mho_arr_size(__array); __i++) \
-		{ \
-			(__array)[__i] = (__array)[__i + 1]; \
-		} \
-		mho_arr_head(__array)->size--; \
+#define mho_arr_remove(__array, __pos) 								\
+	do 																\
+	{ 																\
+		u32 __i; 													\
+		for (__i = (__pos); __i < mho_arr_size(__array); __i++) 	\
+		{ 															\
+			(__array)[__i] = (__array)[__i + 1]; 					\
+		} 															\
+		mho_arr_head(__array)->size--; 								\
 	} while (0);
 
 // Initializes the array
@@ -375,6 +375,9 @@ MHO_EXTERN mho_vec2_t		mho_vec2_normalize(mho_vec2_t vec);
 // Computes a 2D vector rotated by an angle in degrees
 MHO_EXTERN mho_vec2_t		mho_vec2_rotate(mho_vec2_t vec, f32 angle);
 
+// Performs a pairwise multiplication between two 2D vectors
+MHO_EXTERN mho_vec2_t		mho_vec2_pmul(mho_vec2_t v1, mho_vec2_t v2);
+
 /* ============================ *
  * =====	 Vector3D	  ===== *
  * ============================ */
@@ -425,6 +428,9 @@ MHO_EXTERN f32				mho_vec3_mag(mho_vec3_t vec);
 // (vec * (1 / ||vec||))
 MHO_EXTERN mho_vec3_t		mho_vec3_normalize(mho_vec3_t vec);
 
+// Performs a pairwise multiplication between two 3D vectors
+MHO_EXTERN mho_vec3_t		mho_vec3_pmul(mho_vec3_t v1, mho_vec3_t v2);
+
 /* ============================ *
  * =====	 Vector4D	  ===== *
  * ============================ */
@@ -471,6 +477,9 @@ MHO_EXTERN f32				mho_vec4_mag(mho_vec4_t vec);
 // Normalizes a given 4D vector
 // (vec * (1 / ||vec||))
 MHO_EXTERN mho_vec4_t		mho_vec4_normalize(mho_vec4_t vec);
+
+// Performs a pairwise multiplication between two 4D vectors
+MHO_EXTERN mho_vec4_t		mho_vec4_pmul(mho_vec4_t v1, mho_vec4_t v2);
 
 /* ============================ *
  * =====	 Matrix4	  ===== *
@@ -1051,10 +1060,10 @@ mho_load_obj(const char *file,
 			 mho_obj_data_t *data,
 			 b32 interleaved)
 {
-	/* if (interleaved) */
-	/* { */
-	/*	return mho_obj_load_inter(file, data); */
-	/* } */
+	 if (interleaved)
+	 {
+		return mho_load_obj_inter(file, data);
+	 }
 	/* else */
 	/* { */
 	/*	return m_obj_load_indexed(file, data); */
@@ -1112,41 +1121,42 @@ mho_load_obj_inter(const char *file,
 				fscanf(fptr, "%f %f %f\n", &temp3d.x, &temp3d.y, &temp3d.z);
 				mho_arr_push(norms, temp3d);
 			}
-			else if (token[1] == 'f')
-			{
-				res = fscanf(fptr, "%d/%d/%d", &vert_idx[0], &uv_idx[0], &norm_idx[0]);
-				res += fscanf(fptr, "%d/%d/%d", &vert_idx[1], &uv_idx[1], &norm_idx[1]);
-				res += fscanf(fptr, "%d/%d/%d", &vert_idx[2], &uv_idx[2], &norm_idx[2]);
-
-				if (res != 9)
-				{
-					printf("File is incompatible with mho_obj!: %s\n", file);
-					fclose(fptr);
-
-					return FALSE;
-				}
-
-				mho_arr_push(vert_inds, vert_idx[0]);
-				mho_arr_push(vert_inds, vert_idx[1]);
-				mho_arr_push(vert_inds, vert_idx[2]);
-				mho_arr_push(uv_inds, uv_idx[0]);
-				mho_arr_push(uv_inds, uv_idx[1]);
-				mho_arr_push(uv_inds, uv_idx[2]);
-				mho_arr_push(norm_inds, norm_idx[0]);
-				mho_arr_push(norm_inds, norm_idx[1]);
-				mho_arr_push(norm_inds, norm_idx[2]);
-			}
 			else
 			{
 				fscanf(fptr, "%f %f %f\n", &temp3d.x, &temp3d.y, &temp3d.z);
 				mho_arr_push(verts, temp3d);
 			}
 		}
+		else if (token[0] == 'f')
+		{
+			res = fscanf(fptr, "%d/%d/%d", &vert_idx[0], &uv_idx[0], &norm_idx[0]);
+			res += fscanf(fptr, "%d/%d/%d", &vert_idx[1], &uv_idx[1], &norm_idx[1]);
+			res += fscanf(fptr, "%d/%d/%d", &vert_idx[2], &uv_idx[2], &norm_idx[2]);
+
+			if (res != 9)
+			{
+				printf("File is incompatible with mho_obj!: %s\n", file);
+				fclose(fptr);
+
+				return FALSE;
+			}
+
+			mho_arr_push(vert_inds, vert_idx[0]);
+			mho_arr_push(vert_inds, vert_idx[1]);
+			mho_arr_push(vert_inds, vert_idx[2]);
+			mho_arr_push(uv_inds, uv_idx[0]);
+			mho_arr_push(uv_inds, uv_idx[1]);
+			mho_arr_push(uv_inds, uv_idx[2]);
+			mho_arr_push(norm_inds, norm_idx[0]);
+			mho_arr_push(norm_inds, norm_idx[1]);
+			mho_arr_push(norm_inds, norm_idx[2]);
+		}
 	}
 
 	data->vertices = NULL;
 	data->normals = NULL;
 	data->uvs = NULL;
+	data->interleaved = TRUE;
 
 	for (i = 0; i < mho_arr_size(vert_inds); i++)
 	{
@@ -1159,17 +1169,16 @@ mho_load_obj_inter(const char *file,
 		mho_vec2_t uv = uvs[u - 1];
 
 		mho_arr_push(data->vertices, vertex);
-		mho_arr_push(data->normals, normal);
-		mho_arr_push(data->uvs, uv);
+		/* mho_arr_push(data->normals, normal); */
+		/* mho_arr_push(data->uvs, uv); */
 	}
-	data->interleaved = TRUE;
 
-	mho_arr_free(verts);
-	mho_arr_free(norms);
-	mho_arr_free(uvs);
-	mho_arr_free(vert_inds);
-	mho_arr_free(uv_inds);
-	mho_arr_free(norm_inds);
+	/* mho_arr_free(verts); */
+	/* mho_arr_free(norms); */
+	/* mho_arr_free(uvs); */
+	/* mho_arr_free(vert_inds); */
+	/* mho_arr_free(uv_inds); */
+	/* mho_arr_free(norm_inds); */
 	fclose(fptr);
 
 	return TRUE;
@@ -1264,6 +1273,18 @@ mho_vec2_rotate(mho_vec2_t vec,
 	return vec;
 }
 
+mho_vec2_t
+mho_vec2_pmul(mho_vec2_t v1,
+			  mho_vec2_t v2)
+{
+	mho_vec2_t		res;
+
+	res.x = v1.x * v2.x;
+	res.y = v1.y * v2.y;
+
+	return res;
+}
+
 //////////////////////////////
 // VECTOR3D IMPLEMENTATION
 
@@ -1353,6 +1374,19 @@ mho_vec3_normalize(mho_vec3_t vec)
 	return vec;
 }
 
+mho_vec3_t
+mho_vec3_pmul(mho_vec3_t v1,
+			  mho_vec3_t v2)
+{
+	mho_vec3_t		res;
+
+	res.x = v1.x * v2.x;
+	res.y = v1.y * v2.y;
+	res.z = v1.z * v2.z;
+
+	return res;
+}
+
 //////////////////////////////
 // VECTOR4D IMPLEMENTATION
 
@@ -1434,6 +1468,20 @@ mho_vec4_normalize(mho_vec4_t vec)
 	vec.w *= val;
 
 	return vec;
+}
+
+mho_vec4_t
+mho_vec4_pmul(mho_vec4_t v1,
+			  mho_vec4_t v2)
+{
+	mho_vec4_t		res;
+
+	res.x = v1.x * v2.x;
+	res.y = v1.y * v2.y;
+	res.z = v1.z * v2.z;
+	res.w = v1.w * v2.w;
+
+	return res;
 }
 
 //////////////////////////////
@@ -1996,7 +2044,7 @@ mho_mem_print(FILE *stream)
  #endif // M_MEM_DEBUG
 
 // Simplifies Math related names for types and functions
- #ifndef MHO_MATH_COMPLEX_NAMES
+ #ifndef MHO_FULL_NAMES
 	typedef mho_vec2_t					vec2_t;
 	typedef mho_vec3_t					vec3_t;
 	typedef mho_vec4_t					vec4_t;
@@ -2010,6 +2058,7 @@ mho_mem_print(FILE *stream)
 	#define vec2_mag					mho_vec2_mag
 	#define vec2_normalize				mho_vec2_normalize
 	#define vec2_rotate					mho_vec2_rotate
+	#define vec2_pmul					mho_vec2_pmul
 
 	#define vec3_ctor					mho_vec3_ctor
 	#define vec3_add					mho_vec3_add
@@ -2019,6 +2068,7 @@ mho_mem_print(FILE *stream)
 	#define vec3_cross					mho_vec3_cross
 	#define vec3_mag					mho_vec3_mag
 	#define vec3_normalize				mho_vec3_normalize
+	#define vec3_pmul					mho_vec3_pmul
 
 	#define vec4_ctor					mho_vec4_ctor
 	#define vec4_add					mho_vec4_add
@@ -2027,6 +2077,7 @@ mho_mem_print(FILE *stream)
 	#define vec4_dot					mho_vec4_dot
 	#define vec4_mag					mho_vec4_mag
 	#define vec4_normalize				mho_vec4_normalize
+	#define vec4_pmul					mho_vec4_pmul
 
 	#define mat4_identity				mho_mat4_identity
 	#define mat4_translate				mho_mat4_translate
@@ -2040,7 +2091,7 @@ mho_mem_print(FILE *stream)
 	#define mat4_scale					mho_mat4_scale
 	#define mat4_mult					mho_mat4_mult
 
- #endif // MHO_MATH_COMPLEX_NAMES
+ #endif // MHO_FULL_NAMES
 
 #pragma warning(default: 4996) // fopen
 #pragma warning(default: 4055) // fn ptr void * (enabled on +MSVC 14)
