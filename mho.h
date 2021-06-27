@@ -15,11 +15,9 @@
 // TODO: Add MHO_ARR_INCSZ macro to resize array by a given size.
 // TODO: Fix and implement mho_obj.
 // TODO: Implement these C stdlib fn's.
-// TODO: Reimplement memory debugging using the dynamic array instead of linked
-//       list.
 // TODO: See if we can prefix the typedef names with 'mho_' in case a file is
 //       already included whose names collide.
-// TODO: Break this up into separate appropriate .c files.
+// TODO: Implement debugging for fopen/fclose.
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -33,6 +31,7 @@
 
 #include <stdio.h> // FILE *
 #include <stdint.h> // int_t's
+#include <string.h>
 
 
 
@@ -119,7 +118,7 @@ typedef s32         b32;
     #define FALSE   0
 #endif // FALSE
 
-// Useful macro to strip just the filename out of the full filepath.
+// Macro to strip just the filename out of the full filepath.
 #if defined(_WIN32) || defined(_WIN64)
     #define __FILENAME__    (strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__)
 #else
@@ -681,7 +680,6 @@ typedef struct _TAG_mho_mem_rec
                 df_line,
                 size;
     byte        flags;
-    struct      _TAG_mho_mem_rec *next;
 } mho_mem_rec_t;
 
 // Custom malloc impl for debugging
@@ -693,9 +691,6 @@ MHO_EXTERN void     mho_mem_free(void *buffer, const char *file, int line);
 // Prints a memory debugging report to a specified stream
 MHO_EXTERN void     mho_mem_print(FILE *stream);
 
-// Adds a new memory record to the debug list
-MHO_EXTERN void     mho_mem_rec_append(void *ptr, const char *file, int line, int size);
-
 // Verifies memory integrity of list (searches for over/underruns)
 MHO_EXTERN void     mho_mem_debug_memory();
 
@@ -705,7 +700,7 @@ MHO_EXTERN void     mho_mem_debug_memory();
  #ifdef MHO_MEM_DEBUG
     #define malloc(__n)     mho_mem_malloc(__n, __FILENAME__, __LINE__)
     #define free(__n)       mho_mem_free(__n, __FILENAME__, __LINE__)
- #endif // M_MEM_DEBUG
+ #endif // MHO_MEM_DEBUG
 
 // Simplifies Math related names for types and functions
  #ifndef MHO_FULL_NAMES
