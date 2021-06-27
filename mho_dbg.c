@@ -14,8 +14,8 @@
 #define MHO_MEM_UNDER_NUM         0x39D7A5DA
 
 // Required globals
-global s32              mho_mem_malloc_cnt;
-global s32              mho_mem_free_cnt;
+global u32              mho_mem_malloc_cnt;
+global u32              mho_mem_free_cnt;
 global usize            mho_mem_total_alloc;
 global mho_mem_rec_t    *mho_mem_alloc_head = NULL;
 
