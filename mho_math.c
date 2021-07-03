@@ -612,3 +612,38 @@ mho_fsqrtinv(f32 number)
 
     return y;
 }
+
+f32
+mho_noise2f(f32 x,
+			f32 y)
+{
+	f32 a, b, c, d;
+	s32 xi, yi;
+
+	x += 256.0;
+	xi = (s32)x;
+	x -= (f32)xi;
+
+	y += 4096.0;
+	yi = (s32)y;
+	y -= (f32)yi;
+	yi *= 11;
+
+	x = (3.0 * x * x - 2.0 * x * x * x);
+	y = (3.0 * y * y - 2.0 * y * y * y);
+
+	a = mho_randnf((u32)xi + yi);
+	b = mho_randnf((u32)xi + yi + 1);
+
+	c = mho_lerp(a, b, x);
+	/* c = a + (b - a) * x; */
+
+	a = mho_randnf((u32)xi + yi + 11);
+	b = mho_randnf((u32)xi + yi + 12);
+
+	d = mho_lerp(a, b, x);
+	/* d = a + (b - a) * x; */
+
+	return mho_lerp(c, d, y);
+	/* return c + (d - c) * y; */
+}

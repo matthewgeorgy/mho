@@ -11,6 +11,7 @@
 #ifndef MHO_H
 #define MHO_H
 
+// TODO: FIX MEMORY DEBUGGER (VC2010)!!
 // TODO: Implement quaternion and VQS structures + functions.
 // TODO: Add MHO_ARR_INCSZ macro to resize array by a given size.
 // TODO: Fix and implement mho_obj.
@@ -32,6 +33,8 @@
 #include <stdio.h> // FILE *
 #include <stdint.h> // int_t's
 #include <string.h>
+#include <stdlib.h>
+#include <math.h>
 
 
 
@@ -638,13 +641,15 @@ MHO_EXTERN f32      mho_fsqrt(f32 number);
 // Quake III inverse square root
 MHO_EXTERN f32      mho_fsqrtinv(f32 number);
 
-
+// Single octave 2D 32bit float noise.
+MHO_EXTERN f32		mho_noise2f(f32 x, f32 y);
 
 ///////////////////////////////////////////////////////////////////////////////
 //
 //      OpenGL
 //
 
+#if 0
 // Builds a GLSL shader program using a vertex + fragment source
 MHO_EXTERN u32      mho_load_shader_vf(const char *vs_path, const char *fs_path);
 
@@ -660,7 +665,7 @@ MHO_EXTERN void     mho_framebuffer_size_callback(GLFWwindow *window, s32 width,
 
 // Default mouse callback function for OpenGL + GLFW
 MHO_EXTERN void     mho_mouse_callback(GLFWwindow *window, f64 x_pos, f64 y_pos);
-
+#endif
  #endif
 
 
@@ -683,10 +688,10 @@ typedef struct _TAG_mho_mem_rec
 } mho_mem_rec_t;
 
 // Custom malloc impl for debugging
-MHO_EXTERN void     *mho_mem_malloc(size_t size, const char *file, int line);
+MHO_EXTERN void     *mho_mem_malloc(size_t size, char *file, int line);
 
 // Custom free impl for debugging
-MHO_EXTERN void     mho_mem_free(void *buffer, const char *file, int line);
+MHO_EXTERN void     mho_mem_free(void *buffer, char *file, int line);
 
 // Prints a memory debugging report to a specified stream
 MHO_EXTERN void     mho_mem_print(FILE *stream);

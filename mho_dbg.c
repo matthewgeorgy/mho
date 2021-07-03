@@ -21,7 +21,7 @@ global mho_mem_rec_t    *mho_mem_alloc_head = NULL;
 
 void *
 mho_mem_malloc(size_t size,
-               const char *file,
+               char *file,
                int line)
 {
     void		*ptr = NULL;
@@ -57,7 +57,7 @@ mho_mem_malloc(size_t size,
 
 void
 mho_mem_free(void *buffer,
-             const char *file,
+             char *file,
              int line)
 {
     dword		value;
@@ -158,7 +158,7 @@ mho_mem_print(FILE *stream)
     fprintf(stream, "=========================================================\n");
     fprintf(stream, "Total Mallocs: %d\n", mho_mem_malloc_cnt);
     fprintf(stream, "Total Frees:   %d\n", mho_mem_free_cnt);
-    fprintf(stream, "Total Size:    %zu bytes\n\n", mho_mem_total_alloc);
+    fprintf(stream, "Total Size:    %u bytes\n\n", mho_mem_total_alloc);
 
     // Print out all debug-related info
     for (i = 0; i < mho_arr_size(mho_mem_alloc_head); i++)

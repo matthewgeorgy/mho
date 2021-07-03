@@ -160,3 +160,5 @@ mho_mouse_callback(GLFWwindow *window,
     // camera.front = vec3_normalize(direction);
 }
 */
+#endif // _glfw3_h_
+#endif
