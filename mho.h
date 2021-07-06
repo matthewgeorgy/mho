@@ -164,8 +164,8 @@ typedef s32         b32;
 
 typedef struct _TAG_mho_arr_header
 {
-    u32     size;       // Number of elements in array containing data
     u32     capacity;   // Total number of elements
+    u32     size;       // Number of elements in array containing data
 } mho_arr_header_t;
 
 // Wrapper macro
