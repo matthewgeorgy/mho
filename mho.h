@@ -14,6 +14,7 @@
 // TODO: FIX MEMORY DEBUGGER (VC2010)!! We probably need to put the linked list
 //		 back into the memory debugger :(((.
 // TODO: Implement quaternion and VQS structures + functions.
+// TODO: Add #pragma's to .c files.
 // TODO: Add MHO_ARR_INCSZ macro to resize array by a given size.
 // TODO: Fix and implement mho_obj.
 // TODO: Implement these C stdlib fn's.
@@ -158,6 +159,9 @@ typedef s32         b32;
 //      Dynamic Array
 //
 
+// Inspired GREATLY by John Jackson's 'gs_dyn_array' implementation from
+// gunslinger: https://github.com/MrFrenik/gunslinger/blob/master/gs.h 
+
 typedef struct _TAG_mho_arr_header
 {
     u32     size;       // Number of elements in array containing data
@@ -250,30 +254,31 @@ typedef struct _TAG_mho_arr_header
     *((void **)&(__array)) = mho_arr_resize(__array, sizeof(*(__array)), mho_arr_size(__array));
 
 // Inserts data into the array at the specified position (0 indexing)
-#define mho_arr_insert(__array, __val, __pos)                           \
-    do                                                                  \
-    {                                                                   \
-        u32 __i;                                                        \
-        if ((mho_arr_need_grow(__array, 1)))                            \
-            *((void **)&(__array)) = mho_arr_grow_size(__array, 1);     \
-        for (__i = mho_arr_size(__array) - 1; __i >= (__pos); __i--)    \
-        {                                                               \
-            (__array)[__i + 1] = (__array)[__i];                        \
-        }                                                               \
-        (__array)[(__pos)] = (__val);                                   \
-        mho_arr_head(__array)->size++;                                  \
+// NOTE: DOES NOT WORK AT INDEX 0 (ie, cannot insert at start of array)
+#define mho_arr_insert(__array, __val, __pos)												\
+    do																						\
+    {																						\
+        u32 _mho_iter_;                                           							\
+        if ((mho_arr_need_grow(__array, 1)))												\
+            *((void **)&(__array)) = mho_arr_grow_size(__array, 1);							\
+        for (_mho_iter_ = mho_arr_size(__array) - 1; _mho_iter_ >= (__pos); _mho_iter_--)	\
+        {                                                               					\
+            (__array)[_mho_iter_ + 1] = (__array)[_mho_iter_];                        		\
+        }																					\
+        (__array)[(__pos)] = (__val);														\
+        mho_arr_head(__array)->size++;														\
     } while (0);
 
 // Removes data from the array at the specified position and realigns elements
-#define mho_arr_remove(__array, __pos)                              \
-    do                                                              \
-    {                                                               \
-        u32 __i;                                                    \
-        for (__i = (__pos); __i < mho_arr_size(__array); __i++)     \
-        {                                                           \
-            (__array)[__i] = (__array)[__i + 1];                    \
-        }                                                           \
-        mho_arr_head(__array)->size--;                              \
+#define mho_arr_remove(__array, __pos)                              					\
+    do                                                              					\
+    {                                                               					\
+        u32 _mho_iter_;                                                    				\
+        for (_mho_iter_ = (__pos); _mho_iter_ < mho_arr_size(__array); _mho_iter_++)	\
+        {                                                           					\
+            (__array)[_mho_iter_] = (__array)[_mho_iter_ + 1];                    		\
+        }                                                           					\
+        mho_arr_head(__array)->size--;                              					\
     } while (0);
 
 // Initializes the array
