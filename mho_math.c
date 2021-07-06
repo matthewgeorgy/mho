@@ -538,6 +538,74 @@ mho_mat4_mult(mho_mat4_t m1,
     return res;
 }
 
+/////////////////////////////
+// QUATERNION IMPLEMENTATION
+/////////////////////////////
+
+mho_quat_t
+mho_quat_ctor(f32 w,
+			  f32 i,
+			  f32 j,
+			  f32 k)
+{
+	mho_quat_t	quat;
+
+	quat.w = w;
+	quat.i = i;
+	quat.j = j;
+	quat.k = k;
+
+	return quat;
+}
+
+mho_quat_t
+mho_quat_add(mho_quat_t q1,
+			 mho_quat_t q2)
+{
+	q1.w += q2.w;
+	q1.i += q2.i;
+	q1.j += q2.j;
+	q1.k += q2.k;
+
+	return q1;
+}
+
+mho_quat_t
+mho_quat_sub(mho_quat_t q1,
+			 mho_quat_t q2)
+{
+	q1.w -= q2.w;
+	q1.i -= q2.i;
+	q1.j -= q2.j;
+	q1.k -= q2.k;
+
+	return q1;
+}
+
+mho_quat_t
+mho_quat_mul(mho_quat_t q1,
+			 mho_quat_t q2)
+{
+	mho_quat_t	prod;
+
+	prod.w = (q1.w * q2.w) - (q1.i * q2.i) - (q1.j * q2.j) - (q1.k * q2.k);
+	prod.i = (q1.w * q2.i) - (q1.i * q2.w) - (q1.j * q2.k) - (q1.k * q2.j);
+	prod.j = (q1.w * q2.j) - (q1.i * q2.k) - (q1.j * q2.w) - (q1.k * q2.i);
+	prod.k = (q1.w * q2.k) - (q1.i * q2.j) - (q1.j * q2.i) - (q1.k * q2.w);
+
+	return prod;
+}
+
+mho_quat_t
+mho_quat_conj(mho_quat_t q)
+{
+	q.i *= -1;
+	q.j *= -1;
+	q.k *= -1;
+
+	return q;
+}
+
 //////////////////////////////
 // MISC IMPLEMENTATION
 //////////////////////////////

@@ -11,7 +11,8 @@
 #ifndef MHO_H
 #define MHO_H
 
-// TODO: FIX MEMORY DEBUGGER (VC2010)!!
+// TODO: FIX MEMORY DEBUGGER (VC2010)!! We probably need to put the linked list
+//		 back into the memory debugger :(((.
 // TODO: Implement quaternion and VQS structures + functions.
 // TODO: Add MHO_ARR_INCSZ macro to resize array by a given size.
 // TODO: Fix and implement mho_obj.
@@ -24,11 +25,6 @@
 //
 //      Includes
 //
-
-#pragma warning(disable: 4996) // fopen
-#pragma warning(disable: 4055) // fn ptr void * (enabled on +MSVC 14)
-#pragma warning(disable: 4201) // anon struct/union
-#pragma warning(disable: 4054) // typecast from fn ptr
 
 #include <stdio.h> // FILE *
 #include <stdint.h> // int_t's
@@ -279,7 +275,6 @@ typedef struct _TAG_mho_arr_header
         }                                                           \
         mho_arr_head(__array)->size--;                              \
     } while (0);
-
 
 // Initializes the array
 local void **
@@ -604,6 +599,25 @@ typedef struct _TAG_quat
     };
 } mho_quat_t;
 
+// Constructs a quaternion given w, i, j, k components
+MHO_EXTERN mho_quat_t		mho_quat_ctor(f32 w, f32 i, f32 j, f32 k);
+
+// Computes the sum of two quaternions
+// (q1 + q2)
+MHO_EXTERN mho_quat_t		mho_quat_add(mho_quat_t q1, mho_quat_t q2);
+
+// Computes the difference of two quaternions
+// (q1 - q2)
+MHO_EXTERN mho_quat_t		mho_quat_sub(mho_quat_t q1, mho_quat_t q2);
+
+// Computes the product of two quaternions
+// (q1 * q2)
+MHO_EXTERN mho_quat_t		mho_quat_mul(mho_quat_t q1, mho_quat_t q2);
+
+// Computes the conjugate of a quaternion
+// (w - i - j - k)
+MHO_EXTERN mho_quat_t		mho_quat_conj(mho_quat_t q);
+
 /* ============================ *
  * =====        VQS       ===== *
  * ============================ */
@@ -713,6 +727,7 @@ MHO_EXTERN void     mho_mem_debug_memory();
     typedef mho_vec3_t                  vec3_t;
     typedef mho_vec4_t                  vec4_t;
     typedef mho_mat4_t                  mat4_t;
+	typedef mho_quat_t					quat_t;
 
     #define vec2_ctor                   mho_vec2_ctor
     #define vec2_add                    mho_vec2_add
@@ -755,12 +770,13 @@ MHO_EXTERN void     mho_mem_debug_memory();
     #define mat4_scale                  mho_mat4_scale
     #define mat4_mult                   mho_mat4_mult
 
- #endif // MHO_FULL_NAMES
+	#define quat_ctor					mho_quat_ctor
+	#define quat_add					mho_quat_add
+	#define quat_sub					mho_quat_sub
+	#define quat_mul					mho_quat_mul
+	#define quat_conj					mho_quat_conj
 
-#pragma warning(default: 4996) // fopen
-#pragma warning(default: 4055) // fn ptr void * (enabled on +MSVC 14)
-#pragma warning(default: 4021) // anon struct/union
-#pragma warning(default: 4054) // typecast from fn ptr
+ #endif // MHO_FULL_NAMES
 
 #endif // MHO_H
 
