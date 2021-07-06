@@ -12,7 +12,7 @@
 #define MHO_H
 
 // TODO: FIX MEMORY DEBUGGER (VC2010)!! We probably need to put the linked list
-//		 back into the memory debugger :(((.
+//       back into the memory debugger :(((.
 // TODO: Implement quaternion and VQS structures + functions.
 // TODO: Add #pragma's to .c files.
 // TODO: Add MHO_ARR_INCSZ macro to resize array by a given size.
@@ -255,30 +255,30 @@ typedef struct _TAG_mho_arr_header
 
 // Inserts data into the array at the specified position (0 indexing)
 // NOTE: DOES NOT WORK AT INDEX 0 (ie, cannot insert at start of array)
-#define mho_arr_insert(__array, __val, __pos)												\
-    do																						\
-    {																						\
-        u32 _mho_iter_;                                           							\
-        if ((mho_arr_need_grow(__array, 1)))												\
-            *((void **)&(__array)) = mho_arr_grow_size(__array, 1);							\
-        for (_mho_iter_ = mho_arr_size(__array) - 1; _mho_iter_ >= (__pos); _mho_iter_--)	\
-        {                                                               					\
-            (__array)[_mho_iter_ + 1] = (__array)[_mho_iter_];                        		\
-        }																					\
-        (__array)[(__pos)] = (__val);														\
-        mho_arr_head(__array)->size++;														\
+#define mho_arr_insert(__array, __val, __pos)                                               \
+    do                                                                                      \
+    {                                                                                       \
+        u32 _mho_iter_;                                                                     \
+        if ((mho_arr_need_grow(__array, 1)))                                                \
+            *((void **)&(__array)) = mho_arr_grow_size(__array, 1);                         \
+        for (_mho_iter_ = mho_arr_size(__array) - 1; _mho_iter_ >= (__pos); _mho_iter_--)   \
+        {                                                                                   \
+            (__array)[_mho_iter_ + 1] = (__array)[_mho_iter_];                              \
+        }                                                                                   \
+        (__array)[(__pos)] = (__val);                                                       \
+        mho_arr_head(__array)->size++;                                                      \
     } while (0);
 
 // Removes data from the array at the specified position and realigns elements
-#define mho_arr_remove(__array, __pos)                              					\
-    do                                                              					\
-    {                                                               					\
-        u32 _mho_iter_;                                                    				\
-        for (_mho_iter_ = (__pos); _mho_iter_ < mho_arr_size(__array); _mho_iter_++)	\
-        {                                                           					\
-            (__array)[_mho_iter_] = (__array)[_mho_iter_ + 1];                    		\
-        }                                                           					\
-        mho_arr_head(__array)->size--;                              					\
+#define mho_arr_remove(__array, __pos)                                                  \
+    do                                                                                  \
+    {                                                                                   \
+        u32 _mho_iter_;                                                                 \
+        for (_mho_iter_ = (__pos); _mho_iter_ < mho_arr_size(__array); _mho_iter_++)    \
+        {                                                                               \
+            (__array)[_mho_iter_] = (__array)[_mho_iter_ + 1];                          \
+        }                                                                               \
+        mho_arr_head(__array)->size--;                                                  \
     } while (0);
 
 // Initializes the array
@@ -605,23 +605,23 @@ typedef struct _TAG_quat
 } mho_quat_t;
 
 // Constructs a quaternion given w, i, j, k components
-MHO_EXTERN mho_quat_t		mho_quat_ctor(f32 w, f32 i, f32 j, f32 k);
+MHO_EXTERN mho_quat_t       mho_quat_ctor(f32 w, f32 i, f32 j, f32 k);
 
 // Computes the sum of two quaternions
 // (q1 + q2)
-MHO_EXTERN mho_quat_t		mho_quat_add(mho_quat_t q1, mho_quat_t q2);
+MHO_EXTERN mho_quat_t       mho_quat_add(mho_quat_t q1, mho_quat_t q2);
 
 // Computes the difference of two quaternions
 // (q1 - q2)
-MHO_EXTERN mho_quat_t		mho_quat_sub(mho_quat_t q1, mho_quat_t q2);
+MHO_EXTERN mho_quat_t       mho_quat_sub(mho_quat_t q1, mho_quat_t q2);
 
 // Computes the product of two quaternions
 // (q1 * q2)
-MHO_EXTERN mho_quat_t		mho_quat_mul(mho_quat_t q1, mho_quat_t q2);
+MHO_EXTERN mho_quat_t       mho_quat_mul(mho_quat_t q1, mho_quat_t q2);
 
 // Computes the conjugate of a quaternion
 // (w - i - j - k)
-MHO_EXTERN mho_quat_t		mho_quat_conj(mho_quat_t q);
+MHO_EXTERN mho_quat_t       mho_quat_conj(mho_quat_t q);
 
 /* ============================ *
  * =====        VQS       ===== *
@@ -661,7 +661,7 @@ MHO_EXTERN f32      mho_fsqrt(f32 number);
 MHO_EXTERN f32      mho_fsqrtinv(f32 number);
 
 // Single octave 2D 32bit float noise.
-MHO_EXTERN f32		mho_noise2f(f32 x, f32 y);
+MHO_EXTERN f32      mho_noise2f(f32 x, f32 y);
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -732,7 +732,7 @@ MHO_EXTERN void     mho_mem_debug_memory();
     typedef mho_vec3_t                  vec3_t;
     typedef mho_vec4_t                  vec4_t;
     typedef mho_mat4_t                  mat4_t;
-	typedef mho_quat_t					quat_t;
+    typedef mho_quat_t                  quat_t;
 
     #define vec2_ctor                   mho_vec2_ctor
     #define vec2_add                    mho_vec2_add
@@ -775,11 +775,11 @@ MHO_EXTERN void     mho_mem_debug_memory();
     #define mat4_scale                  mho_mat4_scale
     #define mat4_mult                   mho_mat4_mult
 
-	#define quat_ctor					mho_quat_ctor
-	#define quat_add					mho_quat_add
-	#define quat_sub					mho_quat_sub
-	#define quat_mul					mho_quat_mul
-	#define quat_conj					mho_quat_conj
+    #define quat_ctor                   mho_quat_ctor
+    #define quat_add                    mho_quat_add
+    #define quat_sub                    mho_quat_sub
+    #define quat_mul                    mho_quat_mul
+    #define quat_conj                   mho_quat_conj
 
  #endif // MHO_FULL_NAMES
 
