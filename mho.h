@@ -11,8 +11,6 @@
 #ifndef MHO_H
 #define MHO_H
 
-// TODO: FIX MEMORY DEBUGGER (VC2010)!! We probably need to put the linked list
-//       back into the memory debugger :(((.
 // TODO: Implement quaternion and VQS structures + functions.
 // TODO: Add #pragma's to .c files.
 // TODO: Add MHO_ARR_INCSZ macro to resize array by a given size.
@@ -695,36 +693,54 @@ MHO_EXTERN void     mho_mouse_callback(GLFWwindow *window, f64 x_pos, f64 y_pos)
 //
 
 // Record structure for storing memory information
-typedef struct _TAG_mho_mem_rec
+typedef struct _TAG_mho_dbg_mem_rec
 {
-    void        *ptr;
-    char        *file,
-                *df_file;
-    int         line,
-                df_line,
-                size;
-    byte        flags;
-} mho_mem_rec_t;
+    void					*ptr;
+    char					*file,
+							*df_file;
+    int						line,
+							df_line,
+							size;
+    byte					flags;
+	struct _TAG_mho_mem_rec *next;
+} mho_dbg_mem_rec_t;
+
+typedef struct _TAG_mho_dbg_file_rec
+{
+	char							*file;
+	int								line;
+	struct _TAG_mho_dbg_file_rec	*next;
+} mho_dbg_file_rec_t;
 
 // Custom malloc impl for debugging
-MHO_EXTERN void     *mho_mem_malloc(size_t size, char *file, int line);
+MHO_EXTERN void     *mho_dbg_malloc(size_t size, char *file, int line);
 
 // Custom free impl for debugging
-MHO_EXTERN void     mho_mem_free(void *buffer, char *file, int line);
+MHO_EXTERN void     mho_dbg_free(void *buffer, char *file, int line);
 
-// Prints a memory debugging report to a specified stream
-MHO_EXTERN void     mho_mem_print(FILE *stream);
+// Adds a new memory debug rec to the list
+MHO_EXTERN void 	mho_dbg_mem_rec_append(void *ptr, const char *file, int line, int size);
 
 // Verifies memory integrity of list (searches for over/underruns)
-MHO_EXTERN void     mho_mem_debug_memory();
+MHO_EXTERN void     mho_dbg_memory(void);
+
+MHO_EXTERN FILE		*mho_dbg_fopen(const char *filename, const char *mode, char *file, int line);
+
+MHO_EXTERN void		mho_dbg_fclose(FILE *fptr, char *file, int line);
+
+// Adds a new file debug rec to the list
+MHO_EXTERN void 	mho_dbg_file_rec_append(const char *file, int line);
+
+// Prints a debugging report to a specified stream
+MHO_EXTERN void     mho_dbg_print(FILE *stream);
 
 
 
-// Wraps malloc() and free()
- #ifdef MHO_MEM_DEBUG
-    #define malloc(__n)     mho_mem_malloc(__n, __FILENAME__, __LINE__)
-    #define free(__n)       mho_mem_free(__n, __FILENAME__, __LINE__)
- #endif // MHO_MEM_DEBUG
+// Wraps debugging functions
+ #ifdef MHO_DEBUG
+    #define malloc(__n)     mho_dbg_malloc(__n, __FILENAME__, __LINE__)
+    #define free(__n)       mho_dbg_free(__n, __FILENAME__, __LINE__)
+ #endif // MHO_DEBUG
 
 // Simplifies Math related names for types and functions
  #ifndef MHO_FULL_NAMES
