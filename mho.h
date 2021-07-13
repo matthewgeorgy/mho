@@ -19,6 +19,7 @@
 // TODO: See if we can prefix the typedef names with 'mho_' in case a file is
 //       already included whose names collide.
 // TODO: Implement debugging for fopen/fclose.
+// TODO: Maybe take OpenGL stuff out?
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -158,7 +159,7 @@ typedef s32         b32;
 //
 
 // Inspired GREATLY by John Jackson's 'gs_dyn_array' implementation from
-// gunslinger: https://github.com/MrFrenik/gunslinger/blob/master/gs.h 
+// gunslinger: https://github.com/MrFrenik/gunslinger/blob/master/gs.h
 
 typedef struct _TAG_mho_arr_header
 {
@@ -579,6 +580,9 @@ MHO_EXTERN mho_mat4_t       mho_mat4_lookat(mho_vec3_t eye, mho_vec3_t center, m
 // Returns a 4x4 scale matrix given a scale factor/value
 MHO_EXTERN mho_mat4_t       mho_mat4_scale(f32 scale_value);
 
+// Returns a 4x4 scale matrix given a scale vector
+MHO_EXTERN mho_mat4_t       mho_mat4_scale_v(mho_vec3_t scale);
+
 // Computes the product of two 4x4 matrices
 MHO_EXTERN mho_mat4_t       mho_mat4_mult(mho_mat4_t m1, mho_mat4_t m2);
 
@@ -695,20 +699,24 @@ MHO_EXTERN void     mho_mouse_callback(GLFWwindow *window, f64 x_pos, f64 y_pos)
 // Record structure for storing memory information
 typedef struct _TAG_mho_dbg_mem_rec
 {
-    void					*ptr;
-    char					*file,
-							*df_file;
-    int						line,
-							df_line,
-							size;
-    byte					flags;
-	struct _TAG_mho_mem_rec *next;
+    void						*ptr;
+    char						*file,
+								*df_file;
+    int							line,
+								df_line,
+								size;
+    byte						flags;
+	struct _TAG_mho_mem_rec 	*next;
 } mho_dbg_mem_rec_t;
 
+// Record structure for storing file handle information
 typedef struct _TAG_mho_dbg_file_rec
 {
-	char							*file;
+	char							*file,
+									filename,
+									mode;
 	int								line;
+	byte							flags;
 	struct _TAG_mho_dbg_file_rec	*next;
 } mho_dbg_file_rec_t;
 
@@ -724,12 +732,14 @@ MHO_EXTERN void 	mho_dbg_mem_rec_append(void *ptr, const char *file, int line, i
 // Verifies memory integrity of list (searches for over/underruns)
 MHO_EXTERN void     mho_dbg_memory(void);
 
-MHO_EXTERN FILE		*mho_dbg_fopen(const char *filename, const char *mode, char *file, int line);
+// Custom fopen impl for debugging
+MHO_EXTERN FILE		*mho_dbg_fopen(char *filename, char *mode, char *file, int line);
 
-MHO_EXTERN void		mho_dbg_fclose(FILE *fptr, char *file, int line);
+// Custom fclose impl for debugging
+MHO_EXTERN void		mho_dbg_fclose(FILE *fptr, char *filename, char *mode, char *file, int line);
 
 // Adds a new file debug rec to the list
-MHO_EXTERN void 	mho_dbg_file_rec_append(const char *file, int line);
+MHO_EXTERN void 	mho_dbg_file_rec_append(char *filename, char *mode, char *file, int line);
 
 // Prints a debugging report to a specified stream
 MHO_EXTERN void     mho_dbg_print(FILE *stream);
@@ -789,6 +799,7 @@ MHO_EXTERN void     mho_dbg_print(FILE *stream);
     #define mat4_perspective            mho_mat4_perspective
     #define mat4_lookat                 mho_mat4_lookat
     #define mat4_scale                  mho_mat4_scale
+    #define mat4_scale_v                mho_mat4_scale_v
     #define mat4_mult                   mho_mat4_mult
 
     #define quat_ctor                   mho_quat_ctor

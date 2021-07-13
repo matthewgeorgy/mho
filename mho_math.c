@@ -380,7 +380,7 @@ mho_mat4_rotate(f32 angle,
                 s,
                 c1;
     mho_vec3_t  vec = {x, y, z};
-    mho_mat4_t  matrix = {0};
+    mho_mat4_t  matrix;
 
     c = mho_cos(mho_rads(angle));
     s = mho_sin(mho_rads(angle));
@@ -399,6 +399,9 @@ mho_mat4_rotate(f32 angle,
     matrix.col3.y = (c1 * vec.y * vec.z) - s * vec.x;
     matrix.col3.z = (c1 * vec.z * vec.z) + c;
 
+	matrix.col1.w = 0.0f;
+	matrix.col2.w = 0.0f;
+	matrix.col3.w = 0.0f;
     matrix.col4.w = 1.0f;
 
     return matrix;
@@ -412,7 +415,7 @@ mho_mat4_rotate_v(f32 angle,
     f32         c,
                 s,
                 c1;
-    mho_mat4_t  matrix = {0};
+    mho_mat4_t  matrix;
 
     c = mho_cos(mho_rads(angle));
     s = mho_sin(mho_rads(angle));
@@ -431,6 +434,9 @@ mho_mat4_rotate_v(f32 angle,
     matrix.col3.y = (c1 * vec.y * vec.z) - s * vec.x;
     matrix.col3.z = (c1 * vec.z * vec.z) + c;
 
+	matrix.col1.w = 0.0f;
+	matrix.col2.w = 0.0f;
+	matrix.col3.w = 0.0f;
     matrix.col4.w = 1.0f;
 
     return matrix;
@@ -478,21 +484,22 @@ mho_mat4_lookat(mho_vec3_t eye,
     matrix.col1.x = s.x;
     matrix.col1.y = u.x;
     matrix.col1.z = -f.x;
-    matrix.col1.w = 0.0f;
 
     matrix.col2.x = s.y;
     matrix.col2.y = u.y;
     matrix.col2.z = -f.y;
-    matrix.col2.w = 0.0f;
 
     matrix.col3.x = s.z;
     matrix.col3.y = u.z;
     matrix.col3.z = -f.z;
-    matrix.col3.w = 0.0f;
 
     matrix.col4.x = -mho_vec3_dot(s, eye);
     matrix.col4.y = -mho_vec3_dot(u, eye);
     matrix.col4.z = mho_vec3_dot(f, eye);
+
+    matrix.col1.w = 0.0f;
+    matrix.col2.w = 0.0f;
+    matrix.col3.w = 0.0f;
     matrix.col4.w = 1.0f;
 
     return matrix;
@@ -501,11 +508,24 @@ mho_mat4_lookat(mho_vec3_t eye,
 mho_mat4_t
 mho_mat4_scale(f32 scale_value)
 {
-    mho_mat4_t  matrix = {0};
+    mho_mat4_t  matrix;
 
     matrix.col1.x = scale_value;
     matrix.col2.y = scale_value;
     matrix.col3.z = scale_value;
+    matrix.col4.w = 1.0f;
+
+    return matrix;
+}
+
+mho_mat4_t
+mho_mat4_scale_v(mho_vec3_t scale)
+{
+    mho_mat4_t  matrix = {0};
+
+    matrix.col1.x = scale.x;
+    matrix.col2.y = scale.y;
+    matrix.col3.z = scale.z;
     matrix.col4.w = 1.0f;
 
     return matrix;
