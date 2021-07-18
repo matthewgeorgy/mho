@@ -14,10 +14,6 @@
 
 // TODO: Implement quaternion and VQS structures + functions.
 // TODO: Add #pragma's to .c files.
-// TODO: Add MHO_ARR_INCSZ macro to resize array by a given size.
-// TODO: Implement these C stdlib fn's.
-// TODO: See if we can prefix the typedef names with 'mho_' in case a file is
-//       already included whose names collide.
 // TODO: Implement debugging for fopen/fclose.
 // TODO: Maybe take OpenGL stuff out?
 
@@ -352,8 +348,6 @@ MHO_EXTERN void     mho_strcpy(s8 *dest, s8 *src);
 MHO_EXTERN void     mho_strncpy(s8 *dest, s8 *src, usize n);
 MHO_EXTERN usize    mho_strlen(s8 *str);
 MHO_EXTERN s8       *mho_strcat(s8 *str1, s8 *str2);
-MHO_EXTERN s32      mho_strcmp(s8 *dest, s8 *src);
-MHO_EXTERN s32      mho_strncmp(s8 *dest, s8 *src, usize n);
 
 
 ///////////////////////////////////////////////////////////////////////////////
