@@ -1,4 +1,4 @@
-#include "mho.h"
+#include "..\include\mho.h"
 #include <math.h>
 
 /////////////////////////////
@@ -399,9 +399,6 @@ mho_mat4_rotate(f32 angle,
     matrix.col3.y = (c1 * vec.y * vec.z) - s * vec.x;
     matrix.col3.z = (c1 * vec.z * vec.z) + c;
 
-	matrix.col1.w = 0.0f;
-	matrix.col2.w = 0.0f;
-	matrix.col3.w = 0.0f;
     matrix.col4.w = 1.0f;
 
     return matrix;
@@ -434,9 +431,6 @@ mho_mat4_rotate_v(f32 angle,
     matrix.col3.y = (c1 * vec.y * vec.z) - s * vec.x;
     matrix.col3.z = (c1 * vec.z * vec.z) + c;
 
-	//matrix.col1.w = 0.0f;
-	//matrix.col2.w = 0.0f;
-	//matrix.col3.w = 0.0f;
     matrix.col4.w = 1.0f;
 
     return matrix;
@@ -472,7 +466,7 @@ mho_mat4_lookat(mho_vec3_t eye,
                 mho_vec3_t center,
                 mho_vec3_t up)
 {
-    mho_mat4_t  matrix;
+    mho_mat4_t  matrix = {0};
     mho_vec3_t  f,
                 s,
                 u;
@@ -497,9 +491,6 @@ mho_mat4_lookat(mho_vec3_t eye,
     matrix.col4.y = -mho_vec3_dot(u, eye);
     matrix.col4.z = mho_vec3_dot(f, eye);
 
-    matrix.col1.w = 0.0f;
-    matrix.col2.w = 0.0f;
-    matrix.col3.w = 0.0f;
     matrix.col4.w = 1.0f;
 
     return matrix;
@@ -533,7 +524,7 @@ mho_mat4_scale_v(mho_vec3_t scale)
 
 mho_mat4_t
 mho_mat4_mul(mho_mat4_t m1,
-              mho_mat4_t m2)
+             mho_mat4_t m2)
 {
     mho_mat4_t  res;
     u8          y,
