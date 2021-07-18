@@ -1,9 +1,10 @@
 // mho is a general utility library, consisting of C functions that can be
-// useful for any type of development. It's a single header library, so all
-// that's required is to include it in your project directory and #define
-// the implementation symbol.
-//
-// mho should ideally be the last file that is #included in your project, as
+// useful for any type of development. It contains various functionality,
+// such as vector/matrix math, a dynamic array (like std::vector), memory
+// and FILE * debugging and some general utility functions for files and
+// strings.
+
+// mho should be the last file that is #included in your project, as
 // it contains some definitions (ie, TRUE/FALSE) that other libraries should
 // have precedence for, as well as requiring other headers/files to be
 // included for certain functionality to work(ie, <glad.h> for OpenGL).
@@ -14,7 +15,6 @@
 // TODO: Implement quaternion and VQS structures + functions.
 // TODO: Add #pragma's to .c files.
 // TODO: Add MHO_ARR_INCSZ macro to resize array by a given size.
-// TODO: Fix and implement mho_obj.
 // TODO: Implement these C stdlib fn's.
 // TODO: See if we can prefix the typedef names with 'mho_' in case a file is
 //       already included whose names collide.
@@ -157,7 +157,6 @@ typedef s32         b32;
 //
 //      Dynamic Array
 //
-
 // Inspired GREATLY by John Jackson's 'gs_dyn_array' implementation from
 // gunslinger: https://github.com/MrFrenik/gunslinger/blob/master/gs.h
 
@@ -584,14 +583,14 @@ MHO_EXTERN mho_mat4_t       mho_mat4_scale(f32 scale_value);
 MHO_EXTERN mho_mat4_t       mho_mat4_scale_v(mho_vec3_t scale);
 
 // Computes the product of two 4x4 matrices
-MHO_EXTERN mho_mat4_t       mho_mat4_mult(mho_mat4_t m1, mho_mat4_t m2);
+MHO_EXTERN mho_mat4_t       mho_mat4_mul(mho_mat4_t m1, mho_mat4_t m2);
 
 /* ============================ *
  * =====    Quaternion    ===== *
  * ============================ */
 
 // Definition of a quaternion
-typedef struct _TAG_quat
+typedef struct _TAG_mho_quat
 {
     union
     {
@@ -630,7 +629,7 @@ MHO_EXTERN mho_quat_t       mho_quat_conj(mho_quat_t q);
  * ============================ */
 
 // Definition of a VQS structure
-typedef struct _TAG_vqs
+typedef struct _TAG_mho_vqs
 {
     mho_vec3_t      pos;
     mho_quat_t      rotate;
@@ -706,15 +705,15 @@ typedef struct _TAG_mho_dbg_mem_rec
 								df_line,
 								size;
     byte						flags;
-	struct _TAG_mho_mem_rec 	*next;
+	struct _TAG_mho_dbg_mem_rec 	*next;
 } mho_dbg_mem_rec_t;
 
 // Record structure for storing file handle information
 typedef struct _TAG_mho_dbg_file_rec
 {
 	char							*file,
-									filename,
-									mode;
+									*filename,
+									*mode;
 	int								line;
 	byte							flags;
 	struct _TAG_mho_dbg_file_rec	*next;
@@ -743,7 +742,6 @@ MHO_EXTERN void 	mho_dbg_file_rec_append(char *filename, char *mode, char *file,
 
 // Prints a debugging report to a specified stream
 MHO_EXTERN void     mho_dbg_print(FILE *stream);
-
 
 
 // Wraps debugging functions
@@ -800,7 +798,7 @@ MHO_EXTERN void     mho_dbg_print(FILE *stream);
     #define mat4_lookat                 mho_mat4_lookat
     #define mat4_scale                  mho_mat4_scale
     #define mat4_scale_v                mho_mat4_scale_v
-    #define mat4_mult                   mho_mat4_mult
+    #define mat4_mul                   	mho_mat4_mul
 
     #define quat_ctor                   mho_quat_ctor
     #define quat_add                    mho_quat_add

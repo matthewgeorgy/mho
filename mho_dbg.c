@@ -4,8 +4,6 @@
 #include "mho.h"
 
 // Important #define constants we use
-#define MHO_MEM_TRUE              1
-#define MHO_MEM_FALSE             0
 #define MHO_MEM_FREE_BIT          0x01
 #define MHO_MEM_OVER_BIT          0x02
 #define MHO_MEM_UNDER_BIT         0x04
@@ -14,10 +12,11 @@
 #define MHO_MEM_UNDER_NUM         0x39D7A5DA
 
 // Required globals
-global s32              	mho_mem_malloc_cnt;
-global s32              	mho_mem_free_cnt;
+global u32              	mho_mem_malloc_cnt;
+global u32              	mho_mem_free_cnt;
 global usize            	mho_mem_total_alloc;
 global mho_dbg_mem_rec_t    *mho_mem_alloc_head = NULL;
+global mho_dbg_file_rec_t	*mho_file_head = NULL;
 
 void *
 mho_dbg_malloc(size_t size,
@@ -113,7 +112,7 @@ mho_dbg_mem_rec_append(void *ptr,
                    int size)
 {
     mho_dbg_mem_rec_t   *new_node,
-                    *temp;
+                    	*temp;
 
     // Allocate and fill new node
     new_node = (mho_dbg_mem_rec_t *)malloc(sizeof(mho_dbg_mem_rec_t));
@@ -174,6 +173,65 @@ mho_mem_debug_memory()
         }
 
         temp = temp->next;
+    }
+}
+
+
+FILE
+*mho_dbg_fopen(char *filename,
+			   char *mode,
+			   char *file,
+			   int line)
+{
+	FILE		*fptr;
+
+	fptr = fopen(filename, mode);
+	if (fptr)
+	{
+		mho_dbg_file_rec_append(filename, mode, file, line);
+	}
+
+	return fptr;
+}
+
+void
+mho_dbg_fclose(FILE *fptr,
+			   char *file,
+			   int line)
+{
+
+}
+
+void
+mho_dbg_file_rec_append(char *filename,
+						char *mode,
+						char *file,
+						int line)
+{
+	mho_dbg_file_rec_t	*new_node,
+						*temp;
+
+	new_node = (mho_dbg_file_rec_t *)malloc(sizeof(mho_dbg_file_rec_t));
+	new_node->filename = filename;
+	new_node->file = file;
+	new_node->mode = mode;
+	new_node->line = line;
+
+    // If list is empty
+    if (mho_file_head == NULL)
+    {
+        mho_file_head = new_node;
+    }
+
+    else
+    {
+        // Find last node
+        temp = mho_file_head;
+        while (temp->next != NULL)
+            temp = temp->next;
+
+        // Append
+        temp->next = new_node;
     }
 }
 

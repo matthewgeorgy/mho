@@ -380,7 +380,7 @@ mho_mat4_rotate(f32 angle,
                 s,
                 c1;
     mho_vec3_t  vec = {x, y, z};
-    mho_mat4_t  matrix;
+	mho_mat4_t  matrix = {0};
 
     c = mho_cos(mho_rads(angle));
     s = mho_sin(mho_rads(angle));
@@ -415,7 +415,7 @@ mho_mat4_rotate_v(f32 angle,
     f32         c,
                 s,
                 c1;
-    mho_mat4_t  matrix;
+	mho_mat4_t  matrix = {0};
 
     c = mho_cos(mho_rads(angle));
     s = mho_sin(mho_rads(angle));
@@ -434,9 +434,9 @@ mho_mat4_rotate_v(f32 angle,
     matrix.col3.y = (c1 * vec.y * vec.z) - s * vec.x;
     matrix.col3.z = (c1 * vec.z * vec.z) + c;
 
-	matrix.col1.w = 0.0f;
-	matrix.col2.w = 0.0f;
-	matrix.col3.w = 0.0f;
+	//matrix.col1.w = 0.0f;
+	//matrix.col2.w = 0.0f;
+	//matrix.col3.w = 0.0f;
     matrix.col4.w = 1.0f;
 
     return matrix;
@@ -508,7 +508,7 @@ mho_mat4_lookat(mho_vec3_t eye,
 mho_mat4_t
 mho_mat4_scale(f32 scale_value)
 {
-    mho_mat4_t  matrix;
+	mho_mat4_t  matrix = {0};
 
     matrix.col1.x = scale_value;
     matrix.col2.y = scale_value;
@@ -532,7 +532,7 @@ mho_mat4_scale_v(mho_vec3_t scale)
 }
 
 mho_mat4_t
-mho_mat4_mult(mho_mat4_t m1,
+mho_mat4_mul(mho_mat4_t m1,
               mho_mat4_t m2)
 {
     mho_mat4_t  res;
