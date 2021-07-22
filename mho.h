@@ -802,5 +802,9 @@ MHO_EXTERN void     mho_dbg_print(FILE *stream);
 
  #endif // MHO_FULL_NAMES
 
+#undef local
+#undef global
+#undef internal
+
 #endif // MHO_H
 
