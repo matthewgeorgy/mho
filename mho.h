@@ -12,6 +12,8 @@
 #ifndef MHO_H
 #define MHO_H
 
+#pragma warning(disable: 4201) // anon struct/union
+
 // TODO: Implement quaternion and VQS structures + functions.
 // TODO: Add #pragma's to .c files.
 // TODO: Implement debugging for fopen/fclose.
@@ -339,7 +341,7 @@ mho_arr_resize(void *arr,
 MHO_EXTERN char     *mho_read_file_buffer(const char *filename);
 
 // Returns the length of a file given a FILE * handle
-MHO_EXTERN s64      mho_filelen(FILE *fp);
+MHO_EXTERN long     mho_filelen(FILE *fp);
 
 // C stdlib custom implementations
 MHO_EXTERN void     mho_memcpy(void *dest, void *src, usize n);
@@ -692,25 +694,25 @@ MHO_EXTERN void     mho_mouse_callback(GLFWwindow *window, f64 x_pos, f64 y_pos)
 // Record structure for storing memory information
 typedef struct _TAG_mho_dbg_mem_rec
 {
-    void						*ptr;
-    char						*file,
-								*df_file;
-    int							line,
-								df_line,
-								size;
-    byte						flags;
-	struct _TAG_mho_dbg_mem_rec 	*next;
+    void                        *ptr;
+    char                        *file,
+                                *df_file;
+    int                         line,
+                                df_line;
+    usize                       size;
+    byte                        flags;
+    struct _TAG_mho_dbg_mem_rec     *next;
 } mho_dbg_mem_rec_t;
 
 // Record structure for storing file handle information
 typedef struct _TAG_mho_dbg_file_rec
 {
-	char							*file,
-									*filename,
-									*mode;
-	int								line;
-	byte							flags;
-	struct _TAG_mho_dbg_file_rec	*next;
+    char                            *file,
+                                    *filename,
+                                    *mode;
+    int                             line;
+    byte                            flags;
+    struct _TAG_mho_dbg_file_rec    *next;
 } mho_dbg_file_rec_t;
 
 // Custom malloc impl for debugging
@@ -720,19 +722,19 @@ MHO_EXTERN void     *mho_dbg_malloc(size_t size, char *file, int line);
 MHO_EXTERN void     mho_dbg_free(void *buffer, char *file, int line);
 
 // Adds a new memory debug rec to the list
-MHO_EXTERN void 	mho_dbg_mem_rec_append(void *ptr, const char *file, int line, int size);
+MHO_EXTERN void     mho_dbg_mem_rec_append(void *ptr, char *file, int line, usize size);
 
 // Verifies memory integrity of list (searches for over/underruns)
 MHO_EXTERN void     mho_dbg_memory(void);
 
 // Custom fopen impl for debugging
-MHO_EXTERN FILE		*mho_dbg_fopen(char *filename, char *mode, char *file, int line);
+MHO_EXTERN FILE     *mho_dbg_fopen(char *filename, char *mode, char *file, int line);
 
 // Custom fclose impl for debugging
-MHO_EXTERN void		mho_dbg_fclose(FILE *fptr, char *filename, char *mode, char *file, int line);
+MHO_EXTERN void     mho_dbg_fclose(FILE *fptr, char *filename, char *mode, char *file, int line);
 
 // Adds a new file debug rec to the list
-MHO_EXTERN void 	mho_dbg_file_rec_append(char *filename, char *mode, char *file, int line);
+MHO_EXTERN void     mho_dbg_file_rec_append(char *filename, char *mode, char *file, int line);
 
 // Prints a debugging report to a specified stream
 MHO_EXTERN void     mho_dbg_print(FILE *stream);
@@ -792,7 +794,7 @@ MHO_EXTERN void     mho_dbg_print(FILE *stream);
     #define mat4_lookat                 mho_mat4_lookat
     #define mat4_scale                  mho_mat4_scale
     #define mat4_scale_v                mho_mat4_scale_v
-    #define mat4_mul                   	mho_mat4_mul
+    #define mat4_mul                    mho_mat4_mul
 
     #define quat_ctor                   mho_quat_ctor
     #define quat_add                    mho_quat_add
@@ -802,9 +804,7 @@ MHO_EXTERN void     mho_dbg_print(FILE *stream);
 
  #endif // MHO_FULL_NAMES
 
-#undef local
-#undef global
-#undef internal
+#pragma warning(default: 4201) // anon struct/union
 
 #endif // MHO_H
 

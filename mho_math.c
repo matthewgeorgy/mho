@@ -1,5 +1,6 @@
-#include "..\include\mho.h"
-#include <math.h>
+#include "mho.h"
+
+#pragma warning(disable: 4204) // aggregate initializer
 
 /////////////////////////////
 // VECTOR2D IMPLEMENTATION
@@ -9,7 +10,7 @@ mho_vec2_t
 mho_vec2_ctor(f32 x,
               f32 y)
 {
-    mho_vec2_t  vec;
+    mho_vec2_t      vec;
 
     vec.x = x;
     vec.y = y;
@@ -108,7 +109,7 @@ mho_vec3_ctor(f32 x,
               f32 y,
               f32 z)
 {
-    mho_vec3_t  vec;
+    mho_vec3_t      vec;
 
     vec.x = x;
     vec.y = y;
@@ -161,7 +162,7 @@ mho_vec3_t
 mho_vec3_cross(mho_vec3_t v1,
                mho_vec3_t v2)
 {
-    mho_vec3_t  cross_prod;
+    mho_vec3_t      cross_prod;
 
     cross_prod.x = (v1.y * v2.z) - (v1.z * v2.y);
     cross_prod.y = (v1.z * v2.x) - (v1.x * v2.z);
@@ -212,7 +213,7 @@ mho_vec4_ctor(f32 x,
               f32 z,
               f32 w)
 {
-    mho_vec4_t  vec;
+    mho_vec4_t      vec;
 
     vec.x = x;
     vec.y = y;
@@ -306,7 +307,7 @@ mho_vec4_pmul(mho_vec4_t v1,
 mho_mat4_t
 mho_mat4_identity(void)
 {
-    mho_mat4_t  matrix = {0};
+    mho_mat4_t      matrix = {0};
 
     matrix.col1.x = 1.0f;
     matrix.col2.y = 1.0f;
@@ -321,7 +322,7 @@ mho_mat4_translate(f32 x,
                    f32 y,
                    f32 z)
 {
-    mho_mat4_t  matrix;
+    mho_mat4_t      matrix;
 
     matrix = mho_mat4_identity();
     matrix.col4.x = x;
@@ -334,7 +335,7 @@ mho_mat4_translate(f32 x,
 mho_mat4_t
 mho_mat4_translate_v(mho_vec3_t vec)
 {
-    mho_mat4_t  matrix;
+    mho_mat4_t      matrix;
 
     matrix = mho_mat4_identity();
     matrix.col4.x = vec.x;
@@ -357,8 +358,8 @@ mho_mat4_translate_remove(mho_mat4_t matrix)
 void
 mho_mat4_print(mho_mat4_t matrix)
 {
-    u8  i,
-        j;
+    u8      i,
+            j;
 
     for (i = 0; i < 4; i++)
     {
@@ -376,11 +377,11 @@ mho_mat4_rotate(f32 angle,
                 f32 y,
                 f32 z)
 {
-    f32         c,
-                s,
-                c1;
-    mho_vec3_t  vec = {x, y, z};
-	mho_mat4_t  matrix = {0};
+    f32             c,
+                    s,
+                    c1;
+    mho_vec3_t      vec = {x, y, z};
+    mho_mat4_t      matrix = {0};
 
     c = mho_cos(mho_rads(angle));
     s = mho_sin(mho_rads(angle));
@@ -409,10 +410,10 @@ mho_mat4_rotate_v(f32 angle,
                   mho_vec3_t vec)
 {
 
-    f32         c,
-                s,
-                c1;
-	mho_mat4_t  matrix = {0};
+    f32             c,
+                    s,
+                    c1;
+    mho_mat4_t      matrix = {0};
 
     c = mho_cos(mho_rads(angle));
     s = mho_sin(mho_rads(angle));
@@ -442,9 +443,9 @@ mho_mat4_perspective(f32 fov,
                      f32 near,
                      f32 far)
 {
-    f32         t,
-                fdelta;
-    mho_mat4_t  matrix = {0};
+    f32             t,
+                    fdelta;
+    mho_mat4_t      matrix = {0};
 
     t = mho_tan(mho_rads(fov) / 2.0f);
     fdelta = far - near;
@@ -466,10 +467,10 @@ mho_mat4_lookat(mho_vec3_t eye,
                 mho_vec3_t center,
                 mho_vec3_t up)
 {
-    mho_mat4_t  matrix = {0};
-    mho_vec3_t  f,
-                s,
-                u;
+    mho_mat4_t      matrix = {0};
+    mho_vec3_t      f,
+                    s,
+                    u;
 
     f = mho_vec3_normalize(mho_vec3_sub(center, eye));
     s = mho_vec3_normalize(mho_vec3_cross(f, up));
@@ -499,7 +500,7 @@ mho_mat4_lookat(mho_vec3_t eye,
 mho_mat4_t
 mho_mat4_scale(f32 scale_value)
 {
-	mho_mat4_t  matrix = {0};
+    mho_mat4_t      matrix = {0};
 
     matrix.col1.x = scale_value;
     matrix.col2.y = scale_value;
@@ -512,7 +513,7 @@ mho_mat4_scale(f32 scale_value)
 mho_mat4_t
 mho_mat4_scale_v(mho_vec3_t scale)
 {
-    mho_mat4_t  matrix = {0};
+    mho_mat4_t      matrix = {0};
 
     matrix.col1.x = scale.x;
     matrix.col2.y = scale.y;
@@ -526,11 +527,11 @@ mho_mat4_t
 mho_mat4_mul(mho_mat4_t m1,
              mho_mat4_t m2)
 {
-    mho_mat4_t  res;
-    u8          y,
-                x,
-                e;
-    f32         sum;
+    mho_mat4_t      res;
+    u8              y,
+                    x,
+                    e;
+    f32             sum;
 
     for (y = 0; y < 4; y++)
     {
@@ -555,66 +556,66 @@ mho_mat4_mul(mho_mat4_t m1,
 
 mho_quat_t
 mho_quat_ctor(f32 w,
-			  f32 i,
-			  f32 j,
-			  f32 k)
+              f32 i,
+              f32 j,
+              f32 k)
 {
-	mho_quat_t	quat;
+    mho_quat_t  quat;
 
-	quat.w = w;
-	quat.i = i;
-	quat.j = j;
-	quat.k = k;
+    quat.w = w;
+    quat.i = i;
+    quat.j = j;
+    quat.k = k;
 
-	return quat;
+    return quat;
 }
 
 mho_quat_t
 mho_quat_add(mho_quat_t q1,
-			 mho_quat_t q2)
+             mho_quat_t q2)
 {
-	q1.w += q2.w;
-	q1.i += q2.i;
-	q1.j += q2.j;
-	q1.k += q2.k;
+    q1.w += q2.w;
+    q1.i += q2.i;
+    q1.j += q2.j;
+    q1.k += q2.k;
 
-	return q1;
+    return q1;
 }
 
 mho_quat_t
 mho_quat_sub(mho_quat_t q1,
-			 mho_quat_t q2)
+             mho_quat_t q2)
 {
-	q1.w -= q2.w;
-	q1.i -= q2.i;
-	q1.j -= q2.j;
-	q1.k -= q2.k;
+    q1.w -= q2.w;
+    q1.i -= q2.i;
+    q1.j -= q2.j;
+    q1.k -= q2.k;
 
-	return q1;
+    return q1;
 }
 
 mho_quat_t
 mho_quat_mul(mho_quat_t q1,
-			 mho_quat_t q2)
+             mho_quat_t q2)
 {
-	mho_quat_t	prod;
+    mho_quat_t  prod;
 
-	prod.w = (q1.w * q2.w) - (q1.i * q2.i) - (q1.j * q2.j) - (q1.k * q2.k);
-	prod.i = (q1.w * q2.i) - (q1.i * q2.w) - (q1.j * q2.k) - (q1.k * q2.j);
-	prod.j = (q1.w * q2.j) - (q1.i * q2.k) - (q1.j * q2.w) - (q1.k * q2.i);
-	prod.k = (q1.w * q2.k) - (q1.i * q2.j) - (q1.j * q2.i) - (q1.k * q2.w);
+    prod.w = (q1.w * q2.w) - (q1.i * q2.i) - (q1.j * q2.j) - (q1.k * q2.k);
+    prod.i = (q1.w * q2.i) - (q1.i * q2.w) - (q1.j * q2.k) - (q1.k * q2.j);
+    prod.j = (q1.w * q2.j) - (q1.i * q2.k) - (q1.j * q2.w) - (q1.k * q2.i);
+    prod.k = (q1.w * q2.k) - (q1.i * q2.j) - (q1.j * q2.i) - (q1.k * q2.w);
 
-	return prod;
+    return prod;
 }
 
 mho_quat_t
 mho_quat_conj(mho_quat_t q)
 {
-	q.i *= -1;
-	q.j *= -1;
-	q.k *= -1;
+    q.i *= -1;
+    q.j *= -1;
+    q.k *= -1;
 
-	return q;
+    return q;
 }
 
 //////////////////////////////
@@ -692,37 +693,5 @@ mho_fsqrtinv(f32 number)
     return y;
 }
 
-f32
-mho_noise2f(f32 x,
-			f32 y)
-{
-	f32 a, b, c, d;
-	s32 xi, yi;
+#pragma warning(default: 4204) // aggregate initializer
 
-	x += 256.0;
-	xi = (s32)x;
-	x -= (f32)xi;
-
-	y += 4096.0;
-	yi = (s32)y;
-	y -= (f32)yi;
-	yi *= 11;
-
-	x = (3.0 * x * x - 2.0 * x * x * x);
-	y = (3.0 * y * y - 2.0 * y * y * y);
-
-	a = mho_randnf((u32)xi + yi);
-	b = mho_randnf((u32)xi + yi + 1);
-
-	c = mho_lerp(a, b, x);
-	/* c = a + (b - a) * x; */
-
-	a = mho_randnf((u32)xi + yi + 11);
-	b = mho_randnf((u32)xi + yi + 12);
-
-	d = mho_lerp(a, b, x);
-	/* d = a + (b - a) * x; */
-
-	return mho_lerp(c, d, y);
-	/* return c + (d - c) * y; */
-}

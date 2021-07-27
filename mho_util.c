@@ -2,13 +2,15 @@
 #include <stdlib.h>
 #include "mho.h"
 
+#pragma warning(disable: 4996) // fopen unsafe
+
 char *
 mho_read_file_buffer(const char *filename)
 {
-    FILE    *fptr;
-    s32     file_len,
-            ret;
-    char    *source = NULL;
+    FILE        *fptr;
+    long        file_len;
+    s32         ret;
+    char        *source = NULL;
 
     fptr = fopen(filename, "rb");
     if (fptr)
@@ -19,7 +21,7 @@ mho_read_file_buffer(const char *filename)
             source = (char *)malloc(file_len + 1);
             if (source)
             {
-                ret = fread(source, 1, file_len, fptr);
+                ret = (s32)fread(source, 1, file_len, fptr);
                 if (ret == file_len)
                 {
                     source[file_len] = 0;
@@ -44,11 +46,11 @@ mho_read_file_buffer(const char *filename)
     return source;
 }
 
-s64
+long
 mho_filelen(FILE *fp)
 {
-    s64     len,
-            pos;
+    long        len,
+                pos;
 
     pos = ftell(fp);
     fseek(fp, 0, SEEK_END);
@@ -63,7 +65,7 @@ mho_memcpy(void *dest,
            void *src,
            usize n)
 {
-    usize   i;
+    usize       i;
 
     for (i = 0; i < n; i++)
     {
@@ -76,8 +78,8 @@ mho_memset(void *dest,
            s32 c,
            usize n)
 {
-    u8      uc = (u8)c;
-    usize   i;
+    u8          uc = (u8)c;
+    usize       i;
 
     for (i = 0; i < n; i++)
     {
@@ -102,7 +104,7 @@ mho_strncpy(s8 *dest,
             s8 *src,
             usize n)
 {
-    usize   i;
+    usize       i;
 
     for (i = 0; i < n; i++)
     {
@@ -113,7 +115,7 @@ mho_strncpy(s8 *dest,
 usize
 mho_strlen(s8 *str)
 {
-    usize   len = 0;
+    usize       len = 0;
 
     while (*str++ != '\0')
     {
@@ -127,11 +129,11 @@ s8 *
 mho_strcat(s8 *str1,
            s8 *str2)
 {
-    u32     size1,
-            size2,
-            index,
-            i;
-    s8      *new_str;
+    u32         size1,
+                size2,
+                index,
+                i;
+    s8          *new_str;
 
     for (size1 = 0; str1[size1] != '\0'; size1++);
     for (size2 = 0; str2[size2] != '\0'; size2++);
@@ -145,3 +147,6 @@ mho_strcat(s8 *str1,
 
     return new_str;
 }
+
+#pragma warning(default: 4996) // fopen unsafe
+

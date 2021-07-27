@@ -3,6 +3,9 @@
 #include <string.h> // strchr
 #include "mho.h"
 
+#pragma warning(disable: 4996) // fopen unsafe
+#pragma warning(disable: 4477) // %u vs %zu in fprintf (MSVC2015 ONLY)
+
 // Important #define constants we use
 #define MHO_MEM_FREE_BIT          0x01
 #define MHO_MEM_OVER_BIT          0x02
@@ -12,20 +15,20 @@
 #define MHO_MEM_UNDER_NUM         0x39D7A5DA
 
 // Required globals
-global u32              	mho_mem_malloc_cnt;
-global u32              	mho_mem_free_cnt;
-global usize            	mho_mem_total_alloc;
+global u32                  mho_mem_malloc_cnt;
+global u32                  mho_mem_free_cnt;
+global usize                mho_mem_total_alloc;
 global mho_dbg_mem_rec_t    *mho_mem_alloc_head = NULL;
-global mho_dbg_file_rec_t	*mho_file_head = NULL;
+global mho_dbg_file_rec_t   *mho_file_head = NULL;
 
 void *
 mho_dbg_malloc(size_t size,
-               const char *file,
+               char *file,
                int line)
 {
-    void    *ptr = NULL;
-    dword   *buff_un,
-            *buff_ov;
+    void        *ptr = NULL;
+    dword       *buff_un,
+                *buff_ov;
 
     buff_un = (dword *)malloc(size + 2 * sizeof(dword));
 
@@ -48,12 +51,12 @@ mho_dbg_malloc(size_t size,
 
 void
 mho_dbg_free(void *buffer,
-             const char *file,
+             char *file,
              int line)
 {
-    mho_dbg_mem_rec_t   *temp;
-    dword           	value;
-    void            	*p;
+    mho_dbg_mem_rec_t       *temp;
+    dword                   value;
+    void                    *p;
 
     // Set the 'freed' (or 'double freed') flag(s) if necessary
     temp = mho_mem_alloc_head;
@@ -107,12 +110,12 @@ mho_dbg_free(void *buffer,
 
 void
 mho_dbg_mem_rec_append(void *ptr,
-                   const char *file,
+                   char *file,
                    int line,
-                   int size)
+                   usize size)
 {
-    mho_dbg_mem_rec_t   *new_node,
-                    	*temp;
+    mho_dbg_mem_rec_t       *new_node,
+                            *temp;
 
     // Allocate and fill new node
     new_node = (mho_dbg_mem_rec_t *)malloc(sizeof(mho_dbg_mem_rec_t));
@@ -146,9 +149,9 @@ mho_dbg_mem_rec_append(void *ptr,
 void
 mho_mem_debug_memory()
 {
-    mho_dbg_mem_rec_t   *temp;
-    dword           value;
-    void            *p;
+    mho_dbg_mem_rec_t       *temp;
+    dword                   value;
+    void                    *p;
 
     temp = mho_mem_alloc_head;
     while (temp != NULL)
@@ -179,43 +182,43 @@ mho_mem_debug_memory()
 
 FILE
 *mho_dbg_fopen(char *filename,
-			   char *mode,
-			   char *file,
-			   int line)
+               char *mode,
+               char *file,
+               int line)
 {
-	FILE		*fptr;
+    FILE        *fptr;
 
-	fptr = fopen(filename, mode);
-	if (fptr)
-	{
-		mho_dbg_file_rec_append(filename, mode, file, line);
-	}
+    fptr = fopen(filename, mode);
+    if (fptr)
+    {
+        mho_dbg_file_rec_append(filename, mode, file, line);
+    }
 
-	return fptr;
+    return fptr;
 }
 
-void
-mho_dbg_fclose(FILE *fptr,
-			   char *file,
-			   int line)
-{
+/* void */
+/* mho_dbg_fclose(FILE *fptr, */
+/*             char *file, */
+/*             int line) */
+/* { */
 
-}
+/* } */
 
 void
 mho_dbg_file_rec_append(char *filename,
-						char *mode,
-						char *file,
-						int line)
+                        char *mode,
+                        char *file,
+                        int line)
 {
-	mho_dbg_file_rec_t	*new_node,
-						*temp;
+    mho_dbg_file_rec_t      *new_node,
+                            *temp;
 
-	new_node = (mho_dbg_file_rec_t *)malloc(sizeof(mho_dbg_file_rec_t));
-	new_node->filename = filename;
-	new_node->file = file;
-	new_node->mode = mode;
-	new_node->line = line;
+    new_node = (mho_dbg_file_rec_t *)malloc(sizeof(mho_dbg_file_rec_t));
+    new_node->filename = filename;
+    new_node->file = file;
+    new_node->mode = mode;
+    new_node->line = line;
 
     // If list is empty
     if (mho_file_head == NULL)
@@ -238,8 +241,8 @@ mho_dbg_file_rec_append(char *filename,
 void
 mho_mem_print(FILE *stream)
 {
-    mho_dbg_mem_rec_t   *temp;
-    void            	*p;
+    mho_dbg_mem_rec_t       *temp;
+    void                    *p;
 
     mho_mem_debug_memory();
 
@@ -295,3 +298,6 @@ mho_mem_print(FILE *stream)
     fprintf(stream, "                    END OF REPORT\n");
     fprintf(stream, "=========================================================\n");
 }
+
+#pragma warning(default: 4996) // fopen unsafe
+
