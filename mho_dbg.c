@@ -30,6 +30,7 @@ mho_dbg_malloc(size_t size,
     dword       *buff_un,
                 *buff_ov;
 
+
     buff_un = (dword *)malloc(size + 2 * sizeof(dword));
 
     // If allocation succeeded
@@ -57,6 +58,7 @@ mho_dbg_free(void *buffer,
     mho_dbg_mem_rec_t       *temp;
     dword                   value;
     void                    *p;
+
 
     // Set the 'freed' (or 'double freed') flag(s) if necessary
     temp = mho_mem_alloc_head;
@@ -117,6 +119,7 @@ mho_dbg_mem_rec_append(void *ptr,
     mho_dbg_mem_rec_t       *new_node,
                             *temp;
 
+
     // Allocate and fill new node
     new_node = (mho_dbg_mem_rec_t *)malloc(sizeof(mho_dbg_mem_rec_t));
     new_node->ptr = ptr;
@@ -153,6 +156,7 @@ mho_mem_debug_memory()
     dword                   value;
     void                    *p;
 
+
     temp = mho_mem_alloc_head;
     while (temp != NULL)
     {
@@ -188,6 +192,7 @@ FILE
 {
     FILE        *fptr;
 
+
     fptr = fopen(filename, mode);
     if (fptr)
     {
@@ -213,6 +218,7 @@ mho_dbg_file_rec_append(char *filename,
 {
     mho_dbg_file_rec_t      *new_node,
                             *temp;
+
 
     new_node = (mho_dbg_file_rec_t *)malloc(sizeof(mho_dbg_file_rec_t));
     new_node->filename = filename;
@@ -243,6 +249,7 @@ mho_mem_print(FILE *stream)
 {
     mho_dbg_mem_rec_t       *temp;
     void                    *p;
+
 
     mho_mem_debug_memory();
 

@@ -9,8 +9,9 @@ mho_read_file_buffer(const char *filename)
 {
     FILE        *fptr;
     long        file_len;
-    s32         ret;
+    usize       ret;
     char        *source = NULL;
+
 
     fptr = fopen(filename, "rb");
     if (fptr)
@@ -21,7 +22,7 @@ mho_read_file_buffer(const char *filename)
             source = (char *)malloc(file_len + 1);
             if (source)
             {
-                ret = (s32)fread(source, 1, file_len, fptr);
+                ret = fread(source, 1, file_len, fptr);
                 if (ret == file_len)
                 {
                     source[file_len] = 0;
@@ -52,6 +53,7 @@ mho_filelen(FILE *fp)
     long        len,
                 pos;
 
+
     pos = ftell(fp);
     fseek(fp, 0, SEEK_END);
     len = ftell(fp);
@@ -67,6 +69,7 @@ mho_memcpy(void *dest,
 {
     usize       i;
 
+
     for (i = 0; i < n; i++)
     {
         ((s8 *)dest)[i] = ((s8 *)src)[i];
@@ -80,6 +83,7 @@ mho_memset(void *dest,
 {
     u8          uc = (u8)c;
     usize       i;
+
 
     for (i = 0; i < n; i++)
     {
@@ -106,6 +110,7 @@ mho_strncpy(s8 *dest,
 {
     usize       i;
 
+
     for (i = 0; i < n; i++)
     {
         dest[i] = src[i];
@@ -116,6 +121,7 @@ usize
 mho_strlen(s8 *str)
 {
     usize       len = 0;
+
 
     while (*str++ != '\0')
     {
@@ -134,6 +140,7 @@ mho_strcat(s8 *str1,
                 index,
                 i;
     s8          *new_str;
+
 
     for (size1 = 0; str1[size1] != '\0'; size1++);
     for (size2 = 0; str2[size2] != '\0'; size2++);

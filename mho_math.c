@@ -12,6 +12,7 @@ mho_vec2_ctor(f32 x,
 {
     mho_vec2_t      vec;
 
+
     vec.x = x;
     vec.y = y;
 
@@ -66,6 +67,7 @@ mho_vec2_normalize(mho_vec2_t vec)
 {
     f32     val;
 
+
     val = mho_fsqrtinv((vec.x * vec.x) + (vec.y * vec.y));
     vec.x *= val;
     vec.y *= val;
@@ -80,6 +82,7 @@ mho_vec2_rotate(mho_vec2_t vec,
     f32     c,
             s;
 
+
     c = mho_cos(mho_rads(angle));
     s = mho_sin(mho_rads(angle));
     vec.x = ((vec.x * c) - (vec.y * s));
@@ -93,6 +96,7 @@ mho_vec2_pmul(mho_vec2_t v1,
               mho_vec2_t v2)
 {
     mho_vec2_t      res;
+
 
     res.x = v1.x * v2.x;
     res.y = v1.y * v2.y;
@@ -110,6 +114,7 @@ mho_vec3_ctor(f32 x,
               f32 z)
 {
     mho_vec3_t      vec;
+
 
     vec.x = x;
     vec.y = y;
@@ -164,6 +169,7 @@ mho_vec3_cross(mho_vec3_t v1,
 {
     mho_vec3_t      cross_prod;
 
+
     cross_prod.x = (v1.y * v2.z) - (v1.z * v2.y);
     cross_prod.y = (v1.z * v2.x) - (v1.x * v2.z);
     cross_prod.z = (v1.x * v2.y) - (v1.y * v2.x);
@@ -182,6 +188,7 @@ mho_vec3_normalize(mho_vec3_t vec)
 {
     f32     val;
 
+
     val = mho_fsqrtinv((vec.x * vec.x) + (vec.y * vec.y) + (vec.z * vec.z));
     vec.x *= val;
     vec.y *= val;
@@ -195,6 +202,7 @@ mho_vec3_pmul(mho_vec3_t v1,
               mho_vec3_t v2)
 {
     mho_vec3_t      res;
+
 
     res.x = v1.x * v2.x;
     res.y = v1.y * v2.y;
@@ -214,6 +222,7 @@ mho_vec4_ctor(f32 x,
               f32 w)
 {
     mho_vec4_t      vec;
+
 
     vec.x = x;
     vec.y = y;
@@ -277,6 +286,7 @@ mho_vec4_normalize(mho_vec4_t vec)
 {
     f32     val;
 
+
     val = mho_fsqrtinv((vec.x * vec.x) + (vec.y * vec.y) + (vec.z * vec.z) + (vec.w * vec.w));
     vec.x *= val;
     vec.y *= val;
@@ -291,6 +301,7 @@ mho_vec4_pmul(mho_vec4_t v1,
               mho_vec4_t v2)
 {
     mho_vec4_t      res;
+
 
     res.x = v1.x * v2.x;
     res.y = v1.y * v2.y;
@@ -309,6 +320,7 @@ mho_mat4_identity(void)
 {
     mho_mat4_t      matrix = {0};
 
+
     matrix.col1.x = 1.0f;
     matrix.col2.y = 1.0f;
     matrix.col3.z = 1.0f;
@@ -324,6 +336,7 @@ mho_mat4_translate(f32 x,
 {
     mho_mat4_t      matrix;
 
+
     matrix = mho_mat4_identity();
     matrix.col4.x = x;
     matrix.col4.y = y;
@@ -336,6 +349,7 @@ mho_mat4_t
 mho_mat4_translate_v(mho_vec3_t vec)
 {
     mho_mat4_t      matrix;
+
 
     matrix = mho_mat4_identity();
     matrix.col4.x = vec.x;
@@ -361,6 +375,7 @@ mho_mat4_print(mho_mat4_t matrix)
     u8      i,
             j;
 
+
     for (i = 0; i < 4; i++)
     {
         for (j = 0; j < 4; j++)
@@ -382,6 +397,7 @@ mho_mat4_rotate(f32 angle,
                     c1;
     mho_vec3_t      vec = {x, y, z};
     mho_mat4_t      matrix = {0};
+
 
     c = mho_cos(mho_rads(angle));
     s = mho_sin(mho_rads(angle));
@@ -415,6 +431,7 @@ mho_mat4_rotate_v(f32 angle,
                     c1;
     mho_mat4_t      matrix = {0};
 
+
     c = mho_cos(mho_rads(angle));
     s = mho_sin(mho_rads(angle));
     c1 = 1.0f - c;
@@ -447,6 +464,7 @@ mho_mat4_perspective(f32 fov,
                     fdelta;
     mho_mat4_t      matrix = {0};
 
+
     t = mho_tan(mho_rads(fov) / 2.0f);
     fdelta = far - near;
 
@@ -471,6 +489,7 @@ mho_mat4_lookat(mho_vec3_t eye,
     mho_vec3_t      f,
                     s,
                     u;
+
 
     f = mho_vec3_normalize(mho_vec3_sub(center, eye));
     s = mho_vec3_normalize(mho_vec3_cross(f, up));
@@ -502,6 +521,7 @@ mho_mat4_scale(f32 scale_value)
 {
     mho_mat4_t      matrix = {0};
 
+
     matrix.col1.x = scale_value;
     matrix.col2.y = scale_value;
     matrix.col3.z = scale_value;
@@ -514,6 +534,7 @@ mho_mat4_t
 mho_mat4_scale_v(mho_vec3_t scale)
 {
     mho_mat4_t      matrix = {0};
+
 
     matrix.col1.x = scale.x;
     matrix.col2.y = scale.y;
@@ -532,6 +553,7 @@ mho_mat4_mul(mho_mat4_t m1,
                     x,
                     e;
     f32             sum;
+
 
     for (y = 0; y < 4; y++)
     {
@@ -561,6 +583,7 @@ mho_quat_ctor(f32 w,
               f32 k)
 {
     mho_quat_t  quat;
+
 
     quat.w = w;
     quat.i = i;
@@ -599,6 +622,7 @@ mho_quat_mul(mho_quat_t q1,
              mho_quat_t q2)
 {
     mho_quat_t  prod;
+
 
     prod.w = (q1.w * q2.w) - (q1.i * q2.i) - (q1.j * q2.j) - (q1.k * q2.k);
     prod.i = (q1.w * q2.i) - (q1.i * q2.w) - (q1.j * q2.k) - (q1.k * q2.j);
@@ -664,6 +688,7 @@ mho_fsqrt(f32 number)
             y;
     s32     i;
 
+
     x = number * 0.5f;
     y = number;
     i = *(s32 *)&y;                 // evil floating point bit hack
@@ -681,6 +706,7 @@ mho_fsqrtinv(f32 number)
     f32     x,
             y;
     s32     i;
+
 
     x = number * 0.5f;
     y = number;

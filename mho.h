@@ -282,7 +282,8 @@ local void **
 mho_arr_init(void **arr,
              usize val_size)
 {
-    mho_arr_header_t    *data;
+    mho_arr_header_t		*data;
+
 
     if (*arr == NULL)
     {
@@ -307,8 +308,9 @@ mho_arr_resize(void *arr,
                usize sz,
                usize amt)
 {
-    usize               capacity;
-    mho_arr_header_t    *data;
+    usize               	capacity;
+    mho_arr_header_t		*data;
+
 
     if (arr)
         capacity = amt;
