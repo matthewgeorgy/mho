@@ -340,10 +340,16 @@ mho_arr_resize(void *arr,
 //
 
 // Reads a file and writes it into a char * buffer
-MHO_EXTERN char     *mho_read_file_buffer(const char *filename);
+MHO_EXTERN char		*mho_file_read(const char *filename, usize byte_cnt);
+
+// Writes the contents of a char * buffer into a file
+MHO_EXTERN b32		mho_file_write(const char *filename, char *buffer, usize byte_cnt);
+
+// Appends the contents of a char * buffer into a file
+MHO_EXTERN b32		mho_file_append(const char *filename, char *buffer, usize byte_cnt);
 
 // Returns the length of a file given a FILE * handle
-MHO_EXTERN long     mho_filelen(FILE *fp);
+MHO_EXTERN long     mho_file_len(FILE *fp);
 
 // C stdlib custom implementations
 MHO_EXTERN void     mho_memcpy(void *dest, void *src, usize n);
@@ -659,8 +665,11 @@ MHO_EXTERN f32      mho_fsqrt(f32 number);
 // Quake III inverse square root
 MHO_EXTERN f32      mho_fsqrtinv(f32 number);
 
-// Single octave 2D 32bit float noise.
-MHO_EXTERN f32      mho_noise2f(f32 x, f32 y);
+// Approximated sin() function using Taylor Polynomial (deg!)
+MHO_EXTERN f32		mho_fsin(f32 angle);
+
+// Approximated cos() function using Taylor Polynomial (deg!)
+MHO_EXTERN f32		mho_fcos(f32 angle);
 
 ///////////////////////////////////////////////////////////////////////////////
 //

@@ -719,5 +719,25 @@ mho_fsqrtinv(f32 number)
     return y;
 }
 
+f32
+mho_fsin(f32 angle)
+{
+	f32		ret;
+
+	if (angle)
+
+
+	return ret;
+}
+
+f32
+mho_fcos(f32 angle)
+{
+	f32		ret;
+
+
+	return ret;
+}
+
 #pragma warning(default: 4204) // aggregate initializer
 

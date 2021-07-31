@@ -5,50 +5,126 @@
 #pragma warning(disable: 4996) // fopen unsafe
 
 char *
-mho_read_file_buffer(const char *filename)
+mho_file_read(const char *filename,
+              usize byte_cnt)
 {
+    char        *buffer;
     FILE        *fptr;
-    long        file_len;
-    usize       ret;
-    char        *source = NULL;
+    usize       bytes_read;
 
 
     fptr = fopen(filename, "rb");
     if (fptr)
     {
-        file_len = mho_filelen(fptr);
-        if (file_len != -1)
+        if (byte_cnt == 0)
+            byte_cnt = (usize)mho_file_len(fptr);
+
+        if (byte_cnt != -1)
         {
-            source = (char *)malloc(file_len + 1);
-            if (source)
+            buffer = (char *)malloc(byte_cnt + 1);
+            if (buffer)
             {
-                ret = fread(source, 1, file_len, fptr);
-                if (ret == file_len)
+                bytes_read = fread(buffer, 1, byte_cnt, fptr);
+                if (bytes_read == byte_cnt)
                 {
-                    source[file_len] = 0;
+                    buffer[byte_cnt] = 0;
                 }
                 else
                 {
-                    printf("Could not read full file: %s\n", filename);
+                    fprintf(stderr, "Could not read full file: %s\n", filename);
+                    buffer = NULL;
                 }
+            }
+            else
+            {
+                fprintf(stderr, "Could not allocate %u bytes for buffer for file: %s\n", byte_cnt, filename);
+                buffer = NULL;
             }
         }
         else
         {
-            printf("Could not read file length: %s\n", filename);
+            fprintf(stderr, "Could not read file length: %s\n", filename);
+            buffer = NULL;
         }
     }
     else
     {
-        printf("Could not load file: %s\n", filename);
+        fprintf(stderr, "Could not load file: %s\n", filename);
+        buffer = NULL;
     }
     fclose(fptr);
 
-    return source;
+    return buffer;
+}
+
+b32
+mho_file_write(const char *filename,
+               char *buffer,
+               usize byte_cnt)
+{
+    FILE        *fptr;
+    b32         ret = 1;
+    usize       bytes_written;
+
+
+    fptr = fopen(filename, "wb");
+    if (fptr)
+    {
+        if (byte_cnt == 0)
+            byte_cnt = mho_strlen(buffer);
+
+        bytes_written = fwrite(buffer, 1, byte_cnt, fptr);
+        if (bytes_written != byte_cnt)
+        {
+            fprintf(stderr, "Could not write %u bytes to file: %s (wrote %u / %u)", byte_cnt, filename, bytes_written, byte_cnt);
+            ret = -1;
+        }
+    }
+    else
+    {
+        fprintf(stderr, "Could not load file: %s\n", filename);
+        ret = -1;
+    }
+    fclose(fptr);
+
+    return ret;
+}
+
+b32
+mho_file_append(const char *filename,
+                char *buffer,
+                usize byte_cnt)
+{
+    FILE        *fptr;
+    b32         ret = 1;
+    usize       bytes_written;
+
+
+    fptr = fopen(filename, "ab");
+    if (fptr)
+    {
+        if (byte_cnt == 0)
+            byte_cnt = mho_strlen(buffer);
+
+        bytes_written = fwrite(buffer, 1, byte_cnt, fptr);
+        if (bytes_written != byte_cnt)
+        {
+            fprintf(stderr, "Could not write %u bytes to file: %s (wrote %u / %u)", byte_cnt, filename, bytes_written, byte_cnt);
+            ret = -1;
+        }
+    }
+    else
+    {
+        fprintf(stderr, "Could not load file: %s\n", filename);
+        ret = -1;
+    }
+    fclose(fptr);
+
+    return ret;
 }
 
 long
-mho_filelen(FILE *fp)
+mho_file_len(FILE *fp)
 {
     long        len,
                 pos;
@@ -154,6 +230,8 @@ mho_strcat(s8 *str1,
 
     return new_str;
 }
+
+
 
 #pragma warning(default: 4996) // fopen unsafe
 
