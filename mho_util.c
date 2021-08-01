@@ -4,6 +4,8 @@
 
 #pragma warning(disable: 4996) // fopen unsafe
 
+//-------------------- FILES ----------------//
+
 char *
 mho_file_read(const char *filename,
               usize byte_cnt)
@@ -137,6 +139,30 @@ mho_file_len(FILE *fp)
 
     return len;
 }
+
+u32
+mho_file_lines(const char *filename)
+{
+    u32         ln_cnt = 0;
+    FILE        *fptr;
+    char        c;
+
+
+    fptr = fopen(filename, "rb");
+    if (fptr)
+    {
+        do
+        {
+            c = fgetc(fptr);
+            if (c == '\n')
+                ln_cnt++;
+        } while (c != EOF);
+    }
+
+    return ln_cnt;
+}
+
+//-------------------- STDLIB ----------------//
 
 void
 mho_memcpy(void *dest,

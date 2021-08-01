@@ -351,6 +351,9 @@ MHO_EXTERN b32		mho_file_append(const char *filename, char *buffer, usize byte_c
 // Returns the length of a file given a FILE * handle
 MHO_EXTERN long     mho_file_len(FILE *fp);
 
+// Returns the number of lines in a file
+MHO_EXTERN u32		mho_file_lines(const char *filename);
+
 // C stdlib custom implementations
 MHO_EXTERN void     mho_memcpy(void *dest, void *src, usize n);
 MHO_EXTERN void     *mho_memset(void *dest, s32 c, usize n);
