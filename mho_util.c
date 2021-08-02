@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include "mho.h"
 
+// TODO: handle errors (ie, fptr is invalid)
+
 #pragma warning(disable: 4996) // fopen unsafe
 
 //-------------------- FILES ----------------//
@@ -19,7 +21,7 @@ mho_file_read(const char *filename,
     if (fptr)
     {
         if (byte_cnt == 0)
-            byte_cnt = (usize)mho_file_len(fptr);
+            byte_cnt = (usize)mho_file_lenf(fptr);
 
         if (byte_cnt != -1)
         {
@@ -126,7 +128,126 @@ mho_file_append(const char *filename,
 }
 
 long
-mho_file_len(FILE *fp)
+mho_file_len(const char *filename)
+{
+    long        len = -1;
+    FILE        *fptr;
+
+
+    fptr = fopen(filename, "rb");
+    if (fptr)
+    {
+        fseek(fptr, 0, SEEK_END);
+        len = ftell(fptr);
+    }
+    fclose(fptr);
+
+    return len;
+}
+
+
+u32
+mho_file_lines(const char *filename)
+{
+    u32         ln_cnt = 0;
+    FILE        *fptr;
+    s32         c;
+
+
+    fptr = fopen(filename, "rb");
+    if (fptr)
+    {
+        do
+        {
+            c = fgetc(fptr);
+            if (c == '\n')
+                ln_cnt++;
+        } while (c != EOF);
+    }
+
+    return ln_cnt;
+}
+
+char *
+mho_file_readf(FILE *file,
+               usize byte_cnt)
+{
+    long        pos;
+    char        *buffer = NULL;
+    usize       bytes_read;
+
+
+    pos = ftell(file);
+    if (byte_cnt == 0)
+        byte_cnt = (usize)mho_file_lenf(file);
+
+    if (byte_cnt != -1)
+    {
+        buffer = (char *)malloc(byte_cnt + 1);
+        if (buffer)
+        {
+            bytes_read = fread(buffer, 1, byte_cnt, file);
+            if (bytes_read == byte_cnt)
+            {
+                buffer[byte_cnt] = 0;
+            }
+        }
+    }
+    fseek(file, pos, SEEK_SET);
+
+    return buffer;
+}
+
+b32
+mho_file_writef(FILE *file,
+                char *buffer,
+                usize byte_cnt)
+{
+    long        pos;
+    b32         ret = 1;
+    usize       bytes_written;
+
+    pos = ftell(file);
+    if (byte_cnt == 0)
+        byte_cnt = mho_strlen(buffer);
+
+    bytes_written = fwrite(buffer, 1, byte_cnt, file);
+    if (bytes_written != byte_cnt)
+    {
+        fprintf(stderr, "failed to write full bytes!");
+        ret = -1;
+    }
+    fseek(file, pos, SEEK_SET);
+
+    return ret;
+}
+
+b32
+mho_file_appendf(FILE *file,
+                 char *buffer,
+                 usize byte_cnt)
+{
+    long        pos;
+    b32         ret = 1;
+    usize       bytes_written;
+
+    pos = ftell(file);
+    if (byte_cnt == 0)
+        byte_cnt = mho_strlen(buffer);
+
+    bytes_written = fwrite(buffer, 1, byte_cnt, file);
+    if (bytes_written != byte_cnt)
+    {
+        fprintf(stderr, "failed to append bytes!\n");
+        ret = -1;
+    }
+    fseek(file, pos, SEEK_SET);
+
+    return ret;
+}
+
+long
+mho_file_lenf(FILE *fp)
 {
     long        len,
                 pos;
@@ -141,23 +262,21 @@ mho_file_len(FILE *fp)
 }
 
 u32
-mho_file_lines(const char *filename)
+mho_file_linesf(FILE *file)
 {
+    long        pos;
     u32         ln_cnt = 0;
-    FILE        *fptr;
-    char        c;
+    s32         c;
 
 
-    fptr = fopen(filename, "rb");
-    if (fptr)
+    pos = ftell(file);
+    do
     {
-        do
-        {
-            c = fgetc(fptr);
-            if (c == '\n')
-                ln_cnt++;
-        } while (c != EOF);
-    }
+        c = fgetc(file);
+        if (c == '\n')
+            ln_cnt++;
+    } while (c != EOF);
+    fseek(file, pos, SEEK_SET);
 
     return ln_cnt;
 }

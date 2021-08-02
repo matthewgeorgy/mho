@@ -339,22 +339,42 @@ mho_arr_resize(void *arr,
 //      Util
 //
 
-// Reads a file and writes it into a char * buffer
+//--------------- FILENAMES ------------------//
+
+// Reads a file and writes it into a char * buffer, given a filename
 MHO_EXTERN char		*mho_file_read(const char *filename, usize byte_cnt);
 
-// Writes the contents of a char * buffer into a file
+// Writes the contents of a char * buffer into a file, given a filename
 MHO_EXTERN b32		mho_file_write(const char *filename, char *buffer, usize byte_cnt);
 
-// Appends the contents of a char * buffer into a file
+// Appends the contents of a char * buffer into a file, given a filename
 MHO_EXTERN b32		mho_file_append(const char *filename, char *buffer, usize byte_cnt);
 
-// Returns the length of a file given a FILE * handle
-MHO_EXTERN long     mho_file_len(FILE *fp);
+// Returns the length of a file, given a filename
+MHO_EXTERN long     mho_file_len(const char *filename);
 
-// Returns the number of lines in a file
+// Returns the number of lines in a file, given a filename
 MHO_EXTERN u32		mho_file_lines(const char *filename);
 
-// C stdlib custom implementations
+//--------------- FILE * ------------------//
+
+// Reads a file and writes it into a char * buffer, given a FILE * handle
+MHO_EXTERN char		*mho_file_readf(FILE *file, usize byte_cnt);
+
+// Writes the contents of a char * buffer into a file, given a FILE * handle
+MHO_EXTERN b32		mho_file_writef(FILE *file, char *buffer, usize byte_cnt);
+
+// Appends the contents of a char * buffer into a file, given a FILE * handle
+MHO_EXTERN b32		mho_file_appendf(FILE *file, char *buffer, usize byte_cnt);
+
+// Returns the length of a file given a FILE * handle
+MHO_EXTERN long     mho_file_lenf(FILE *fp);
+
+// Returns the number of lines in a file, given a FILE * handle
+MHO_EXTERN u32		mho_file_linesf(FILE *file);
+
+
+//--------------- STDLIB ------------------//
 MHO_EXTERN void     mho_memcpy(void *dest, void *src, usize n);
 MHO_EXTERN void     *mho_memset(void *dest, s32 c, usize n);
 MHO_EXTERN void     mho_strcpy(s8 *dest, s8 *src);
