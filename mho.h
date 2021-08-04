@@ -17,7 +17,6 @@
 // TODO: Implement quaternion and VQS structures + functions.
 // TODO: Add #pragma's to .c files.
 // TODO: Implement debugging for fopen/fclose.
-// TODO: Maybe take OpenGL stuff out?
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -693,30 +692,6 @@ MHO_EXTERN f32		mho_fsin(f32 angle);
 
 // Approximated cos() function using Taylor Polynomial (deg!)
 MHO_EXTERN f32		mho_fcos(f32 angle);
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//      OpenGL
-//
-
-#if 0
-// Builds a GLSL shader program using a vertex + fragment source
-MHO_EXTERN u32      mho_load_shader_vf(const char *vs_path, const char *fs_path);
-
-// Builds a GLSL shader program using a compute source
-MHO_EXTERN u32      mho_load_shader_comp(const char *cs_path);
-
-// Checks for any compile errors in a given GLSL shader program or source
-MHO_EXTERN void     mho_check_compile_errors(u32 data, u8 type, const char *filename);
-
- #ifdef _glfw3_h_
-// Default framebuffer resize callback function for OpenGL + GLFW
-MHO_EXTERN void     mho_framebuffer_size_callback(GLFWwindow *window, s32 width, s32 height);
-
-// Default mouse callback function for OpenGL + GLFW
-MHO_EXTERN void     mho_mouse_callback(GLFWwindow *window, f64 x_pos, f64 y_pos);
-#endif
- #endif
 
 
 
