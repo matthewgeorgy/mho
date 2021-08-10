@@ -18,6 +18,7 @@
 // TODO: Add #pragma's to .c files.
 // TODO: Implement debugging for fopen/fclose.
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //      Includes
@@ -159,8 +160,8 @@ typedef s32         b32;
 
 typedef struct _TAG_mho_arr_header
 {
-    u32     capacity;   // Total number of elements
-    u32     size;       // Number of elements in array containing data
+    u64     capacity;   // Total number of elements
+    u64     size;       // Number of elements in array containing data
 } mho_arr_header_t;
 
 // Wrapper macro
@@ -199,7 +200,7 @@ typedef struct _TAG_mho_arr_header
 #define mho_arr_need_grow(__array, __n) \
     ((__array) == 0 || mho_arr_size(__array) + (__n) > mho_arr_capacity(__array))
 
-// Grows the array (doubles in size or increases by MHO_ARR_INCSZ increments)
+// Grows the array (doubles in size)
 #define mho_arr_grow(__array) \
     mho_arr_resize((__array), sizeof(*(__array)), mho_arr_capacity(__array) ? mho_arr_capacity(__array) * 2 : 1)
 
@@ -250,30 +251,30 @@ typedef struct _TAG_mho_arr_header
 
 // Inserts data into the array at the specified position (0 indexing)
 // NOTE: DOES NOT WORK AT INDEX 0 (ie, cannot insert at start of array)
-#define mho_arr_insert(__array, __val, __pos)                                               \
-    do                                                                                      \
-    {                                                                                       \
-        u32 _mho_iter_;                                                                     \
-        if ((mho_arr_need_grow(__array, 1)))                                                \
-            *((void **)&(__array)) = mho_arr_grow_size(__array, 1);                         \
-        for (_mho_iter_ = mho_arr_size(__array) - 1; _mho_iter_ >= (__pos); _mho_iter_--)   \
-        {                                                                                   \
-            (__array)[_mho_iter_ + 1] = (__array)[_mho_iter_];                              \
-        }                                                                                   \
-        (__array)[(__pos)] = (__val);                                                       \
-        mho_arr_head(__array)->size++;                                                      \
+#define mho_arr_insert(__array, __val, __pos)                                                       \
+    do                                                                                              \
+    {                                                                                               \
+        u32 mho__arr_iter;                                                                          \
+        if ((mho_arr_need_grow(__array, 1)))                                                        \
+            *((void **)&(__array)) = mho_arr_grow_size(__array, 1);                                 \
+        for (mho__arr_iter = mho_arr_size(__array) - 1; mho__arr_iter >= (__pos); mho__arr_iter--)  \
+        {                                                                                           \
+            (__array)[mho__arr_iter + 1] = (__array)[mho__arr_iter];                                \
+        }                                                                                           \
+        (__array)[(__pos)] = (__val);                                                               \
+        mho_arr_head(__array)->size++;                                                              \
     } while (0);
 
 // Removes data from the array at the specified position and realigns elements
-#define mho_arr_remove(__array, __pos)                                                  \
-    do                                                                                  \
-    {                                                                                   \
-        u32 _mho_iter_;                                                                 \
-        for (_mho_iter_ = (__pos); _mho_iter_ < mho_arr_size(__array); _mho_iter_++)    \
-        {                                                                               \
-            (__array)[_mho_iter_] = (__array)[_mho_iter_ + 1];                          \
-        }                                                                               \
-        mho_arr_head(__array)->size--;                                                  \
+#define mho_arr_remove(__array, __pos)                                                          \
+    do                                                                                          \
+    {                                                                                           \
+        u32 mho__arr_iter;                                                                      \
+        for (mho__arr_iter = (__pos); mho__arr_iter < mho_arr_size(__array); mho__arr_iter++)   \
+        {                                                                                       \
+            (__array)[mho__arr_iter] = (__array)[mho__arr_iter + 1];                            \
+        }                                                                                       \
+        mho_arr_head(__array)->size--;                                                          \
     } while (0);
 
 // Initializes the array
@@ -281,7 +282,7 @@ local void **
 mho_arr_init(void **arr,
              usize val_size)
 {
-    mho_arr_header_t		*data;
+    mho_arr_header_t        *data;
 
 
     if (*arr == NULL)
@@ -307,8 +308,8 @@ mho_arr_resize(void *arr,
                usize sz,
                usize amt)
 {
-    usize               	capacity;
-    mho_arr_header_t		*data;
+    usize                   capacity;
+    mho_arr_header_t        *data;
 
 
     if (arr)
@@ -341,36 +342,36 @@ mho_arr_resize(void *arr,
 //--------------- FILENAMES ------------------//
 
 // Reads a file and writes it into a char * buffer, given a filename
-MHO_EXTERN char		*mho_file_read(const char *filename, usize byte_cnt);
+MHO_EXTERN char     *mho_file_read(const char *filename, usize byte_cnt);
 
 // Writes the contents of a char * buffer into a file, given a filename
-MHO_EXTERN b32		mho_file_write(const char *filename, char *buffer, usize byte_cnt);
+MHO_EXTERN b32      mho_file_write(const char *filename, char *buffer, usize byte_cnt);
 
 // Appends the contents of a char * buffer into a file, given a filename
-MHO_EXTERN b32		mho_file_append(const char *filename, char *buffer, usize byte_cnt);
+MHO_EXTERN b32      mho_file_append(const char *filename, char *buffer, usize byte_cnt);
 
 // Returns the length of a file, given a filename
 MHO_EXTERN long     mho_file_len(const char *filename);
 
 // Returns the number of lines in a file, given a filename
-MHO_EXTERN u32		mho_file_lines(const char *filename);
+MHO_EXTERN u32      mho_file_lines(const char *filename);
 
 //--------------- FILE * ------------------//
 
 // Reads a file and writes it into a char * buffer, given a FILE * handle
-MHO_EXTERN char		*mho_file_readf(FILE *file, usize byte_cnt);
+MHO_EXTERN char     *mho_file_readf(FILE *file, usize byte_cnt);
 
 // Writes the contents of a char * buffer into a file, given a FILE * handle
-MHO_EXTERN b32		mho_file_writef(FILE *file, char *buffer, usize byte_cnt);
+MHO_EXTERN b32      mho_file_writef(FILE *file, char *buffer, usize byte_cnt);
 
 // Appends the contents of a char * buffer into a file, given a FILE * handle
-MHO_EXTERN b32		mho_file_appendf(FILE *file, char *buffer, usize byte_cnt);
+MHO_EXTERN b32      mho_file_appendf(FILE *file, char *buffer, usize byte_cnt);
 
 // Returns the length of a file given a FILE * handle
 MHO_EXTERN long     mho_file_lenf(FILE *fp);
 
 // Returns the number of lines in a file, given a FILE * handle
-MHO_EXTERN u32		mho_file_linesf(FILE *file);
+MHO_EXTERN u32      mho_file_linesf(FILE *file);
 
 
 //--------------- STDLIB ------------------//
@@ -688,10 +689,10 @@ MHO_EXTERN f32      mho_fsqrt(f32 number);
 MHO_EXTERN f32      mho_fsqrtinv(f32 number);
 
 // Approximated sin() function using Taylor Polynomial (deg!)
-MHO_EXTERN f32		mho_fsin(f32 angle);
+MHO_EXTERN f32      mho_fsin(f32 angle);
 
 // Approximated cos() function using Taylor Polynomial (deg!)
-MHO_EXTERN f32		mho_fcos(f32 angle);
+MHO_EXTERN f32      mho_fcos(f32 angle);
 
 
 
