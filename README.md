@@ -1,5 +1,5 @@
 # mho
-collection of useful (minimalist) C libraries
+collection of C libraries
 
 <a name="mho_libs"></a>
 
