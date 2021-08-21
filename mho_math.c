@@ -92,14 +92,27 @@ mho_vec2_rotate(mho_vec2_t vec,
 }
 
 mho_vec2_t
-mho_vec2_pmul(mho_vec2_t v1,
-              mho_vec2_t v2)
+mho_vec2_mul(mho_vec2_t v1,
+             mho_vec2_t v2)
 {
     mho_vec2_t      res;
 
 
     res.x = v1.x * v2.x;
     res.y = v1.y * v2.y;
+
+    return res;
+}
+
+mho_vec2_t
+mho_vec2_div(mho_vec2_t v1,
+             mho_vec2_t v2)
+{
+    mho_vec2_t      res;
+
+
+    res.x = v1.x / v2.x;
+    res.y = v1.y / v2.y;
 
     return res;
 }
@@ -198,8 +211,8 @@ mho_vec3_normalize(mho_vec3_t vec)
 }
 
 mho_vec3_t
-mho_vec3_pmul(mho_vec3_t v1,
-              mho_vec3_t v2)
+mho_vec3_mul(mho_vec3_t v1,
+             mho_vec3_t v2)
 {
     mho_vec3_t      res;
 
@@ -207,6 +220,20 @@ mho_vec3_pmul(mho_vec3_t v1,
     res.x = v1.x * v2.x;
     res.y = v1.y * v2.y;
     res.z = v1.z * v2.z;
+
+    return res;
+}
+
+mho_vec3_t
+mho_vec3_div(mho_vec3_t v1,
+             mho_vec3_t v2)
+{
+    mho_vec3_t      res;
+
+
+    res.x = v1.x / v2.x;
+    res.y = v1.y / v2.y;
+    res.z = v1.z / v2.z;
 
     return res;
 }
@@ -297,8 +324,8 @@ mho_vec4_normalize(mho_vec4_t vec)
 }
 
 mho_vec4_t
-mho_vec4_pmul(mho_vec4_t v1,
-              mho_vec4_t v2)
+mho_vec4_mul(mho_vec4_t v1,
+             mho_vec4_t v2)
 {
     mho_vec4_t      res;
 
@@ -307,6 +334,21 @@ mho_vec4_pmul(mho_vec4_t v1,
     res.y = v1.y * v2.y;
     res.z = v1.z * v2.z;
     res.w = v1.w * v2.w;
+
+    return res;
+}
+
+mho_vec4_t
+mho_vec4_div(mho_vec4_t v1,
+             mho_vec4_t v2)
+{
+    mho_vec4_t      res;
+
+
+    res.x = v1.x / v2.x;
+    res.y = v1.y / v2.y;
+    res.z = v1.z / v2.z;
+    res.w = v1.w / v2.w;
 
     return res;
 }
@@ -455,35 +497,55 @@ mho_mat4_rotate_v(f32 angle,
 }
 
 mho_mat4_t
-mho_mat4_perspective(f32 fov,
-                     f32 aspect_ratio,
-                     f32 near,
-                     f32 far)
+mho_mat4_perspective_rh(f32 fov,
+                        f32 aspect_ratio,
+                        f32 near,
+                        f32 far)
 {
     f32             t,
                     fdelta;
     mho_mat4_t      matrix = {0};
 
 
-    t = mho_tan(mho_rads(fov) / 2.0f);
+    t = mho_tan(mho_rads(fov) * 0.5f);
     fdelta = far - near;
 
     matrix.col1.x = 1 / (aspect_ratio * t);
-
     matrix.col2.y = 1 / t;
-
     matrix.col3.z = -1 * ((far + near) / fdelta);
     matrix.col3.w = -1;
-
     matrix.col4.z = ((-2.0f * far * near) / fdelta);
 
     return matrix;
 }
 
 mho_mat4_t
-mho_mat4_lookat(mho_vec3_t eye,
-                mho_vec3_t center,
-                mho_vec3_t up)
+mho_mat4_perspective_lh(f32 fov,
+                        f32 aspect_ratio,
+                        f32 near,
+                        f32 far)
+{
+    f32             t,
+                    frange;
+    mho_mat4_t      matrix = {0};
+
+
+    t = mho_tan(mho_rads(fov) * 0.5f);
+    frange = far / (far - near);
+
+    matrix.col1.x = 1 / (aspect_ratio * t);
+    matrix.col2.y = 1 / t;
+    matrix.col3.z = frange;
+    matrix.col3.w = 1;
+    matrix.col4.z = -frange * near;
+
+    return matrix;
+}
+
+mho_mat4_t
+mho_mat4_lookat_rh(mho_vec3_t eye,
+                   mho_vec3_t center,
+                   mho_vec3_t up)
 {
     mho_mat4_t      matrix = {0};
     mho_vec3_t      f,
@@ -515,6 +577,43 @@ mho_mat4_lookat(mho_vec3_t eye,
 
     return matrix;
 }
+
+mho_mat4_t
+mho_mat4_lookat_lh(mho_vec3_t eye,
+                   mho_vec3_t center,
+                   mho_vec3_t up)
+{
+    mho_mat4_t      matrix = {0};
+    mho_vec3_t      f,
+                    s,
+                    u;
+
+
+    f = mho_vec3_normalize(mho_vec3_sub(center, eye));
+    s = mho_vec3_normalize(mho_vec3_cross(up, f));
+    u = mho_vec3_cross(f, s);
+
+    matrix.col1.x = s.x;
+    matrix.col1.y = u.x;
+    matrix.col1.z = f.x;
+
+    matrix.col2.x = s.y;
+    matrix.col2.y = u.y;
+    matrix.col2.z = f.y;
+
+    matrix.col3.x = s.z;
+    matrix.col3.y = u.z;
+    matrix.col3.z = f.z;
+
+    matrix.col4.x = -mho_vec3_dot(s, eye);
+    matrix.col4.y = -mho_vec3_dot(u, eye);
+    matrix.col4.z = -mho_vec3_dot(f, eye);
+
+    matrix.col4.w = 1.0f;
+
+    return matrix;
+}
+
 
 mho_mat4_t
 mho_mat4_scale(f32 scale_value)
@@ -717,26 +816,6 @@ mho_fsqrtinv(f32 number)
     y = y * (1.5f - (x * y * y));   // 2nd iteration
 
     return y;
-}
-
-f32
-mho_fsin(f32 angle)
-{
-	f32		ret;
-
-	if (angle)
-
-
-	return ret;
-}
-
-f32
-mho_fcos(f32 angle)
-{
-	f32		ret;
-
-
-	return ret;
 }
 
 #pragma warning(default: 4204) // aggregate initializer

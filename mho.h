@@ -1,21 +1,29 @@
-// mho is a general utility library, consisting of C functions that can be
-// useful for any type of development. It contains various functionality,
-// such as vector/matrix math, a dynamic array (like std::vector), memory
-// and FILE * debugging and some general utility functions for files and
-// strings.
+/*  mho is a general utility library, consisting of C functions that can be
+    useful for any type of development. It contains various functionality,
+    such as vector/matrix math, a dynamic array (like std::vector), memory
+    and FILE * debugging and some general utility functions for files and
+    strings.
 
-// mho should be the last file that is #included in your project, as
-// it contains some definitions (ie, TRUE/FALSE) that other libraries should
-// have precedence for, as well as requiring other headers/files to be
-// included for certain functionality to work(ie, <glad.h> for OpenGL).
+    mho should be the last file that is #included in your project, as
+    it contains some definitions (ie, TRUE/FALSE) that other libraries should
+    have precedence for, as well as requiring other headers/files to be
+    included for certain functionality to work(ie, <glad.h> for OpenGL).
+
+    ==========================================================================
+
+    Version History
+
+        1.1 Added LH/RH versions for mat4_{perspective|lookat} functions
+        1.0 Initial commit
+*/
 
 #ifndef MHO_H
 #define MHO_H
 
 #pragma warning(disable: 4201) // anon struct/union
 
+// TODO: Maybe add some 'assert's to check for non-NULL parameters upon function entry.
 // TODO: Implement quaternion and VQS structures + functions.
-// TODO: Add #pragma's to .c files.
 // TODO: Implement debugging for fopen/fclose.
 
 
@@ -449,7 +457,10 @@ MHO_EXTERN mho_vec2_t       mho_vec2_normalize(mho_vec2_t vec);
 MHO_EXTERN mho_vec2_t       mho_vec2_rotate(mho_vec2_t vec, f32 angle);
 
 // Performs a pairwise multiplication between two 2D vectors
-MHO_EXTERN mho_vec2_t       mho_vec2_pmul(mho_vec2_t v1, mho_vec2_t v2);
+MHO_EXTERN mho_vec2_t       mho_vec2_mul(mho_vec2_t v1, mho_vec2_t v2);
+
+// Performs a pairwise division between two 2D vectors
+MHO_EXTERN mho_vec2_t       mho_vec2_div(mho_vec2_t v1, mho_vec2_t v2);
 
 /* ============================ *
  * =====     Vector3D     ===== *
@@ -502,7 +513,10 @@ MHO_EXTERN f32              mho_vec3_mag(mho_vec3_t vec);
 MHO_EXTERN mho_vec3_t       mho_vec3_normalize(mho_vec3_t vec);
 
 // Performs a pairwise multiplication between two 3D vectors
-MHO_EXTERN mho_vec3_t       mho_vec3_pmul(mho_vec3_t v1, mho_vec3_t v2);
+MHO_EXTERN mho_vec3_t       mho_vec3_mul(mho_vec3_t v1, mho_vec3_t v2);
+
+// Performs a pairwise division between two 3D vectors
+MHO_EXTERN mho_vec3_t       mho_vec3_div(mho_vec3_t v1, mho_vec3_t v3);
 
 /* ============================ *
  * =====     Vector4D     ===== *
@@ -552,13 +566,16 @@ MHO_EXTERN f32              mho_vec4_mag(mho_vec4_t vec);
 MHO_EXTERN mho_vec4_t       mho_vec4_normalize(mho_vec4_t vec);
 
 // Performs a pairwise multiplication between two 4D vectors
-MHO_EXTERN mho_vec4_t       mho_vec4_pmul(mho_vec4_t v1, mho_vec4_t v2);
+MHO_EXTERN mho_vec4_t       mho_vec4_mul(mho_vec4_t v1, mho_vec4_t v2);
+
+// Performs a pairwise division between two 4D vectors
+MHO_EXTERN mho_vec4_t       mho_vec4_div(mho_vec4_t v1, mho_vec4_t v4);
 
 /* ============================ *
  * =====     Matrix4      ===== *
  * ============================ */
 
-// Definition of a 4x4 matrix
+// Definition of a 4x4 matrix, column major
 typedef struct _TAG_mho_mat4
 {
     union
@@ -597,11 +614,18 @@ MHO_EXTERN mho_mat4_t       mho_mat4_rotate(f32 angle, f32 x, f32 y, f32 z);
 MHO_EXTERN mho_mat4_t       mho_mat4_rotate_v(f32 angle, mho_vec3_t vec);
 
 // Returns a 4x4 perspective matrix given an FOV, aspect ratio, and
-// near/far plane distance values
-MHO_EXTERN mho_mat4_t       mho_mat4_perspective(f32 fov, f32 aspect_ratio, f32 near, f32 far);
+// near/far plane distance values (RIGHT HANDED)
+MHO_EXTERN mho_mat4_t       mho_mat4_perspective_rh(f32 fov, f32 aspect_ratio, f32 near, f32 far);
 
-// Returns a 4x4 lookat matrix given an eye, center, and up 3D vector
-MHO_EXTERN mho_mat4_t       mho_mat4_lookat(mho_vec3_t eye, mho_vec3_t center, mho_vec3_t up);
+// Returns a 4x4 perspective matrix given an FOV, aspect ratio, and
+// near/far plane distance values (LEFT HANDED)
+MHO_EXTERN mho_mat4_t       mho_mat4_perspective_lh(f32 fov, f32 aspect_ratio, f32 near, f32 far);
+
+// Returns a 4x4 lookat matrix given an eye, center, and up 3D vector (RIGHT HANDED)
+MHO_EXTERN mho_mat4_t       mho_mat4_lookat_rh(mho_vec3_t eye, mho_vec3_t center, mho_vec3_t up);
+
+// Returns a 4x4 lookat matrix given an eye, center, and up 3D vector (LEFT HANDED)
+MHO_EXTERN mho_mat4_t       mho_mat4_lookat_lh(mho_vec3_t eye, mho_vec3_t center, mho_vec3_t up);
 
 // Returns a 4x4 scale matrix given a scale factor/value
 MHO_EXTERN mho_mat4_t       mho_mat4_scale(f32 scale_value);
@@ -688,12 +712,6 @@ MHO_EXTERN f32      mho_fsqrt(f32 number);
 // Quake III inverse square root
 MHO_EXTERN f32      mho_fsqrtinv(f32 number);
 
-// Approximated sin() function using Taylor Polynomial (deg!)
-MHO_EXTERN f32      mho_fsin(f32 angle);
-
-// Approximated cos() function using Taylor Polynomial (deg!)
-MHO_EXTERN f32      mho_fcos(f32 angle);
-
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -772,7 +790,8 @@ MHO_EXTERN void     mho_dbg_print(FILE *stream);
     #define vec2_mag                    mho_vec2_mag
     #define vec2_normalize              mho_vec2_normalize
     #define vec2_rotate                 mho_vec2_rotate
-    #define vec2_pmul                   mho_vec2_pmul
+    #define vec2_mul                    mho_vec2_mul
+    #define vec2_div                    mho_vec2_div
 
     #define vec3_ctor                   mho_vec3_ctor
     #define vec3_add                    mho_vec3_add
@@ -782,7 +801,8 @@ MHO_EXTERN void     mho_dbg_print(FILE *stream);
     #define vec3_cross                  mho_vec3_cross
     #define vec3_mag                    mho_vec3_mag
     #define vec3_normalize              mho_vec3_normalize
-    #define vec3_pmul                   mho_vec3_pmul
+    #define vec3_mul                    mho_vec3_mul
+    #define vec3_div                    mho_vec3_div
 
     #define vec4_ctor                   mho_vec4_ctor
     #define vec4_add                    mho_vec4_add
@@ -791,7 +811,8 @@ MHO_EXTERN void     mho_dbg_print(FILE *stream);
     #define vec4_dot                    mho_vec4_dot
     #define vec4_mag                    mho_vec4_mag
     #define vec4_normalize              mho_vec4_normalize
-    #define vec4_pmul                   mho_vec4_pmul
+    #define vec4_mul                    mho_vec4_mul
+    #define vec4_div                    mho_vec4_div
 
     #define mat4_identity               mho_mat4_identity
     #define mat4_translate              mho_mat4_translate
@@ -800,8 +821,10 @@ MHO_EXTERN void     mho_dbg_print(FILE *stream);
     #define mat4_print                  mho_mat4_print
     #define mat4_rotate                 mho_mat4_rotate
     #define mat4_rotate_v               mho_mat4_rotate_v
-    #define mat4_perspective            mho_mat4_perspective
-    #define mat4_lookat                 mho_mat4_lookat
+    #define mat4_perspective_rh         mho_mat4_perspective_rh
+    #define mat4_perspective_lh         mho_mat4_perspective_lh
+    #define mat4_lookat_rh              mho_mat4_lookat_rh
+    #define mat4_lookat_lh              mho_mat4_lookat_lh
     #define mat4_scale                  mho_mat4_scale
     #define mat4_scale_v                mho_mat4_scale_v
     #define mat4_mul                    mho_mat4_mul
