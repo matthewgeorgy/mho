@@ -13,6 +13,7 @@
 
     Version History
 
+        1.2 Automatically choose LH vs RH for mat4_{perspective|lookat} with #ifdef's
         1.1 Added LH/RH versions for mat4_{perspective|lookat} functions
         1.0 Initial commit
 */
@@ -613,12 +614,10 @@ MHO_EXTERN mho_mat4_t       mho_mat4_rotate(f32 angle, f32 x, f32 y, f32 z);
 // Returns a 4x4 rotation matrix given an angle in degrees and 3D vector
 MHO_EXTERN mho_mat4_t       mho_mat4_rotate_v(f32 angle, mho_vec3_t vec);
 
-// Returns a 4x4 perspective matrix given an FOV, aspect ratio, and
-// near/far plane distance values (RIGHT HANDED)
+// Returns a 4x4 perspective matrix given an FOV, aspect ratio, and near/far plane distance values (RIGHT HANDED)
 MHO_EXTERN mho_mat4_t       mho_mat4_perspective_rh(f32 fov, f32 aspect_ratio, f32 near, f32 far);
 
-// Returns a 4x4 perspective matrix given an FOV, aspect ratio, and
-// near/far plane distance values (LEFT HANDED)
+// Returns a 4x4 perspective matrix given an FOV, aspect ratio, and near/far plane distance values (LEFT HANDED)
 MHO_EXTERN mho_mat4_t       mho_mat4_perspective_lh(f32 fov, f32 aspect_ratio, f32 near, f32 far);
 
 // Returns a 4x4 lookat matrix given an eye, center, and up 3D vector (RIGHT HANDED)
@@ -836,6 +835,23 @@ MHO_EXTERN void     mho_dbg_print(FILE *stream);
     #define quat_conj                   mho_quat_conj
 
  #endif // MHO_FULL_NAMES
+
+// Automatically choose correct mat4_{perspective|lookat} function
+ #if defined(__glad_h)
+    #ifndef MHO_FULL_NAMES
+        #define mat4_perspective    mat4_perspective_rh
+        #define mat4_lookat         mat4_lookat_rh
+    #endif // MHO_FULL_NAMES
+    #define mho_mat4_perspective    mho_mat4_perspective_rh
+    #define mho_mat4_lookat         mho_mat4_lookat_rh
+ #elif defined(__d3d11_h__)
+    #ifndef MHO_FULL_NAMES
+        #define mat4_perspective    mat4_perspective_lh
+        #define mat4_lookat         mat4_lookat_lh
+    #endif // MHO_FULL_NAMES
+    #define mho_mat4_perspective    mho_mat4_perspective_lh
+    #define mho_mat4_lookat         mho_mat4_lookat_lh
+ #endif // __glad_h + __d3d11_h__
 
 #pragma warning(default: 4201) // anon struct/union
 
