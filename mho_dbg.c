@@ -1,12 +1,10 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h> // strchr
 #include "mho.h"
 
 #pragma warning(disable: 4996) // fopen unsafe
 #pragma warning(disable: 4477) // %u vs %zu in fprintf (MSVC2015 ONLY)
 
-// Important #define constants we use
+//---------------------- Memory ---------------------//
+
 #define MHO_MEM_FREE_BIT          0x01
 #define MHO_MEM_OVER_BIT          0x02
 #define MHO_MEM_UNDER_BIT         0x04
@@ -14,12 +12,25 @@
 #define MHO_MEM_OVER_NUM          0x192BA3A2
 #define MHO_MEM_UNDER_NUM         0x39D7A5DA
 
-// Required globals
+// Record structure for storing memory information
+typedef struct _TAG_mho_dbg_mrec
+{
+    void                        *ptr;
+    char                        *file,
+                                *df_file;
+    int                         line,
+                                df_line;
+    usize                       size;
+    byte                        flags;
+    struct _TAG_mho_dbg_mrec     *next;
+} mho_dbg_mrec_t;
+
 global u32                  mho_mem_malloc_cnt;
 global u32                  mho_mem_free_cnt;
 global usize                mho_mem_total_alloc;
-global mho_dbg_mem_rec_t    *mho_mem_alloc_head = NULL;
-global mho_dbg_file_rec_t   *mho_file_head = NULL;
+global u32                  mho_fopen_cnt;
+global u32                  mho_fclose_cnt;
+global mho_dbg_mrec_t   *mho_dbg_mhead = NULL;
 
 void *
 mho_dbg_malloc(size_t size,
@@ -55,13 +66,13 @@ mho_dbg_free(void *buffer,
              char *file,
              int line)
 {
-    mho_dbg_mem_rec_t       *temp;
-    dword                   value;
-    void                    *p;
+    mho_dbg_mrec_t      *temp;
+    dword               value;
+    void                *p;
 
 
     // Set the 'freed' (or 'double freed') flag(s) if necessary
-    temp = mho_mem_alloc_head;
+    temp = mho_dbg_mhead;
     while (temp != NULL)
     {
         if (temp->ptr == buffer)
@@ -116,12 +127,12 @@ mho_dbg_mem_rec_append(void *ptr,
                    int line,
                    usize size)
 {
-    mho_dbg_mem_rec_t       *new_node,
-                            *temp;
+    mho_dbg_mrec_t      *new_node,
+                        *temp;
 
 
     // Allocate and fill new node
-    new_node = (mho_dbg_mem_rec_t *)malloc(sizeof(mho_dbg_mem_rec_t));
+    new_node = (mho_dbg_mrec_t *)malloc(sizeof(mho_dbg_mrec_t));
     new_node->ptr = ptr;
     new_node->file = (char *)file;
     new_node->line = line;
@@ -132,15 +143,15 @@ mho_dbg_mem_rec_append(void *ptr,
     new_node->next = NULL;
 
     // If list is empty
-    if (mho_mem_alloc_head == NULL)
+    if (mho_dbg_mhead == NULL)
     {
-        mho_mem_alloc_head = new_node;
+        mho_dbg_mhead = new_node;
     }
 
     else
     {
         // Find last node
-        temp = mho_mem_alloc_head;
+        temp = mho_dbg_mhead;
         while (temp->next != NULL)
             temp = temp->next;
 
@@ -150,14 +161,14 @@ mho_dbg_mem_rec_append(void *ptr,
 }
 
 void
-mho_mem_debug_memory()
+mho_dbg_memory()
 {
-    mho_dbg_mem_rec_t       *temp;
-    dword                   value;
-    void                    *p;
+    mho_dbg_mrec_t      *temp;
+    dword               value;
+    void                *p;
 
 
-    temp = mho_mem_alloc_head;
+    temp = mho_dbg_mhead;
     while (temp != NULL)
     {
         if (!(temp->flags && MHO_MEM_FREE_BIT))
@@ -183,6 +194,23 @@ mho_mem_debug_memory()
     }
 }
 
+//---------------------- Files ---------------------//
+
+#define MHO_FILE_CLOSED_BIT       0x01
+
+// Record structure for storing file handle information
+typedef struct _TAG_mho_dbg_frec
+{
+    FILE                            *fptr;
+    char                            *file,
+                                    *filename,
+                                    *mode;
+    int                             line;
+    byte                            flags;
+    struct _TAG_mho_dbg_frec    *next;
+} mho_dbg_frec_t;
+
+global mho_dbg_frec_t   *mho_dbg_fhead = NULL;
 
 FILE
 *mho_dbg_fopen(char *filename,
@@ -196,46 +224,66 @@ FILE
     fptr = fopen(filename, mode);
     if (fptr)
     {
-        mho_dbg_file_rec_append(filename, mode, file, line);
+        mho_dbg_file_rec_append(fptr, filename, file, line);
+        mho_fopen_cnt++;
     }
 
     return fptr;
 }
 
-/* void */
-/* mho_dbg_fclose(FILE *fptr, */
-/*             char *file, */
-/*             int line) */
-/* { */
+void
+mho_dbg_fclose(FILE *fptr,
+               char *file,
+               int line)
+{
+    mho_dbg_frec_t      *temp;
 
-/* } */
+
+    temp = mho_dbg_fhead;
+    while (temp != NULL)
+    {
+        if (temp->fptr == fptr)
+        {
+            temp->flags |= MHO_FILE_CLOSED_BIT;
+            break;
+        }
+
+        temp = temp->next;
+    }
+
+    fclose(fptr);
+    mho_fclose_cnt++;
+}
 
 void
-mho_dbg_file_rec_append(char *filename,
-                        char *mode,
+mho_dbg_file_rec_append(FILE *fptr,
+                        char *filename,
                         char *file,
                         int line)
 {
-    mho_dbg_file_rec_t      *new_node,
-                            *temp;
+    mho_dbg_frec_t      *new_node,
+                        *temp;
 
 
-    new_node = (mho_dbg_file_rec_t *)malloc(sizeof(mho_dbg_file_rec_t));
+    new_node = (mho_dbg_frec_t *)malloc(sizeof(mho_dbg_frec_t));
+    new_node->fptr = fptr;
     new_node->filename = filename;
     new_node->file = file;
-    new_node->mode = mode;
     new_node->line = line;
+    new_node->flags = 0x0;
+    new_node->next = NULL;
+    temp = NULL;
 
     // If list is empty
-    if (mho_file_head == NULL)
+    if (mho_dbg_fhead == NULL)
     {
-        mho_file_head = new_node;
+        mho_dbg_fhead = new_node;
     }
 
     else
     {
         // Find last node
-        temp = mho_file_head;
+        temp = mho_dbg_fhead;
         while (temp->next != NULL)
             temp = temp->next;
 
@@ -245,61 +293,80 @@ mho_dbg_file_rec_append(char *filename,
 }
 
 void
-mho_mem_print(FILE *stream)
+mho_dbg_print(FILE *stream)
 {
-    mho_dbg_mem_rec_t       *temp;
-    void                    *p;
+    mho_dbg_mrec_t      *mtemp;
+    mho_dbg_frec_t      *ftemp;
+    void                *p;
 
-
-    mho_mem_debug_memory();
 
     fprintf(stream, "\n=========================================================\n");
-    fprintf(stream, "                    DEBUG REPORT\n");
+    fprintf(stream, "                  DEBUG REPORT\n");
     fprintf(stream, "=========================================================\n");
-    fprintf(stream, "Total Mallocs: %d\n", mho_mem_malloc_cnt);
-    fprintf(stream, "Total Frees:   %d\n", mho_mem_free_cnt);
-    fprintf(stream, "Total Size:    %u bytes\n\n", mho_mem_total_alloc);
+    fprintf(stream, "Total Mallocs:         %d\n", mho_mem_malloc_cnt);
+    fprintf(stream, "Total Frees:           %d\n", mho_mem_free_cnt);
+    fprintf(stream, "Total Size:            %u bytes\n", mho_mem_total_alloc);
+    fprintf(stream, "-----\n");
+    fprintf(stream, "Total files opened:    %u\n", mho_fopen_cnt);
+    fprintf(stream, "Total files closed:    %u\n\n\n", mho_fclose_cnt);
 
-    // Print out all debug-related info
-    temp = mho_mem_alloc_head;
-    while (temp != NULL)
+    // Memory info
+    mtemp = mho_dbg_mhead;
+    mho_dbg_memory();
+    while (mtemp != NULL)
     {
         // Memory Leaks
-        if (!(temp->flags & MHO_MEM_FREE_BIT))
+        if (!(mtemp->flags & MHO_MEM_FREE_BIT))
         {
-            fprintf(stream, "UNFREED MEMORY:   0x%p (%s (%d))\n", temp->ptr,
-                                                                  temp->file,
-                                                                  temp->line);
+            fprintf(stream, "UNFREED MEMORY:   0x%p (%s [%d])\n", mtemp->ptr,
+                                                                  mtemp->file,
+                                                                  mtemp->line);
         }
 
         // Double Frees
-        if (temp->flags & MHO_MEM_DOUBLE_FREE_BIT)
+        if (mtemp->flags & MHO_MEM_DOUBLE_FREE_BIT)
         {
-            fprintf(stream, "DOUBLE FREE:      0x%p (%s (%d))\n", temp->ptr,
-                                                                  temp->df_file,
-                                                                  temp->df_line);
+            fprintf(stream, "DOUBLE FREE:      0x%p (%s [%d])\n", mtemp->ptr,
+                                                                  mtemp->df_file,
+                                                                  mtemp->df_line);
         }
 
         // Buffer Underruns
-        if (temp->flags & MHO_MEM_UNDER_BIT)
+        if (mtemp->flags & MHO_MEM_UNDER_BIT)
         {
-            p = (byte *)temp->ptr - 4;
-            fprintf(stream, "BUFFER UNDERRUN:  0x%p (%s (%d))\n", p,
-                                                                  temp->file,
-                                                                  temp->line);
+            p = (byte *)mtemp->ptr - 4;
+            fprintf(stream, "BUFFER UNDERRUN:  0x%p (%s [%d])\n", p,
+                                                                  mtemp->file,
+                                                                  mtemp->line);
         }
 
         // Buffer Overruns
-        if (temp->flags & MHO_MEM_OVER_BIT)
+        if (mtemp->flags & MHO_MEM_OVER_BIT)
         {
-            p = (byte *)temp->ptr + temp->size;
-            fprintf(stream, "BUFFER OVERRUN:   0x%p (%s (%d))\n", p,
-                                                                  temp->file,
-                                                                  temp->line);
+            p = (byte *)mtemp->ptr + mtemp->size;
+            fprintf(stream, "BUFFER OVERRUN:   0x%p (%s [%d])\n", p,
+                                                                  mtemp->file,
+                                                                  mtemp->line);
         }
 
-        temp = temp->next;
+        mtemp = mtemp->next;
     }
+    fprintf(stream, "\n");
+
+    // Files info
+    ftemp = mho_dbg_fhead;
+    while (ftemp != NULL)
+    {
+        if (!(ftemp->flags & MHO_FILE_CLOSED_BIT))
+        {
+            fprintf(stream, "UNCLOSED FILE:    0x%p (%s [%d])\n", ftemp->fptr,
+                                                             ftemp->file,
+                                                             ftemp->line);
+        }
+
+        ftemp = ftemp->next;
+    }
+    fprintf(stream, "\n");
 
     fprintf(stream, "=========================================================\n");
     fprintf(stream, "                    END OF REPORT\n");

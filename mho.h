@@ -13,6 +13,8 @@
 
     Version History
 
+        1.4 Refined debugging system
+        1.3 Added debugging for fopen/fclose
         1.2 Automatically choose LH vs RH for mat4_{perspective|lookat} with #ifdef's
         1.1 Added LH/RH versions for mat4_{perspective|lookat} functions
         1.0 Initial commit
@@ -25,8 +27,6 @@
 
 // TODO: Maybe add some 'assert's to check for non-NULL parameters upon function entry.
 // TODO: Implement quaternion and VQS structures + functions.
-// TODO: Implement debugging for fopen/fclose.
-
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -718,30 +718,6 @@ MHO_EXTERN f32      mho_fsqrtinv(f32 number);
 //      Debugging
 //
 
-// Record structure for storing memory information
-typedef struct _TAG_mho_dbg_mem_rec
-{
-    void                        *ptr;
-    char                        *file,
-                                *df_file;
-    int                         line,
-                                df_line;
-    usize                       size;
-    byte                        flags;
-    struct _TAG_mho_dbg_mem_rec     *next;
-} mho_dbg_mem_rec_t;
-
-// Record structure for storing file handle information
-typedef struct _TAG_mho_dbg_file_rec
-{
-    char                            *file,
-                                    *filename,
-                                    *mode;
-    int                             line;
-    byte                            flags;
-    struct _TAG_mho_dbg_file_rec    *next;
-} mho_dbg_file_rec_t;
-
 // Custom malloc impl for debugging
 MHO_EXTERN void     *mho_dbg_malloc(size_t size, char *file, int line);
 
@@ -758,10 +734,10 @@ MHO_EXTERN void     mho_dbg_memory(void);
 MHO_EXTERN FILE     *mho_dbg_fopen(char *filename, char *mode, char *file, int line);
 
 // Custom fclose impl for debugging
-MHO_EXTERN void     mho_dbg_fclose(FILE *fptr, char *filename, char *mode, char *file, int line);
+MHO_EXTERN void     mho_dbg_fclose(FILE *fptr, char *file, int line);
 
 // Adds a new file debug rec to the list
-MHO_EXTERN void     mho_dbg_file_rec_append(char *filename, char *mode, char *file, int line);
+MHO_EXTERN void     mho_dbg_file_rec_append(FILE *fptr, char *filename, char *file, int line);
 
 // Prints a debugging report to a specified stream
 MHO_EXTERN void     mho_dbg_print(FILE *stream);
@@ -769,8 +745,10 @@ MHO_EXTERN void     mho_dbg_print(FILE *stream);
 
 // Wraps debugging functions
  #ifdef MHO_DEBUG
-    #define malloc(__n)     mho_dbg_malloc(__n, __FILENAME__, __LINE__)
-    #define free(__n)       mho_dbg_free(__n, __FILENAME__, __LINE__)
+    #define malloc(__n)         mho_dbg_malloc(__n, __FILENAME__, __LINE__)
+    #define free(__n)           mho_dbg_free(__n, __FILENAME__, __LINE__)
+    #define fopen(__n, __m)     mho_dbg_fopen(__n, __m, __FILENAME__, __LINE__)
+    #define fclose(__n)         mho_dbg_fclose(__n, __FILENAME__, __LINE__)
  #endif // MHO_DEBUG
 
 // Simplifies Math related names for types and functions
