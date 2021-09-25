@@ -681,7 +681,7 @@ mho_quat_ctor(f32 w,
               f32 j,
               f32 k)
 {
-    mho_quat_t  quat;
+    mho_quat_t      quat;
 
 
     quat.w = w;
@@ -720,13 +720,13 @@ mho_quat_t
 mho_quat_mul(mho_quat_t q1,
              mho_quat_t q2)
 {
-    mho_quat_t  prod;
+    mho_quat_t      prod;
 
 
     prod.w = (q1.w * q2.w) - (q1.i * q2.i) - (q1.j * q2.j) - (q1.k * q2.k);
-    prod.i = (q1.w * q2.i) - (q1.i * q2.w) - (q1.j * q2.k) - (q1.k * q2.j);
-    prod.j = (q1.w * q2.j) - (q1.i * q2.k) - (q1.j * q2.w) - (q1.k * q2.i);
-    prod.k = (q1.w * q2.k) - (q1.i * q2.j) - (q1.j * q2.i) - (q1.k * q2.w);
+    prod.i = (q1.w * q2.i) + (q1.i * q2.w) + (q1.j * q2.k) - (q1.k * q2.j);
+    prod.j = (q1.w * q2.j) - (q1.i * q2.k) + (q1.j * q2.w) + (q1.k * q2.i);
+    prod.k = (q1.w * q2.k) + (q1.i * q2.j) - (q1.j * q2.i) + (q1.k * q2.w);
 
     return prod;
 }
@@ -739,6 +739,77 @@ mho_quat_conj(mho_quat_t q)
     q.k *= -1;
 
     return q;
+}
+
+f32
+mho_quat_len(mho_quat_t q)
+{
+    return mho_sqrt((q.w * q.w) + (q.i * q.i) + (q.j * q.j) + (q.k * q.k));
+}
+
+mho_quat_t
+mho_quat_scale(mho_quat_t q,
+               f32 scale)
+{
+    q.w *= scale;
+    q.i *= scale;
+    q.j *= scale;
+    q.k *= scale;
+
+    return q;
+}
+
+mho_quat_t
+mho_quat_normalize(mho_quat_t q)
+{
+    return mho_quat_scale(q, 1.0f / mho_quat_len(q));
+}
+
+mho_mat4_t
+mho_quat_to_mat4(mho_quat_t q)
+{
+    mho_mat4_t      res = {0};
+    mho_quat_t      r;
+    f32             xy, xz, xx, yy, yz, zz, wx, wy, wz,
+                    angle, c, s;
+    vec3_t          axis;
+
+
+    angle = mho_rads(0.5f * q.w);
+    c = mho_cos(angle);
+    s = mho_sin(angle);
+    axis = vec3_normalize(vec3_ctor(q.i, q.j, q.k));
+    r.w = c;
+    r.i = s * axis.x;
+    r.j = s * axis.y;
+    r.k = s * axis.z;
+    r = mho_quat_normalize(r);
+
+    xx = r.i * r.i;
+    yy = r.j * r.j;
+    zz = r.k * r.k;
+    xy = r.i * r.j;
+    xz = r.i * r.k;
+    yz = r.j * r.k;
+    wx = r.w * r.i;
+    wy = r.w * r.j;
+    wz = r.w * r.k;
+
+    res.col1.x = 1.0f - 2.0f * (yy + zz);
+    res.col1.y = 2.0f * (xy + wz);
+    res.col1.z = 2.0f * (xz - wy);
+
+    res.col2.x = 2.0f * (xy - wz);
+    res.col2.y = 1.0f - 2.0f * (xx + zz);
+    res.col2.z = 2.0f * (yz + wx);
+
+    res.col3.x = 2.0f * (xz + wy);
+    res.col3.y = 2.0f * (yz - wx);
+    res.col3.z = 1.0f - 2.0f * (xx + yy);
+
+    res.col4.w = 1;
+
+    return res;
 }
 
 //////////////////////////////

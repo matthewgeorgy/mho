@@ -13,11 +13,12 @@
 
     Version History
 
-        1.4 Refined debugging system
-        1.3 Added debugging for fopen/fclose
-        1.2 Automatically choose LH vs RH for mat4_{perspective|lookat} with #ifdef's
-        1.1 Added LH/RH versions for mat4_{perspective|lookat} functions
-        1.0 Initial commit
+		1.5		Added quaternion support
+        1.4		Refined debugging system
+        1.3 	Added debugging for fopen/fclose
+        1.2 	Automatically choose LH vs RH for mat4_{perspective|lookat} with #ifdef's
+        1.1 	Added LH/RH versions for mat4_{perspective|lookat} functions
+        1.0 	Initial commit
 */
 
 #ifndef MHO_H
@@ -673,6 +674,18 @@ MHO_EXTERN mho_quat_t       mho_quat_mul(mho_quat_t q1, mho_quat_t q2);
 // Computes the conjugate of a quaternion
 // (w - i - j - k)
 MHO_EXTERN mho_quat_t       mho_quat_conj(mho_quat_t q);
+
+// Computes the length (norm) of a quaternion
+MHO_EXTERN f32				mho_quat_len(mho_quat_t q);
+
+// Scales a quaternion by a given factor
+MHO_EXTERN mho_quat_t		mho_quat_scale(mho_quat_t q, f32 scale);
+
+// Normalizes a quaternion
+MHO_EXTERN mho_quat_t		mho_quat_normalize(mho_quat_t q);
+
+// Constructs a rotation matrix from a quaternion
+MHO_EXTERN mho_mat4_t		mho_quat_to_mat4(mho_quat_t q);
 
 /* ============================ *
  * =====        VQS       ===== *
